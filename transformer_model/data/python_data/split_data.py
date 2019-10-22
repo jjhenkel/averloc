@@ -1,4 +1,4 @@
-import csv, sys, random, re
+import csv, sys, random, re, json
 csv.field_size_limit(100000000)	
 
 def process_method_name(name):
@@ -19,7 +19,7 @@ def process_method_name(name):
 def process_method_body(body, keep_docstring=False):
 
 	body = body.replace('\\\"', ' " ').replace('"  "  "', '"""')
-	body = body.replace('.',' . ').replace('\'',' \' ').replace('\\n','').replace(',',' , ')
+	body = body.replace('.',' . ').replace('\'',' \' ').replace('\\n','').replace(',',' , ').replace('_',' ').replace('-',' ')
 
 	if not keep_docstring:
 		i = body.find('"""')
@@ -34,9 +34,11 @@ def process_method_body(body, keep_docstring=False):
 	return ' '.join(a), len(a)
 
 
-NUM = 2000
+NUM = 500000
 MIN_LEN = 5
-MAX_LEN = 50
+MAX_LEN = 128
+
+config = {'NUM': NUM, 'MIN_LEN': MIN_LEN, 'MAX_LEN': MAX_LEN}
 
 with open("python-data-1500k.tsv", encoding='utf8') as tsvfile:
 	tsvreader = csv.reader(tsvfile, delimiter="\t", quoting=csv.QUOTE_NONE)
@@ -54,9 +56,9 @@ with open("python-data-1500k.tsv", encoding='utf8') as tsvfile:
 	file_X_test = open('test_%d.data'%NUM, 'w', encoding='utf8')
 	file_Y_test = open('test_%d.labels'%NUM, 'w', encoding='utf8')
 
-	TRAIN = sorted(indices[:int(NUM*0.6)])
-	VAL = sorted(indices[int(NUM*0.6):int(NUM*0.8)])
-	TEST = sorted(indices[int(NUM*0.8):NUM])
+	TRAIN = sorted(indices[:int(NUM*0.8)])
+	VAL = sorted(indices[int(NUM*0.8):int(NUM*0.9)])
+	TEST = sorted(indices[int(NUM*0.9):NUM])
 
 	c = 0 
 	header = True
@@ -69,8 +71,17 @@ with open("python-data-1500k.tsv", encoding='utf8') as tsvfile:
 		body, l = process_method_body(line[6])
 
 		if flag and l>=MIN_LEN and l<=MAX_LEN:
-			if c%1000==0:
-				print(c)
+			if c%(NUM//100)==0:
+				print(c*100//NUM, end=' ')
+				sys.stdout.flush()
+				file_X_train.flush()
+				file_Y_train.flush()
+				file_X_val.flush()
+				file_Y_val.flush()
+				file_X_test.flush()
+				file_Y_test.flush()
+
+
 
 			if len(TRAIN)>0 and c == TRAIN[0]:
 				TRAIN.pop(0)
@@ -97,6 +108,10 @@ with open("python-data-1500k.tsv", encoding='utf8') as tsvfile:
 	file_Y_val.close()
 	file_X_test.close()
 	file_Y_test.close()
+
+	config['c'] = c
+	json.dump(config, open('config_%d.json'%NUM, 'w'), indent=4)
+	print(config)
 
 
 

@@ -2,6 +2,7 @@
 import argparse
 import torch
 import transformer.Constants as Constants
+import json
 
 def read_instances_from_file(inst_file, max_sent_len, keep_case):
     ''' Convert file into word seq lists and vocab '''
@@ -74,8 +75,9 @@ def main():
     parser.add_argument('-valid_src', required=True)
     parser.add_argument('-valid_tgt', required=True)
     parser.add_argument('-save_data', required=True)
-    parser.add_argument('-max_len', '--max_word_seq_len', type=int, default=50)
-    parser.add_argument('-min_word_count', type=int, default=5)
+    parser.add_argument('-max_len', '--max_word_seq_len', type=int, default=128)
+    parser.add_argument('-min_word_count_src', type=int, default=20)
+    parser.add_argument('-min_word_count_tgt', type=int, default=5)
     parser.add_argument('-keep_case', action='store_true')
     parser.add_argument('-share_vocab', action='store_true')
     parser.add_argument('-vocab', default=None)
@@ -127,13 +129,13 @@ def main():
         if opt.share_vocab:
             print('[Info] Build shared vocabulary for source and target.')
             word2idx = build_vocab_idx(
-                train_src_word_insts + train_tgt_word_insts, opt.min_word_count)
+                train_src_word_insts + train_tgt_word_insts, max(opt.min_word_count_src, opt.min_word_count_tgt))
             src_word2idx = tgt_word2idx = word2idx
         else:
             print('[Info] Build vocabulary for source.')
-            src_word2idx = build_vocab_idx(train_src_word_insts, opt.min_word_count)
+            src_word2idx = build_vocab_idx(train_src_word_insts, opt.min_word_count_src)
             print('[Info] Build vocabulary for target.')
-            tgt_word2idx = build_vocab_idx(train_tgt_word_insts, opt.min_word_count)
+            tgt_word2idx = build_vocab_idx(train_tgt_word_insts, opt.min_word_count_tgt)
 
     # word to index
     print('[Info] Convert source word instances into sequences of word index.')
@@ -155,6 +157,10 @@ def main():
         'valid': {
             'src': valid_src_insts,
             'tgt': valid_tgt_insts}}
+
+    json.dump(src_word2idx, open('src_vocab.json','w'), indent=4)
+    json.dump(tgt_word2idx, open('tgt_vocab.json','w'), indent=4)
+    print('[Info] Written vocabulary files to json')
 
     print('[Info] Dumping the processed data to pickle file', opt.save_data)
     torch.save(data, opt.save_data)

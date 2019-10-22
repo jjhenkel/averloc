@@ -61,9 +61,8 @@ def train_epoch(model, training_data, optimizer, device, smoothing):
     n_word_total = 0
     n_word_correct = 0
 
-    for batch in tqdm(
-            training_data, mininterval=2,
-            desc='  - (Training)   ', leave=False):
+    # for batch in tqdm(training_data, mininterval=2, desc='  - (Training)   ', leave=False):
+    for batch in training_data:
 
         # prepare data
         src_seq, src_pos, tgt_seq, tgt_pos = map(lambda x: x.to(device), batch)
@@ -102,10 +101,8 @@ def eval_epoch(model, validation_data, device):
     n_word_correct = 0
 
     with torch.no_grad():
-        for batch in tqdm(
-                validation_data, mininterval=2,
-                desc='  - (Validation) ', leave=False):
-
+        # for batch in tqdm(validation_data, mininterval=2, desc='  - (Validation) ', leave=False):
+        for batch in validation_data:
             # prepare data
             src_seq, src_pos, tgt_seq, tgt_pos = map(lambda x: x.to(device), batch)
             gold = tgt_seq[:, 1:]
@@ -195,7 +192,7 @@ def main():
 
     parser.add_argument('-data', required=True)
 
-    parser.add_argument('-epoch', type=int, default=10)
+    parser.add_argument('-epoch', type=int, default=5)
     parser.add_argument('-batch_size', type=int, default=64)
 
     #parser.add_argument('-d_word_vec', type=int, default=512)
