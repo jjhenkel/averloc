@@ -1,0 +1,1200 @@
+response text = response . text . lstrip ( ) . lower ( ) return text . startswith ( ' <html ' ) or text . startswith ( ' <!doctype ' )
+self , * args , ** kwargs response = self . session . request ( * args , ** kwargs ) Browser . add_soup ( response , self . soup_config ) return response
+self , * args , ** kwargs response = self . session . post ( * args , ** kwargs ) Browser . add_soup ( response , self . soup_config ) return response
+self , form , url = None , ** kwargs if isinstance ( form , Form ) : form = form . form response = self . _request ( form , url , ** kwargs ) Browser . add_soup ( response , self . soup_config ) return response
+self , soup with tempfile . NamedTemporaryFile ( delete = False , suffix = ' . html ' ) as file : file . write ( soup . encode ( ) ) webbrowser . open ( ' file:// ' + file . name )
+self if self . session is not None : self . session . cookies . clear ( ) self . session . close ( ) self . session = None
+self , name for option in self . form . find_all ( " input " , { " name " : name } ) : if " checked " in option . attrs : del option . attrs [ " checked " ]
+self , debug self . __debug = debug
+self return self . __debug
+self return self . __verbose
+self return self . __state . url
+self , page_text , url = None , soup_config = None soup_config = soup_config or self . soup_config self . __state = _BrowserState ( page = bs4 . BeautifulSoup ( page_text , ** soup_config ) , url = url )
+self , url , * args , ** kwargs return self . open ( self . absolute_url ( url ) , * args , ** kwargs )
+self , * args , ** kwargs print ( " Links in the current page: " ) for l in self . links ( * args , ** kwargs ) : print ( " " , l )
+self , * args , ** kwargs links = self . links ( * args , ** kwargs ) if len ( links ) == 0 : raise LinkNotFoundError ( ) else : return links [ 0 ]
+def soup = bs4 . BeautifulSoup ( ' <notform>This is not a form</notform> ' , ' lxml ' ) tag = soup . find ( ' notform ' ) assert isinstance ( tag , bs4 . element . Tag ) pytest . deprecated_call ( mechanicalsoup . Form , tag )
+self , object_number , byte_string self . overwritten_objects_offsets [ object_number ] = ( self . _write_object ( object_number , byte_string ) )
+self return len ( self . objects_offsets ) + len ( self . new_objects_offsets )
+self , byte_string object_number = self . next_object_number ( ) self . new_objects_offsets . append ( self . _write_object ( object_number , byte_string ) ) return object_number
+string r return string . encode ( ' utf8 ' ) . lower ( ) . decode ( ' utf8 ' )
+element , link_type return any ( ascii_lower ( token ) == link_type for token in HTML_SPACE_SEPARATED_TOKENS_RE . findall ( element . get ( ' rel ' , ' ' ) ) )
+tag def decorator ( function ) : """ Decorator registering a function handling ``tag`` elements . """ HTML_HANDLERS [ tag ] = function return function return decorator
+element , box , _get_image_from_uri , base_url box . is_attachment = element_has_link_type ( element , ' attachment ' ) return [ box ]
+meta_name , string if W3C_DATE_RE . match ( string ) : return string else : LOGGER . warning ( ' Invalid date in <meta name= " %s " > %r ' , meta_name , string )
+self , image_resolution , _font_size return ( self . _intrinsic_width / image_resolution , self . _intrinsic_height / image_resolution , image_resolution , _font_size return ( self . _intrinsic_width / image_resolution , self . _intrinsic_height / image_resolution )
+self , _image_resolution , _font_size return None , Non , _image_resolution , _font_size return None , None
+self , rule_descriptors , url_fetcher
+self return [ HTML5_UA_STYLESHEET return [ HTML5_UA_STYLESHEET ]
+self return [ HTML5_PH_STYLESHEET return [ HTML5_PH_STYLESHEET ]
+self , stylesheets = None , enable_hinting = False , presentational_hints = False , font_config = None return Document . _render ( self , stylesheets , enable_hinting , presentational_hints , font_config )
+self , stylesheets = None , resolution = 96 , presentational_hints = False , font_config = None surface , _width , _height = ( self . render ( stylesheets , enable_hinting = True , presentational_hints = presentational_hints , font_config = font_config ) . write_image_surface ( resolution ) ) return surface
+context context . save ( ) try : yield finally : context . restore ( )
+color hue , saturation , value = rgb2hsv ( color . red , color . green , color . blue ) value /= 1 . 5 saturation /= 1 . 25 return hsv2rgb ( hue , saturation , value ) + ( color . alpha , )
+data if isinstance ( data , bytes ) : data = data . decode ( ' utf8 ' ) return email . message_from_string ( data if isinstance ( data , bytes ) : data = data . decode ( ' utf8 ' ) return email . message_from_string ( data )
+url return bool ( ( UNICODE_SCHEME_RE if isinstance ( url , str ) else BYTES_SCHEME_RE ) . match ( url ) return bool ( ( UNICODE_SCHEME_RE if isinstance ( url , str ) else BYTES_SCHEME_RE ) . match ( url ) )
+string , slice_ return string . encode ( ' utf-8 ' ) [ slice_ ] . decode ( ' utf-8 ' ng , slice_ return string . encode ( ' utf-8 ' ) [ slice_ ] . decode ( ' utf-8 ' )
+self context = pango . pango_layout_get_context ( self . layout ) return FontMetrics ( context , self . font , self . language context = pango . pango_layout_get_context ( self . layout ) return FontMetrics ( context , self . font , self . language )
+symbols , _negative , value return symbols [ ( value - 1 ) % len ( symbols ) ]
+symbols , _negative , value if value <= 0 : return None length = len ( symbols ) return symbols [ value % length ] * ( ( value - 1 ) // length )
+symbols , _negative , value first_symbol_value , symbols = symbols value -= first_symbol_value if 0 <= value < len ( symbols ) : return symbols [ value ]
+self cls = type ( self ) new_box = cls . __new__ ( cls ) new_box . __dict__ . update ( self . __dict__ ) return new_box
+self return self . copy ( )
+self return self . position_x + self . margin_left + self . border_left_width
+self return self . position_x + self . margin_left
+self return self . position_y + self . margin_top
+self return ( self . border_box_x ( ) , self . border_box_y ( ) , self . border_width ( ) , self . border_height ( ) )
+self return self . rounded_box ( self . border_top_width , self . border_right_width , self . border_bottom_width , self . border_left_width )
+self return self . style [ ' position ' ] in ( ' absolute ' , ' fixed ' )
+self return ( self . style [ ' page ' ] , self . style [ ' page ' ] )
+self yield self for child in self . children : if hasattr ( child , ' descendants ' ) : for grand_child in child . descendants ( ) : yield grand_child else : yield child
+self if self . is_table_wrapper : for child in self . children : if isinstance ( child , TableBox ) : return child else : # pragma: no cover raise ValueError ( ' Table wrapper without a table ' )
+self return ( self . border_box_x ( ) , self . position_y , self . border_width ( ) , self . margin_height ( ) )
+self return itertools . chain ( self . children , self . column_groups return itertools . chain ( self . children , self . column_groups )
+self return ( self . style [ ' page ' ] , self . style [ ' page ' ] return ( self . style [ ' page ' ] , self . style [ ' page ' ] )
+self return [ cell for column in self . children for cell in column . get_cells ( ) ]
+element_tag , style , content return BOX_TYPE_FROM_DISPLAY [ style [ ' display ' ] ] ( element_tag , style , content ent_tag , style , content return BOX_TYPE_FROM_DISPLAY [ style [ ' display ' ] ] ( element_tag , style , content )
+counter_name , counter_values , missing_counters if counter_name not in list ( counter_values ) + missing_counters : missing_counters . append ( counter_name )
+counter_name , lookup_counter_values , anchor_name , missing_target_counters if counter_name not in lookup_counter_values : missing_counters = missing_target_counters . setdefault ( anchor_name , [ ] ) if counter_name not in missing_counters : missing_counters . append ( counter_name )
+box , _has_non_whitespace = re . compile ( ' \\\\S ' ) . search return isinstance ( box , boxes . TextBox ) and not _has_non_whitespace ( box . text )
+box if not isinstance ( box , boxes . ParentBox ) : return box children = [ anonymous_table_boxes ( child ) for child in box . children ] return table_boxes_children ( box , children )
+box if not isinstance ( box , boxes . ParentBox ) : return box children = [ flex_boxes ( child ) for child in box . children ] box . children = flex_children ( box , children ) return box
+context , box , available_width return min ( max ( min_content_width ( context , box , outer = False ) , available_width ) , max_content_width ( context , box , outer = False ) )
+context , box , outer = True return _block_content_width ( context , box , min_content_width , outer )
+context , box , outer = True return _block_content_width ( context , box , max_content_width , outer )
+context , box , outer return max ( table_cell_min_content_width ( context , box , outer ) , block_max_content_width ( context , box , outer ) )
+constraint_width , constraint_height , intrinsic_ratio return _constraint_image_sizing ( constraint_width , constraint_height , intrinsic_ratio , cover = False )
+self return self . padding_plus_border + self . margin_a + self . margin_ return self . padding_plus_border + self . margin_a + self . margin_b
+self return self . sugar + self . inne return self . sugar + self . inner
+self return self . sugar + ( self . min_content_size if self . inner == ' auto ' else self . inner return self . sugar + ( self . min_content_size if self . inner == ' auto ' else self . inner )
+self return self . sugar + ( self . max_content_size if self . inner == ' auto ' else self . inner return self . sugar + ( self . max_content_size if self . inner == ' auto ' else self . inner )
+self return 1e return 1e6
+box , context , containing_block_height page_width_or_height ( VerticalBox ( context , box ) , containing_block_height , context , containing_block_height page_width_or_height ( VerticalBox ( context , box ) , containing_block_height )
+sibling_before , sibling_after before_page = sibling_before . page_values ( ) [ 1 ] after_page = sibling_after . page_values ( ) [ 0 ] if before_page != after_page : return after_page
+box , extra_padding box . padding_top += extra_padding for child in box . children : child . translate ( dy = extra_padding )
+page , get_image_from_uri layout_box_backgrounds ( page , page , get_image_from_uri ) set_canvas_background ( page , get_image_from_uri layout_box_backgrounds ( page , page , get_image_from_uri ) set_canvas_background ( page )
+self self . excluded_shapes = [ ] self . _excluded_shapes_lists . append ( self . excluded_shapes self . excluded_shapes = [ ] self . _excluded_shapes_lists . append ( self . excluded_shapes )
+name name = name . replace ( ' - ' , ' _ ' ) def decorator ( function ) : """ Register the property ``name`` for ``function`` . """ COMPUTER_FUNCTIONS [ name ] = function return function return decorator
+computer , name , values return tuple ( ( origin_x , length ( computer , name , pos_x ) , origin_y , length ( computer , name , pos_y ) ) for origin_x , pos_x , origin_y , pos_y in values )
+computer , name , values return tuple ( length ( computer , name , value ) for value in values )
+computer , name , values return tuple ( length ( computer , name , value , pixels_only = True ) for value in values )
+computer , name , value if value == ' always ' : return ' page ' else : return value
+computer , name , value return length ( computer , name , value , pixels_only = True )
+computer , name , values return tuple ( ( string_set [ 0 ] , _content_list ( computer , string_set [ 1 ] ) ) for string_set in values )
+computer , name , values if values != ' none ' : _ , key = values anchor_name = computer [ ' element ' ] . get ( key ) or None computer [ ' target_collector ' ] . collect_anchor ( anchor_name ) return anchor_name
+computer , name , value if isinstance ( value , int ) : return value else : return length ( computer , name , value )
+computer , name , value result = [ ] for function , args in value : if function == ' translate ' : args = length_or_percentage_tuple ( computer , name , args ) result . append ( ( function , args ) ) return tuple ( result )
+tokens return tuple ( token for token in tokens if token . type not in ( ' whitespace ' , ' comment ' ) )
+token if token . type == ' ident ' : return token . lower_value
+tokens if len ( tokens ) == 1 : token = tokens [ 0 ] if token . type == ' ident ' : return token . lower_value
+token if token . type == ' dimension ' : factor = ANGLE_TO_RADIANS . get ( token . unit ) if factor is not None : return token . value * factor
+token if token . type == ' dimension ' : factor = RESOLUTION_TO_DPPX . get ( token . unit ) if factor is not None : return token . value * factor
+token keyword = get_keyword ( token ) if keyword in ( ' open-quote ' , ' close-quote ' , ' no-open-quote ' , ' no-close-quote ' ) : return keyword
+self return self . _cascaded_style return self . _cascaded_styles
+self return self . _computed_style return self . _computed_styles
+token return parse_color ( token n return parse_color ( token )
+tokens if len ( tokens ) == 3 : # Ignore third parameter as 3D transforms are ignored . tokens = tokens [ : 2 ] return parse_2d_position ( tokens )
+tokens return parse_position ( tokens )
+tokens return parse_position ( tokens )
+keyword return keyword in ( ' border-box ' , ' padding-box ' , ' content-box ' )
+keyword return keyword in ( ' auto ' , ' avoid ' , ' avoid-page ' , ' page ' , ' left ' , ' right ' , ' recto ' , ' verso ' , ' avoid-column ' , ' column ' , ' always ' )
+keyword return keyword in ( ' auto ' , ' avoid ' , ' avoid-page ' , ' avoid-column ' )
+keyword return keyword in ( ' slice ' , ' clone ' )
+keyword return keyword in ( ' auto ' , ' keep ' , ' discard ' )
+token keyword = get_keyword ( token ) if keyword == ' auto ' : return ' auto ' else : return get_length ( token )
+keyword return keyword in ( ' all ' , ' none ' )
+keyword return keyword in ( ' padding-box ' , ' border-box ' , ' content-box ' )
+keyword return keyword in ( ' top ' , ' bottom ' )
+tokens return counter ( tokens , default_integer = 1 )
+tokens return counter ( tokens , default_integer = 0 )
+token length = get_length ( token , negative = False , percentage = True ) if length : return length if get_keyword ( token ) == ' auto ' : return ' auto '
+token length = get_length ( token , negative = False ) if length : return length keyword = get_keyword ( token ) if keyword == ' normal ' : return keyword
+keyword return keyword in ( ' auto ' , ' balance ' )
+keyword return keyword in ( ' ltr ' , ' rtl ' )
+keyword return keyword in ( ' left ' , ' right ' , ' none ' )
+keyword return keyword in ( ' normal ' , ' sub ' , ' super ' ord return keyword in ( ' normal ' , ' sub ' , ' super ' )
+keyword return keyword in ( ' normal ' , ' italic ' , ' oblique ' )
+token if get_keyword ( token ) == ' normal ' : return ' normal ' length = get_length ( token ) if length : return length
+keyword return keyword in ( ' inside ' , ' outside ' )
+keyword return keyword == ' none ' or keyword in counters . STYLES
+token keyword = get_keyword ( token ) if keyword == ' auto ' : return keyword else : return length_or_precentage ( [ token ] )
+token length = get_length ( token , negative = False , percentage = True ) if length : return length
+token length = get_length ( token , negative = False , percentage = True ) if length : return length if get_keyword ( token ) == ' none ' : return Dimension ( float ( ' inf ' ) , ' px ' )
+token if token . type == ' number ' and token . int_value is not None : value = token . int_value if value >= 1 : return value
+token if token . type == ' number ' and token . int_value is not None : value = token . int_value if value >= 1 : return value if get_keyword ( token ) == ' auto ' : return ' auto '
+keyword return keyword in ( ' auto ' , ' visible ' , ' hidden ' , ' scroll ' )
+keyword return keyword in ( ' clip ' , ' ellipsis ' )
+keyword if keyword in ( ' fixed ' , ' auto ' ) : return keyword
+keyword return keyword in ( ' left ' , ' right ' , ' center ' , ' justify ' )
+keyword return keyword in ( ' none ' , ' uppercase ' , ' lowercase ' , ' capitalize ' , ' full-width ' )
+keyword return keyword in ( ' visible ' , ' hidden ' , ' collapse ' )
+keyword return keyword in ( ' normal ' , ' pre ' , ' nowrap ' , ' pre-wrap ' , ' pre-line ' )
+token basis = width_height ( [ token ] ) if basis is not None : return basis if get_keyword ( token ) == ' content ' : return ' content '
+keyword return keyword in ( ' row ' , ' row-reverse ' , ' column ' , ' column-reverse ' )
+token if token . type == ' number ' and token . int_value is not None : return token . int_valun if token . type == ' number ' and token . int_value is not None : return token . int_value
+keyword return keyword in ( ' flex-start ' , ' flex-end ' , ' center ' , ' space-between ' , ' space-around ' , ' space-evenly ' , ' stretch ' )
+keyword return keyword in ( ' flex-start ' , ' flex-end ' , ' center ' , ' baseline ' , ' stretch ' )
+token if token . type == ' number ' and token . int_value is not None : value = token . int_value if value >= 0 : return value return get_length ( token , negative = False )
+token return get_length ( token , negative = False , percentage = True )
+tokens , base_url parsed_tokens = tuple ( get_content_list_token ( token , base_url ) for token in tokens ) if None not in parsed_tokens : return parsed_tokens
+keyword return keyword in ( ' open ' , ' closed ' )
+keyword return keyword in ( ' ultra-condensed ' , ' extra-condensed ' , ' condensed ' , ' semi-condensed ' , ' normal ' , ' semi-expanded ' , ' expanded ' , ' extra-expanded ' , ' ultra-expanded ' )
+tokens return properties . font_feature_settings ( tokens )
+base_url , name , tokens for suffix in ( ' -top ' , ' -right ' , ' -bottom ' , ' -left ' ) : for new_prop in expand_border_side ( base_url , name + suffix , tokens ) : yield new_prop
+base_url , name , tokens keyword = get_single_keyword ( tokens ) if keyword in ( ' auto ' , ' avoid ' ) : yield ' break-inside ' , keyword
+name , tokens return expand_font_variant ( tokens )
+html_content , base_url = BASE_URL box = build . build_formatting_structure ( * _parse_base ( html_content , base_url ) ) _sanity_checks ( box ) return box
+html_content return [ p . _page_box for p in FakeHTML ( string = html_content , base_url = BASE_URL ) . render ( enable_hinting = True ) . pages ]
+html box = parse_all ( html ) assert box . style [ ' display ' ] == ' block ' assert not box . childre box = parse_all ( html ) assert box . style [ ' display ' ] == ' block ' assert not box . children
+self , data self . chunks . append ( bytes ( data [ : ] ) , data self . chunks . append ( bytes ( data [ : ] ) )
+box return ( box . position_x , box . position_y , box . margin_width ( ) , box . margin_height ( ) )
+@ page , = render_pages ( ' ' ' <div style= " top:100%; float:left " > ' ' ' ge , = render_pages ( ' ' ' <div style= " top:100%; float:left " > ' ' ' )
+style , selectors at_rule , = tinycss2 . parse_stylesheet ( style ) assert parse_page_selectors ( at_rule ) == selectore , selectors at_rule , = tinycss2 . parse_stylesheet ( style ) assert parse_page_selectors ( at_rule ) == selectors
+source , messages with capture_logs ( ) as logs : CSS ( string = source ) assert len ( logs ) == 1 , source for message in messages : assert message in logs [ 0 ]
+document , name , expected_width , expected_height surface = document . write_image_surface ( ) return image_to_pixels ( surface , expected_width , expected_height )
+@ return test_borders ( margin = ' 20px ' , prop = ' outline ' turn test_borders ( margin = ' 20px ' , prop = ' outline ' )
+pixels_str return parse_pixels ( pixels_str , PIX_BY_CHAR_OVERRIDES ls_str return parse_pixels ( pixels_str , PIX_BY_CHAR_OVERRIDES )
+@ page , = render_pages ( ' ' ' <table> <td style= " width: 50% " > </table> ' ' ' ge , = render_pages ( ' ' ' <table> <td style= " width: 50% " > </table> ' ' ' )
+shape fan_in = shape [ 0 ] if len ( shape ) == 2 else np . prod ( shape [ : - 1 ] ) fan_out = shape [ 1 ] if len ( shape ) == 2 else shape [ - 1 ] return fan_in , fan_out
+x , keep_prob , is_training return tf . contrib . layers . dropout ( x , keep_prob = keep_prob , is_training = is_training )
+self return self . _num_unit return self . _num_units
+self return self . _num_unit return self . _num_units
+self return self . _num_unit return self . _num_units
+self return ( LSTMStateTuple ( self . _num_units , self . _num_units ) if self . _state_is_tuple else 2 * self . _num_units return ( LSTMStateTuple ( self . _num_units , self . _num_units ) if self . _state_is_tuple else 2 * self . _num_units )
+self return self . _num_unit return self . _num_units
+path if isinstance ( path , list ) : for p in path : if not os . path . exists ( p ) : os . makedirs ( p ) else : if not os . path . exists ( path ) : os . makedirs ( path )
+mel return 700 * ( 10 ** ( mel / 2595 . 0 ) - 1 )
+c_str if _check_whether_special ( c_str ) : return _c2n ( c_str ) else : return _get_complex ( c_str r if _check_whether_special ( c_str ) : return _c2n ( c_str ) else : return _get_complex ( c_str )
+string ' ' ' Main function to be called for converting digits into characters in a sentence ' ' ' return _prepString ( string ng ' ' ' Main function to be called for converting digits into characters in a sentence ' ' ' return _prepString ( string )
+self return self . _output_vector_le return self . _output_vector_len
+self , feature_dir , label_dir , mode , level return load_batched_data ( feature_dir , label_dir , batch_size , mode , level , feature_dir , label_dir , mode , level return load_batched_data ( feature_dir , label_dir , batch_size , mode , level )
+self return self . format . format ( * self . message return self . format . format ( * self . message )
+self return ( self . format + NotSupportedException . archError ) . format ( * self . message return ( self . format + NotSupportedException . archError ) . format ( * self . message )
+self return self . widt return self . width
+self return self . progra return self . program
+self self . append ( " " self . append ( " " )
+self , string self . program += str ( string , string self . program += str ( string )
+self , string self . append ( string ) self . newline ( , string self . append ( string ) self . newline ( )
+self self . program += " " * self . currentInden self . program += " " * self . currentIndent
+self , name , ebpfType self . type_map [ name ] = ebpfTyp , name , ebpfType self . type_map [ name ] = ebpfType
+self return self . widt return self . width
+width return ( width + 7 ) / h return ( width + 7 ) / 8
+self , serializer , identifier , size raise CompilationException ( True , " Arrays of base type not expected in P4 " , serializer , identifier , size raise CompilationException ( True , " Arrays of base type not expected in P4 " )
+self , other assert ( isinstance ( other , Node ) ) self . edges . add ( other , other assert ( isinstance ( other , Node ) ) self . edges . add ( other )
+self , action return action . lineno < , action return action . lineno < 0
+headerInstance assert isinstance ( headerInstance , p4_header_instance ) return headerInstance . max_index is not NonerInstance assert isinstance ( headerInstance , p4_header_instance ) return headerInstance . max_index is not None
+self , serializer assert isinstance ( serializer , programSerializer . ProgramSerializer ) serializer . append ( self . config . getIncludes ( ) , serializer assert isinstance ( serializer , programSerializer . ProgramSerializer ) serializer . append ( self . config . getIncludes ( ) )
+self , serializer self . deparser . serialize ( serializer , self , serializer self . deparser . serialize ( serializer , self )
+self , serializer raise CompilationException ( True , " Method must be overridden " , serializer raise CompilationException ( True , " Method must be overridden " )
+self , serializer raise CompilationException ( True , " Method must be overridden " , serializer raise CompilationException ( True , " Method must be overridden " )
+self return " " return " "
+self , serializer pas , serializer pass
+self , serializer , licenseString assert isinstance ( serializer , ProgramSerializer ) pas , serializer , licenseString assert isinstance ( serializer , ProgramSerializer ) pass
+self , serializer assert isinstance ( serializer , ProgramSerializer ) self . type . declare ( serializer , self . name , False , serializer assert isinstance ( serializer , ProgramSerializer ) self . type . declare ( serializer , self . name , False )
+field assert isinstance ( field , EbpfTableKeyField ) return field . field . type . alignment ( d assert isinstance ( field , EbpfTableKeyField ) return field . field . type . alignment ( )
+self , serializer assert isinstance ( serializer , ProgramSerializer ) self . key . serializeType ( serializer , self . keyTypeName , serializer assert isinstance ( serializer , ProgramSerializer ) self . key . serializeType ( serializer , self . keyTypeName )
+self , * args if self . verbose : print ( * args , * args if self . verbose : print ( * args )
+self return IPAddress ( self . ipaddress return IPAddress ( self . ipaddress )
+self return self . nam return self . name
+self nsname = self . get_ns_name ( ) ns = NetNS ( nsname ) return n nsname = self . get_ns_name ( ) ns = NetNS ( nsname ) return ns
+self ns = self . get_ns ( ) ; ns . close ( ) ns . remove ( ns = self . get_ns ( ) ; ns . close ( ) ns . remove ( )
+self , node assert isinstance ( node , Node ) self . nodes . append ( node , node assert isinstance ( node , Node ) self . nodes . append ( node )
+filename return os . path . splitext ( os . path . basename ( filename ) ) [ 0 name return os . path . splitext ( os . path . basename ( filename ) ) [ 0 ]
+def return os . getuid ( ) == return os . getuid ( ) == 0
+def return _read_cpu_range ( ' /sys/devices/system/cpu/possible ' return _read_cpu_range ( ' /sys/devices/system/cpu/possible ' )
+s , file = sys . stdout , nl = 1 buf = file . buffer if hasattr ( file , " buffer " ) else file buf . write ( s ) if nl : buf . write ( b " \ " ) file . flush ( )
+self return " %d %s bytes " % ( self . size , " signed " if self . signed else " unsigned " return " %d %s bytes " % ( self . size , " signed " if self . signed else " unsigned " )
+self return " %s:%s " % ( self . provider , self . name return " %s:%s " % ( self . provider , self . name )
+self , probe , fn_name if lib . bcc_usdt_enable_probe ( self . context , probe . encode ( ' ascii ' ) , fn_name . encode ( ' ascii ' ) ) != 0 : print ( ) sys . exit ( 1 )
+self return self . contex return self . context
+def global _num_open_probes return _num_open_probeglobal _num_open_probes return _num_open_probes
+cls , program_words headers = " " for header , keywords in cls . _auto_includes . items ( ) : for keyword in keywords : for word in program_words : if keyword in word and header not in headers : headers += " #include <%s>\ " % header return headers
+self , num_new_probes global _num_open_probes if _num_open_probes + num_new_probes > _probe_limit : raise Exception ( " Number of open probes would exceed global quota " , num_new_probes global _num_open_probes if _num_open_probes + num_new_probes > _probe_limit : raise Exception ( " Number of open probes would exceed global quota " )
+self , name , fd global _num_open_probes self . kprobe_fds [ name ] = fd _num_open_probes += , name , fd global _num_open_probes self . kprobe_fds [ name ] = fd _num_open_probes += 1
+self , name global _num_open_probes del self . kprobe_fds [ name ] _num_open_probes -= , name global _num_open_probes del self . kprobe_fds [ name ] _num_open_probes -= 1
+self , name , fd global _num_open_probes self . uprobe_fds [ name ] = fd _num_open_probes += , name , fd global _num_open_probes self . uprobe_fds [ name ] = fd _num_open_probes += 1
+self , name global _num_open_probes del self . uprobe_fds [ name ] _num_open_probes -= , name global _num_open_probes del self . uprobe_fds [ name ] _num_open_probes -= 1
+name , sym_re return set ( [ address for ( _ , address ) in BPF . get_user_functions_and_addresses ( name , sym_re ) ] )
+pid if pid < 0 and pid != - 1 : pid = - 1 if not pid in BPF . _sym_caches : BPF . _sym_caches [ pid ] = SymbolCache ( pid ) return BPF . _sym_caches [ pid ]
+name return BPF . _sym_cache ( - 1 ) . resolve_name ( None , name )
+self return len ( self . kprobe_fds )
+self , timeout = - 1 self . perf_buffer_poll ( timeout )
+self return lib . bcc_free_memory ( return lib . bcc_free_memory ( )
+ttype try : return map_type_name [ ttype ] except KeyError : return " <unknown> "e try : return map_type_name [ ttype ] except KeyError : return " <unknown> "
+self return [ item for item in self . iteritems ( ) return [ item for item in self . iteritems ( ) ]
+self return [ value for value in self . itervalues ( ) return [ value for value in self . itervalues ( ) ]
+self for k in self . keys ( ) : self . __delitem__ ( k for k in self . keys ( ) : self . __delitem__ ( k )
+self return self . __iter__ ( return self . __iter__ ( )
+self return self . __iter__ ( return self . __iter__ ( )
+self , key result = self . sum ( key ) return result . value / self . total_cp , key result = self . sum ( key ) return result . value / self . total_cpu
+stack_id return ( stack_id < 0 ) and ( stack_id != - errno . EFAULT k_id return ( stack_id < 0 ) and ( stack_id != - errno . EFAULT )
+self , node return self . adjacency_map . get ( node , set ( ) , node return self . adjacency_map . get ( node , set ( ) )
+self return self . adjacency_map . keys ( return self . adjacency_map . keys ( )
+self , node1 , node2 return self . attributes_map [ ( node1 , node2 ) , node1 , node2 return self . attributes_map [ ( node1 , node2 ) ]
+bpf , event_handler bpf [ " events " ] . open_perf_buffer ( event_handler ) while True : bpf . perf_buffer_poll ( ) if Global . args . pid : return
+signal_value , frame print ( al_value , frame print ( )
+def print ( " USAGE: %s [time] " % argv [ 0 ] ) exit ( print ( " USAGE: %s [time] " % argv [ 0 ] ) exit ( )
+signal , frame print ( al , frame print ( )
+val ival = positive_int ( val ) if ival == 0 : raise argparse . ArgumentTypeError ( " must be nonzero " ) return ivaival = positive_int ( val ) if ival == 0 : raise argparse . ArgumentTypeError ( " must be nonzero " ) return ival
+signal , frame print ( al , frame print ( )
+self , string fname = " streq_%d " % Probe . streq_index Probe . streq_index += 1 self . streq_functions += % ( fname , string ) return fname
+cls , mode , probability , count cls . mode = mode cls . probability = probability cls . count = coun , mode , probability , count cls . mode = mode cls . probability = probability cls . count = count
+self , err raise ValueError ( " error in probe ' %s ' : %s " % ( self . spec , err ) , err raise ValueError ( " error in probe ' %s ' : %s " % ( self . spec , err ) )
+self return Probe . errno_mapping [ Probe . mode return Probe . errno_mapping [ Probe . mode ]
+self prog = self . _get_heading ( ) + prog = prog % ( self . _get_if_top ( ) , self . prep , self . _get_entry_logic ( ) ) return prog
+self prog = self . _get_heading ( ) + prog = prog % ( self . _get_exit_logic ( ) , self . _get_if_top ( ) ) return prog
+self text = % self . length return text
+self self . _create_probes ( ) self . _generate_program ( ) self . _attach_probes ( ) self . _main_loop ( self . _create_probes ( ) self . _generate_program ( ) self . _attach_probes ( ) self . _main_loop ( )
+error print ( " Error: " + error ) exit ( 1 r print ( " Error: " + error ) exit ( 1 )
+stack_id return ( stack_id < 0 ) and ( stack_id != - errno . EFAULT k_id return ( stack_id < 0 ) and ( stack_id != - errno . EFAULT )
+stack_id return ( stack_id < 0 ) and ( stack_id != - errno . EFAULT k_id return ( stack_id < 0 ) and ( stack_id != - errno . EFAULT )
+signal , frame print ( al , frame print ( )
+self , size self . count += 1 self . size += siz , size self . count += 1 self . size += size
+command p = subprocess . Popen ( command . split ( ) ) return p . piand p = subprocess . Popen ( command . split ( ) ) return p . pid
+signal , frame print ( al , frame print ( )
+self , comm , pid print ( " %s [%d] " % ( comm , pid ) , comm , pid print ( " %s [%d] " % ( comm , pid ) )
+pid try : return open ( " /proc/%d/comm " % pid ) . read ( ) . strip ( ) except : return " [unknown] "try : return open ( " /proc/%d/comm " % pid ) . read ( ) . strip ( ) except : return " [unknown] "
+cpu , data , size print_event ( cpu , data , size , " WRITE/SEND " , " perf_SSL_write " , data , size print_event ( cpu , data , size , " WRITE/SEND " , " perf_SSL_write " )
+cpu , data , size print_event ( cpu , data , size , " READ/RECV " , " perf_SSL_read " , data , size print_event ( cpu , data , size , " READ/RECV " , " perf_SSL_read " )
+self return self . python_format == " " return self . python_format == " "
+self , error raise ValueError ( " error in probe ' %s ' : %s " % ( self . raw_probe , error ) , error raise ValueError ( " error in probe ' %s ' : %s " % ( self . raw_probe , error ) )
+self , string fname = " streq_%d " % Probe . streq_index Probe . streq_index += 1 self . streq_functions += % ( fname , string ) return fname
+def print ( " USAGE: %s [-Ch] {PTS | /dev/ttydev} # try -h for help " % argv [ 0 ] ) exit ( print ( " USAGE: %s [-Ch] {PTS | /dev/ttydev} # try -h for help " % argv [ 0 ] ) exit ( )
+signal , frame print ( al , frame print ( )
+stack_id return ( stack_id < 0 ) and ( stack_id != - errno . EFAULT k_id return ( stack_id < 0 ) and ( stack_id != - errno . EFAULT )
+retval try : return ' - ' + errno . errorcode [ - retval ] except KeyError : return str ( retval al try : return ' - ' + errno . errorcode [ - retval ] except KeyError : return str ( retval )
+signal_value , frame print ( al_value , frame print ( )
+val ival = positive_int ( val ) if ival == 0 : raise argparse . ArgumentTypeError ( " must be nonzero " ) return ivaival = positive_int ( val ) if ival == 0 : raise argparse . ArgumentTypeError ( " must be nonzero " ) return ival
+addr if args . annotations : return b . ksym ( addr ) + " _[k] " else : return b . ksym ( addr if args . annotations : return b . ksym ( addr ) + " _[k] " else : return b . ksym ( addr )
+signal , frame print ( al , frame print ( )
+signal , frame print ( al , frame print ( )
+command p = subprocess . Popen ( command . split ( ) ) return p . piand p = subprocess . Popen ( command . split ( ) ) return p . pid
+signal , frame print ( al , frame print ( )
+self text = % ( self . begin , self . begin_save , self . end , args . minimum * 1000000 , self . end_save ) return text
+self , data return self . formatter ( data , data return self . formatter ( data )
+event " gen %d GC collected %d objects " % ( event . field1 , event . field2 t " gen %d GC collected %d objects " % ( event . field1 , event . field2 )
+self text = return str . join ( ' ' , [ text % ( self . language , event ) for event in self . events ] )
+self text = lang = self . language return str . join ( ' ' , [ text % ( lang , event , lang , event ) for event in self . events ] )
+self self . _find_targets ( ) self . _enable_probes ( ) return self . _generate_tables ( ) + self . _generate_functions ( self . _find_targets ( ) self . _enable_probes ( ) return self . _generate_tables ( ) + self . _generate_functions ( )
+self return self . usdt return self . usdts
+self for probe in self . probes : probe . cleanup ( ) self . bpf . cleanup ( ) self . bpf = Non for probe in self . probes : probe . cleanup ( ) self . bpf . cleanup ( ) self . bpf = None
+def print ( " USAGE: %s [interval [count]] " % argv [ 0 ] ) exit ( print ( " USAGE: %s [interval [count]] " % argv [ 0 ] ) exit ( )
+self test_prog1 = BPF ( text = test_prog1 )
+self test_prog1 = b = BPF ( text = test_prog1 ) t = b [ " lru " ] self . assertEqual ( t . flags , 2 ) ;
+self text = b = bcc . BPF ( text = text ) sleep ( 1 ) total_switches = 0 for k , v in b [ " switches " ] . items ( ) : total_switches += v . value self . assertNotEqual ( 0 , total_switches )
+self text = b = BPF ( text = text , debug = 0 ) fn = b . load_func ( " count_sched " , BPF . KPROBE )
+self text = b = BPF ( text = text , debug = 0 ) fn = b . load_func ( " count_foo " , BPF . KPROBE )
+self text = b = BPF ( text = text ) fn = b . load_func ( " count_tcp " , BPF . KPROBE )
+self text = b = BPF ( text = text ) fn = b . load_func ( " count_tcp " , BPF . KPROBE )
+self text = b = BPF ( text = text ) fn = b . load_func ( " count_tcp " , BPF . KPROBE )
+self text = b = BPF ( text = text , debug = 0 ) fns = b . load_funcs ( BPF . KPROBE )
+self text = b = BPF ( text = text , debug = 0 ) fn = b . load_func ( " do_request " , BPF . KPROBE )
+self text = b = BPF ( text = text , debug = 0 ) fn = b . load_func ( " do_request " , BPF . KPROBE )
+self BPF ( text = )
+self b = BPF ( text = ) fn = b . load_func ( " trace_entry1 " , BPF . KPROBE ) fn = b . load_func ( " trace_entry2 " , BPF . KPROBE )
+self text = try : b = BPF ( text = text ) except : pass
+self b = BPF ( text = )
+self b = BPF ( text = ) b . load_func ( " test " , BPF . KPROBE )
+self b = BPF ( text = ) b . load_func ( " test " , BPF . KPROBE )
+self text = b = BPF ( text = text ) fn = b . load_func ( " trace_entry " , BPF . KPROBE )
+self text = b = BPF ( text = text ) fn = b . load_func ( " test " , BPF . KPROBE )
+self text = b = BPF ( text = text ) fn = b . load_func ( " test " , BPF . KPROBE )
+self text = b = BPF ( text = text ) fn = b . load_func ( " test " , BPF . KPROBE )
+self text = b = BPF ( text = text ) fn = b . load_func ( " test " , BPF . KPROBE )
+self text = b = BPF ( text = text ) fn = b . load_func ( " test " , BPF . KPROBE )
+self text = b = BPF ( text = text ) fn = b . load_func ( " test " , BPF . KPROBE )
+self text = b = BPF ( text = text ) fn = b . load_func ( " trace_entry " , BPF . KPROBE )
+self text = b = BPF ( text = text ) self . assertEqual ( ct . sizeof ( b [ " t3 " ] . Leaf ) , 8 )
+self text = b = BPF ( text = text , cflags = [ " -DMYFLAG " ] )
+self b1 = BPF ( text = ) b2 = BPF ( text = """ BPF_TABLE( " extern " , int , int , table1 , 10); """ ) t = b2 [ " table1 " ]
+self with self . assertRaises ( Exception ) : b = BPF ( text = )
+self text = with self . assertRaises ( Exception ) : b = BPF ( text = text )
+self text = b = BPF ( text = text ) t = b [ " jmp " ] self . assertEqual ( len ( t ) , 32 ) ;
+self text = b = BPF ( text = text ) t = b [ " act " ] self . assertEqual ( len ( t ) , 32 ) ;
+self bpf_text = b = BPF ( text = bpf_text ) b . load_func ( " trace_entry " , BPF . KPROBE ) b . load_func ( " trace_exit " , BPF . KPROBE )
+self bpf_text = b = BPF ( text = bpf_text ) b . load_func ( " trace_entry " , BPF . KPROBE ) b . load_func ( " trace_exit " , BPF . KPROBE )
+self bpf_text = b = BPF ( text = bpf_text ) b . load_func ( " trace_entry " , BPF . KPROBE ) b . load_func ( " trace_exit " , BPF . KPROBE )
+self text = b = BPF ( text = text ) fn = b . load_func ( " test " , BPF . KPROBE )
+self text = with self . assertRaises ( Exception ) : b = BPF ( text = text )
+self text = b = BPF ( text = text ) table = b [ ' table1 ' ] self . assertEqual ( ct . sizeof ( table . Key ) , 96 ) self . assertEqual ( ct . sizeof ( table . Leaf ) , 16 )
+self text = b = BPF ( text = text ) fn = b . load_func ( " test " , BPF . KPROBE )
+self text = b = BPF ( text = text ) fn = b . load_func ( " test " , BPF . KPROBE )
+self text = b = BPF ( text = text ) fn = b . load_func ( " test " , BPF . KPROBE )
+self text = b = BPF ( text = text ) fn = b . load_func ( " test " , BPF . KPROBE )
+self text = b = BPF ( text = text ) fn = b . load_func ( " test " , BPF . KPROBE )
+self text = b = BPF ( text = text ) fn = b . load_func ( " test " , BPF . KPROBE )
+self text = b = BPF ( text = text ) fn = b . load_func ( " test " , BPF . KPROBE )
+self text = b = BPF ( text = text ) fn = b . load_func ( " test " , BPF . KPROBE )
+self text = b = BPF ( text = text ) fn = b . load_func ( " test " , BPF . KPROBE )
+self text = b = BPF ( text = text ) fn = b . load_func ( " test " , BPF . KPROBE )
+self b = BPF ( text = b ) b . attach_kprobe ( event = b " htab_map_delete_elem " , fn_name = b " map_delete " ) b . cleanup ( )
+self self . b = BPF ( text = ) self . b . attach_kprobe ( event_re = " ^vfs_ . * " , fn_name = " wololo " )
+self self . b . cleanup ( self . b . cleanup ( )
+self self . b1 = BPF ( text = ) self . b2 = BPF ( text = """ int count(void *ctx) { return 0; } """ )
+self self . b = BPF ( text = )
+self self . assertEqual ( 2 , self . b . num_open_kprobes ( ) self . assertEqual ( 2 , self . b . num_open_kprobes ( ) )
+self self . b . cleanup ( self . b . cleanup ( )
+self self . b . cleanup ( self . b . cleanup ( )
+self self . b = BPF ( text = )
+self b = BPF ( text = ) for i in range ( 0 , 100 ) : time . sleep ( 0 . 01 ) b [ " hist1 " ] . print_log2_hist ( ) b . cleanup ( )
+self self . b = BPF ( text = b " int empty(void *ctx) { return 0; } " self . b = BPF ( text = b " int empty(void *ctx) { return 0; } " )
+self self . b . attach_kprobe ( event_re = b " ^tcp_enter_cwr . * " , fn_name = b " empty " self . b . attach_kprobe ( event_re = b " ^tcp_enter_cwr . * " , fn_name = b " empty " )
+self b = BPF ( text = ) self . assertEqual ( b " \\xb7\\x00\\x00\\x00\\x01\\x00\\x00\\x00 " + b " \\x95\\x00\\x00\\x00\\x00\\x00\\x00\\x00 " , b . dump_func ( " entry " ) )
+self self . app . kill ( ) self . app . wait ( ) os . unlink ( self . ftemp . name self . app . kill ( ) self . app . wait ( ) os . unlink ( self . ftemp . name )
+self sym = BPF . ksymname ( b " __kmalloc " ) self . assertIsNotNone ( sym ) self . assertNotEqual ( sym , 0 sym = BPF . ksymname ( b " __kmalloc " ) self . assertIsNotNone ( sym ) self . assertNotEqual ( sym , 0 )
+self self . resolve_addr ( self . resolve_addr ( )
+self self . resolve_name ( self . resolve_name ( )
+self online_cpus = get_online_cpus ( ) num_cores = multiprocessing . cpu_count ( ) self . assertEqual ( len ( online_cpus ) , num_cores online_cpus = get_online_cpus ( ) num_cores = multiprocessing . cpu_count ( ) self . assertEqual ( len ( online_cpus ) , num_cores )
+self if self . p : del ( self . p if self . p : del ( self . p )
+self self . assertEqual ( cfg . leaking_amount , self . run_leaker ( " malloc " ) self . assertEqual ( cfg . leaking_amount , self . run_leaker ( " malloc " ) )
+self self . assertEqual ( cfg . leaking_amount , self . run_leaker ( " realloc " ) self . assertEqual ( cfg . leaking_amount , self . run_leaker ( " realloc " ) )
+self self . assertEqual ( cfg . leaking_amount , self . run_leaker ( " posix_memalign " ) self . assertEqual ( cfg . leaking_amount , self . run_leaker ( " posix_memalign " ) )
+self self . assertEqual ( cfg . leaking_amount , self . run_leaker ( " memalign " ) self . assertEqual ( cfg . leaking_amount , self . run_leaker ( " memalign " ) )
+self self . assertEqual ( cfg . leaking_amount , self . run_leaker ( " aligned_alloc " ) self . assertEqual ( cfg . leaking_amount , self . run_leaker ( " aligned_alloc " ) )
+self self . run_with_int ( " bashreadline . py " self . run_with_int ( " bashreadline . py " )
+self self . run_with_duration ( " biolatency . py 1 1 " self . run_with_duration ( " biolatency . py 1 1 " )
+self self . run_with_int ( " biosnoop . py " self . run_with_int ( " biosnoop . py " )
+self self . run_with_duration ( " biotop . py 1 1 " self . run_with_duration ( " biotop . py 1 1 " )
+self self . run_with_int ( " biotop . py " self . run_with_int ( " biotop . py " )
+self self . run_with_duration ( " bpflist . py " self . run_with_duration ( " bpflist . py " )
+self self . run_with_duration ( " btrfsdist . py 1 1 " self . run_with_duration ( " btrfsdist . py 1 1 " )
+self self . run_with_int ( " btrfsslower . py " , allow_early = True self . run_with_int ( " btrfsslower . py " , allow_early = True )
+self self . run_with_duration ( " cachestat . py 1 1 " self . run_with_duration ( " cachestat . py 1 1 " )
+self self . run_with_duration ( " cpudist . py 1 1 " self . run_with_duration ( " cpudist . py 1 1 " )
+self self . run_with_int ( " dcsnoop . py " self . run_with_int ( " dcsnoop . py " )
+self self . run_with_duration ( " dcstat . py 1 1 " self . run_with_duration ( " dcstat . py 1 1 " )
+self self . run_with_int ( " ext4slower . py " self . run_with_int ( " ext4slower . py " )
+self self . run_with_int ( " fileslower . py " self . run_with_int ( " fileslower . py " )
+self self . run_with_duration ( " filetop . py 1 1 " self . run_with_duration ( " filetop . py 1 1 " )
+self self . run_with_duration ( " hardirqs . py 1 1 " self . run_with_duration ( " hardirqs . py 1 1 " )
+self self . run_with_int ( " killsnoop . py " , kill = True self . run_with_int ( " killsnoop . py " , kill = True )
+self self . run_with_int ( " mdflush . py " self . run_with_int ( " mdflush . py " )
+self self . run_with_int ( " mountsnoop . py " self . run_with_int ( " mountsnoop . py " )
+self self . run_with_duration ( " offcputime . py 1 " self . run_with_duration ( " offcputime . py 1 " )
+self self . run_with_duration ( " offwaketime . py 1 " self . run_with_duration ( " offwaketime . py 1 " )
+self self . run_with_int ( " oomkill . py " self . run_with_int ( " oomkill . py " )
+self self . run_with_int ( " opensnoop . py " self . run_with_int ( " opensnoop . py " )
+self self . run_with_duration ( " profile . py 1 " self . run_with_duration ( " profile . py 1 " )
+self self . run_with_duration ( " runqlat . py 1 1 " self . run_with_duration ( " runqlat . py 1 1 " )
+self self . run_with_int ( " stackcount . py __kmalloc -i 1 " self . run_with_int ( " stackcount . py __kmalloc -i 1 " )
+self self . run_with_int ( " statsnoop . py " self . run_with_int ( " statsnoop . py " )
+self self . run_with_int ( " syncsnoop . py " self . run_with_int ( " syncsnoop . py " )
+self self . run_with_int ( " tcpaccept . py " self . run_with_int ( " tcpaccept . py " )
+self self . run_with_int ( " tcpconnect . py " self . run_with_int ( " tcpconnect . py " )
+self self . run_with_int ( " tcpconnlat . py " self . run_with_int ( " tcpconnlat . py " )
+self self . run_with_int ( " tcplife . py " self . run_with_int ( " tcplife . py " )
+self self . run_with_int ( " tcpdrop . py " self . run_with_int ( " tcpdrop . py " )
+self self . run_with_duration ( " tcptop . py 1 1 " self . run_with_duration ( " tcptop . py 1 1 " )
+self self . run_with_duration ( " tplist . py -p %d " % os . getpid ( ) self . run_with_duration ( " tplist . py -p %d " % os . getpid ( ) )
+self self . run_with_int ( " trace . py do_sys_open " self . run_with_int ( " trace . py do_sys_open " )
+self self . run_with_int ( " lib/ucalls . py -l none -S %d " % os . getpid ( ) self . run_with_int ( " lib/ucalls . py -l none -S %d " % os . getpid ( ) )
+self self . run_with_duration ( " lib/ustat . py 1 1 " self . run_with_duration ( " lib/ustat . py 1 1 " )
+self self . run_with_int ( " vfscount . py " , timeout = 15 , kill_timeout = 15 self . run_with_int ( " vfscount . py " , timeout = 15 , kill_timeout = 15 )
+self self . run_with_duration ( " vfsstat . py 1 1 " self . run_with_duration ( " vfsstat . py 1 1 " )
+self self . run_with_duration ( " wakeuptime . py 1 " self . run_with_duration ( " wakeuptime . py 1 " )
+self self . fp . close ( self . fp . close ( )
+self b = BPF ( text = self . gpl_only_text ) self . load_bpf_code ( b b = BPF ( text = self . gpl_only_text ) self . load_bpf_code ( b )
+self b = BPF ( text = self . gpl_only_text + self . license ( ' GPL ' ) ) self . load_bpf_code ( b b = BPF ( text = self . gpl_only_text + self . license ( ' GPL ' ) ) self . load_bpf_code ( b )
+self b = BPF ( text = self . gpl_only_text , cflags = [ " -DBPF_LICENSE=GPL " ] ) self . load_bpf_code ( b b = BPF ( text = self . gpl_only_text , cflags = [ " -DBPF_LICENSE=GPL " ] ) self . load_bpf_code ( b )
+self b = BPF ( text = self . proprietary_text , cflags = [ " -DBPF_LICENSE=Proprietary " ] ) self . load_bpf_code ( b b = BPF ( text = self . proprietary_text , cflags = [ " -DBPF_LICENSE=Proprietary " ] ) self . load_bpf_code ( b )
+self import pytest rcode = pytest . main ( self . test_args ) sys . exit ( rcode import pytest rcode = pytest . main ( self . test_args ) sys . exit ( rcode )
+self self . fix_identities ( ) self . fix_repeating_arguments ( ) return sel self . fix_identities ( ) self . fix_repeating_arguments ( ) return self
+self , * types return [ self ] if not types or type ( self ) in types else [ , * types return [ self ] if not types or type ( self ) in types else [ ]
+self return self . pop ( 0 ) if len ( self ) else Non return self . pop ( 0 ) if len ( self ) else None
+self return self [ 0 ] if len ( self ) else Non return self [ 0 ] if len ( self ) else None
+def doc = usage , = parse_section ( ' usage: ' , doc ) assert usage == " Usage: prog [-hv] ARG\ prog N M " assert formal_usage ( usage ) == " ( [-hv] ARG ) | ( N M ) "
+self , arg print ( arg )
+self , arg print ( ' Good Bye! ' ) exit ( )
+self return self . av return self . avg
+self , x if self . use_res_connect : return x + self . conv ( x ) else : return self . conv ( x , x if self . use_res_connect : return x + self . conv ( x ) else : return self . conv ( x )
+pretrained = False , ** kwargs model = ResNet ( BasicBlock , [ 2 , 2 , 2 , 2 ] , ** kwargs ) if pretrained : model . load_state_dict ( load_url ( model_urls [ ' resnet18 ' ] ) ) return model
+pretrained = False , ** kwargs model = ResNet ( Bottleneck , [ 3 , 4 , 6 , 3 ] , ** kwargs ) if pretrained : model . load_state_dict ( load_url ( model_urls [ ' resnet50 ' ] ) , strict = False ) return model
+in_planes , out_planes , stride = 1 return nn . Conv2d ( in_planes , out_planes , kernel_size = 3 , stride = stride , padding = 1 , bias = False )
+self return self . num_inchannel return self . num_inchannels
+pretrained = False , ** kwargs model = ResNeXt ( GroupBottleneck , [ 3 , 4 , 23 , 3 ] , ** kwargs ) if pretrained : model . load_state_dict ( load_url ( model_urls [ ' resnext101 ' ] ) , strict = False ) return model
+data_parallel assert isinstance ( data_parallel , DataParallel ) old_replicate = data_parallel . replicate @ functools . wraps ( old_replicate ) def new_replicate ( module , device_ids ) : modules = old_replicate ( module , device_ids ) execute_replication_callbacks ( modules ) return modules data_parallel . replicate = new_replicate
+tensor return tensor . sum ( dim = 0 ) . sum ( dim = - 1 )
+tensor return tensor . unsqueeze ( 0 ) . unsqueeze ( - 1 )
+self , outputs , output_device return dict_gather ( outputs , output_device , dim = self . dim , outputs , output_device return dict_gather ( outputs , output_device , dim = self . dim )
+env , m append_pythonpath ( env , get_module_import_dir ( m ) , m append_pythonpath ( env , get_module_import_dir ( m ) )
+self self . lock = Non self . lock = None
+self self . _environ = os . environ . copy ( self . _environ = os . environ . copy ( )
+self py = create_tmp_test ( ) out = python ( py . name , 3 ) . strip ( ) self . assertEqual ( out , " 3 " )
+self from sh import ErrorReturnCode py = create_tmp_test ( ) self . assertRaises ( ErrorReturnCode , python , py . name )
+self from glob import glob py = create_tmp_test ( ) files = glob ( " * . faowjefoajweofj " ) out = python ( py . name , files ) . strip ( ) self . assertEqual ( out , " [ ' * . faowjefoajweofj ' ] " )
+self py = create_tmp_test ( " exit(0) " ) python ( py . name , _ok_code = None py = create_tmp_test ( " exit(0) " ) python ( py . name , _ok_code = None )
+self from sh import ls self . assertRaises ( TypeError , ls , _iter = True , _piped = True from sh import ls self . assertRaises ( TypeError , ls , _iter = True , _piped = True )
+self from sh import ErrorReturnCode_2 py = create_tmp_test ( ) self . assertRaises ( ErrorReturnCode_2 , python , py . name )
+self from sh import Command , ls , which self . assertEqual ( Command ( which ( " ls " ) ) , ls from sh import Command , ls , which self . assertEqual ( Command ( which ( " ls " ) ) , ls )
+self py = create_tmp_test ( ) self . assertTrue ( python ( py . name , long_option = " testing " ) . strip ( ) == " TESTING " ) self . assertTrue ( python ( py . name ) . strip ( ) == " " )
+self py = create_tmp_test ( ) stdout = python ( py . name , _err_to_out = True ) self . assertEqual ( stdout , " stdoutstderr " )
+self from sh import whoami iam1 = whoami ( ) iam2 = whoami ( ) self . assertEqual ( iam1 , iam2 from sh import whoami iam1 = whoami ( ) iam2 = whoami ( ) self . assertEqual ( iam1 , iam2 )
+self py = create_tmp_test ( ) env = os . environ . copy ( ) env [ " EXIT " ] = " 3 " self . assertRaises ( sh . ErrorReturnCode_3 , python , py . name , _fg = True , _env = env )
+self from sh import ErrorReturnCode_1 py = create_tmp_test ( ) self . assertRaises ( ErrorReturnCode_1 , python , py . name )
+self from sh import SignalException_15 def throw_terminate_signal ( ) : py = create_tmp_test ( ) to_kill = python ( py . name , _bg = True ) to_kill . terminate ( ) to_kill . wait ( ) self . assertRaises ( SignalException_15 , throw_terminate_signal )
+self py = create_tmp_test ( ) out = python . bake ( py . name ) . bake_ ( ) self . assertEqual ( " bake " , out )
+self self . assertRaises ( DeprecationWarning , sh . args , _env = { } self . assertRaises ( DeprecationWarning , sh . args , _env = { } )
+self py = create_tmp_test ( """ print( " cool " ) """ ) out = python ( py . name , " % " ) out = python ( py . name , " %% " ) out = python ( py . name , " %%% " )
+self from sh import ls wraps ( ls ) ( lambda f : True from sh import ls wraps ( ls ) ( lambda f : True )
+self import signal import sh sig_name = " SignalException_%d " % signal . SIGQUIT sig = getattr ( sh , sig_name ) from sh import SignalException_SIGQUIT self . assertEqual ( sig , SignalException_SIGQUIT )
+self import sh py = create_tmp_test ( """ print( " cool " ) """ ) p = python ( py . name , _iter = True ) for i in range ( 100 ) : try : next ( p ) except StopIteration : pass
+self def unallowed_import ( ) : _os = os from _os import path self . assertRaises ( ImportError , unallowed_import def unallowed_import ( ) : _os = os from _os import path self . assertRaises ( ImportError , unallowed_import )
+fn return len ( inspect . getfullargspec ( fn ) . args eturn len ( inspect . getfullargspec ( fn ) . args )
+fn return len ( inspect . getargspec ( fn ) . args eturn len ( inspect . getargspec ( fn ) . args )
+self , f return self . fo_lookup . get ( f , f return self . fo_lookup . get ( f )
+self , fd return self . fd_lookup . get ( fd , fd return self . fd_lookup . get ( fd )
+self , f self . _register ( f , select . POLLIN | select . POLLPRI , f self . _register ( f , select . POLLIN | select . POLLPRI )
+self , f fd = self . _get_file_descriptor ( f ) self . _poll . unregister ( fd ) self . _remove_fileobject ( f , f fd = self . _get_file_descriptor ( f ) self . _poll . unregister ( fd ) self . _remove_fileobject ( f )
+self , f self . _register ( f , self . wlist , f self . _register ( f , self . wlist )
+self , f self . _register ( f , self . xlist , f self . _register ( f , self . xlist )
+self , msg , * args self . log . info ( self . _format_msg ( msg , * args ) , msg , * args self . log . info ( self . _format_msg ( msg , * args ) )
+self self . wait ( ) return self . process . stdou self . wait ( ) return self . process . stdout
+self self . wait ( ) return self . process . stder self . wait ( ) return self . process . stderr
+self self . wait ( ) return self . process . exit_cod self . wait ( ) return self . process . exit_code
+out return isinstance ( out , basestring return isinstance ( out , basestring )
+ob fileno = get_fileno ( ob ) is_tty = False if fileno : is_tty = os . isatty ( fileno ) return is_tty
+fd , rows_cols rows , cols = rows_cols TIOCSWINSZ = getattr ( termios , ' TIOCSWINSZ ' , - 2146929561 ) s = struct . pack ( ' HHHH ' , rows , cols , 0 , 0 ) fcntl . ioctl ( fd , TIOCSWINSZ , s )
+syscall , * args , ** kwargs ret = None while True : try : ret = syscall ( * args , ** kwargs ) except OSError as e : if e . errno == errno . EINTR : continue else : raise else : break return ret
+self exc = None try : exc = self . _input_thread_exc_queue . get ( False ) except Empty : pass return ex exc = None try : exc = self . _input_thread_exc_queue . get ( False ) except Empty : pass return exc
+self , buf self . _stdout_stream . stream_bufferer . change_buffering ( buf , buf self . _stdout_stream . stream_bufferer . change_buffering ( buf )
+self return " " . encode ( self . call_args [ " encoding " ] ) . join ( self . _stderr return " " . encode ( self . call_args [ " encoding " ] ) . join ( self . _stderr )
+self return os . getpgid ( self . pid )
+self self . log . debug ( " killing group " ) self . signal_group ( signal . SIGKILL self . log . debug ( " killing group " ) self . signal_group ( signal . SIGKILL )
+stdin bufsize = 1024 iter_str = ( stdin [ i : i + bufsize ] for i in range ( 0 , len ( stdin ) , bufsize ) ) return get_iter_chunk_reader ( iter_str )
+bf_type if bf_type == 1 : bufsize = 1024 # unbuffered elif bf_type == 0 : bufsize = 1 # or buffered by specific amount else : bufsize = bf_type return bufsize
+self return self . stream
+handler handler = fdopen ( handler , " w " , closefd = False ) return get_file_chunk_consumer ( handler ler handler = fdopen ( handler , " w " , closefd = False ) return get_file_chunk_consumer ( handler )
+handler def process ( chunk ) : handler . write ( chunk ) return False def finish ( ) : pass return process , finisler def process ( chunk ) : handler . write ( chunk ) return False def finish ( ) : pass return process , finish
+self return self . stream
+self , program , paths = None return which ( program , paths , program , paths = None return which ( program , paths )
+orig cmd = orig . bake ( _tty_out = False ) return cmd
+frame return frame . f_code . co_filename == " <frozen importlib . _bootstrap> "
+vcs , method def decorate ( f ) : """ Store f in HANDLERS[vcs][method] . """ if vcs not in HANDLERS : HANDLERS [ vcs ] = { } HANDLERS [ vcs ] [ method ] = f return f return decorate
+x try : return x . __dask_graph__ ( ) is not None except ( AttributeError , TypeError ) : return False
+self , filename = " mydask " , format = None , optimize_graph = False , ** kwargs return visualize ( self , filename = filename , format = format , optimize_graph = optimize_graph , ** kwargs )
+self , ** kwargs ( result , ) = persist ( self , traverse = False , ** kwargs ) return result
+self , ** kwargs ( result , ) = compute ( self , traverse = False , ** kwargs ) return result
+dsk , keys , ** kwargs return ds , keys , ** kwargs return dsk
+args , ** kwargs if kwargs : args = args + ( kwargs , ) return md5 ( str ( tuple ( map ( normalize_token , args ) ) ) . encode ( ) ) . hexdigest ( )
+d return normalize_token ( sorted ( d . items ( ) , key = str ) turn normalize_token ( sorted ( d . items ( ) , key = str ) )
+seq return type ( seq ) . __name__ , list ( map ( normalize_token , seq ) return type ( seq ) . __name__ , list ( map ( normalize_token , seq ) )
+buf h = cityhash . CityHash128 ( buf ) return h . to_bytes ( 16 , " little " )
+buf return xxhash . xxh64 ( buf ) . digest ( )
+buf return hashlib . sha1 ( buf ) . digest ( )
+x try : hash ( x ) return True except TypeError : return False
+x return type ( x ) is tuple and x and callable ( x [ 0 ] )
+dsk , x if istask ( x ) : return True try : if x in dsk : return True except Exception : pass if isinstance ( x , list ) : for i in x : if has_tasks ( dsk , i ) : return True return False
+task for item in task : if istask ( item ) : for i in preorder_traversal ( item ) : yield i elif isinstance ( item , list ) : yield list for i in preorder_traversal ( item ) : yield i else : yield item
+dsk dependencies = { k : get_dependencies ( dsk , task = v ) for k , v in dsk . items ( ) } dependents = reverse_dict ( dependencies ) return dependencies , dependents
+d , keys return _toposort ( d , keys = keys , returncycle = True )
+d , keys return not getcycle ( d , keys )
+x if istask ( x ) or type ( x ) is list : return ( literal ( x ) , ) return x
+q return q . get ( turn q . get ( )
+e , dumps rais dumps raise
+exc , tb = None if exc . __traceback__ is not tb : raise exc . with_traceback ( tb ) raise ex , tb = None if exc . __traceback__ is not tb : raise exc . with_traceback ( tb ) raise exc
+func , args = ( ) , kwds = { } , callback = None res = func ( * args , ** kwds ) if callback is not None : callback ( res )
+item return ( type ( item ) . __name__ , item )
+x return x + turn x + 1
+func , * seqs if isinstance ( seqs [ 0 ] , ( list , Iterator ) ) : return [ deepmap ( func , * items ) for items in zip ( * seqs ) ] else : return func ( * seqs )
+exceptions try : yield except exceptions : pasptions try : yield except exceptions : pass
+mod_name , error_msg try : return import_module ( mod_name ) except ImportError : raise RuntimeError ( error_msg )
+new_cwd old_cwd = os . getcwd ( ) os . chdir ( new_cwd ) try : yield finally : os . chdir ( old_cwd cwd old_cwd = os . getcwd ( ) os . chdir ( new_cwd ) try : yield finally : os . chdir ( old_cwd )
+dir = None with tmpdir ( dir ) as dirname : with changed_cwd ( dirname ) : yield dirnam= None with tmpdir ( dir ) as dirname : with changed_cwd ( dirname ) : yield dirname
+func s = inspect . signature ( func ) return [ n for n , p in s . parameters . items ( ) if p . kind in [ p . POSITIONAL_OR_KEYWORD , p . POSITIONAL_ONLY , p . KEYWORD_ONLY ] ]
+filename try : os . unlink ( filename ) except OSError as e : if e . errno != ENOENT : raise
+typ if not typ . __module__ or typ . __module__ == " builtins " : return typ . __name__ else : return typ . __module__ + " . " + typ . __name__
+s if isinstance ( s , bytes ) : return s if hasattr ( s , " encode " ) : return s . encode ( ) msg = " Object %s is neither a bytes object nor has an encode method " raise TypeError ( msg % s )
+n , k , base return n // base ** k % base
+self , * args , ** kwargs return self . lock . acquire ( * args , ** kwargs , * args , ** kwargs return self . lock . acquire ( * args , ** kwargs )
+self , * args , ** kwargs return self . lock . release ( * args , ** kwargs , * args , ** kwargs return self . lock . release ( * args , ** kwargs )
+self return self . lock . locked ( return self . lock . locked ( )
+cls , op , inv = False raise NotImplementedError
+s typ = type ( s ) return ( all ( hasattr ( s , name ) for name in ( " name " , " dtype " ) ) and " index " in typ . __name__ . lower ( ) )
+s return [ int ( part ) if part . isdigit ( ) else part for part in re . split ( r " (\\d+) " , s ) ]
+func , keyword try : return keyword in inspect . signature ( func ) . parameters except Exception : return Fals , keyword try : return keyword in inspect . signature ( func ) . parameters except Exception : return False
+task if istask ( task ) : return True elif isinstance ( task , list ) : return any ( has_sub_tasks ( i ) for i in task ) else : return False
+key if isinstance ( key , tuple ) : key = key [ 1 : ] if len ( key ) == 1 : [ key ] = key return str ( key ) else : return " "
+dsk , filename = " mydask " , format = None , ** kwargs g = to_graphviz ( dsk , ** kwargs ) return graphviz_to_file ( g , filename , format )
+dicts result = { } for d in dicts : update ( result , d ) return result
+config = config , defaults = defaults , ** kwargs config . clear ( ) for d in defaults : update ( config , d , priority = " old " ) update ( config , collect ( ** kwargs ) )
+new , config = config , defaults = defaults defaults . append ( new ) update ( config , new , priority = " old " )
+ind , substitution if ind is None : return ind else : return tuple ( [ substitution . get ( c , c ) for c in ind ] )
+i , prefix = " _ " return prefix + " %d " % prefix = " _ " return prefix + " %d " % i
+self return Traverser ( self . term , deque ( self . _stack ) )
+self self . term = self . _stack . pop ( )
+self , task , strategy = " bottom_up " return strategies [ strategy ] ( self , task )
+net , term return net . _rewrite ( term , term return net . _rewrite ( term )
+self , dsk , state , errored self . starttimes . clear ( ) self . durations . clear ( , dsk , state , errored self . starttimes . clear ( ) self . durations . clear ( )
+x return cloudpickle . dumps ( x , protocol = pickle . HIGHEST_PROTOCOL turn cloudpickle . dumps ( x , protocol = pickle . HIGHEST_PROTOCOL )
+def return multiprocessing . current_process ( ) . idenreturn multiprocessing . current_process ( ) . ident
+tb return " " . join ( traceback . format_tb ( tb ) eturn " " . join ( traceback . format_tb ( tb ) )
+exc , tb exc = remote_exception ( exc , tb ) raise ex , tb exc = remote_exception ( exc , tb ) raise exc
+dsk , keys , ** kwargs dsk = ensure_dict ( dsk ) dsk2 , _ = cull ( dsk , keys ) return dsk , keys , ** kwargs dsk = ensure_dict ( dsk ) dsk2 , _ = cull ( dsk , keys ) return dsk2
+dsk , key , length return Delayed ( key , dsk , length , key , length return Delayed ( key , dsk , length )
+self return self . _ke return self . _key
+self return HighLevelGraph . from_collections ( self . _key , { self . _key : self . _obj } , dependencies = ( ) return HighLevelGraph . from_collections ( self . _key , { self . _key : self . _obj } , dependencies = ( ) )
+seq return seq [ 0 ]
+default = None , key = None , falsey = None if default is None : return partial ( globalmethod , key = key , falsey = falsey ) return GlobalMethod ( default = default , key = key , falsey = falsey )
+def git_refnames = " $Format:%d$ " git_full = " $Format:%H$ " keywords = { " refnames " : git_refnames , " full " : git_full } return keywords
+def cfg = VersioneerConfig ( ) cfg . VCS = " git " cfg . style = " pep440 " cfg . tag_prefix = " " cfg . parentdir_prefix = " dask- " cfg . versionfile_source = " dask/_version . py " cfg . verbose = False return cfg
+o return getsizeof ( o turn getsizeof ( o )
+seq return getsizeof ( seq ) + sum ( map ( sizeof , seq ) return getsizeof ( seq ) + sum ( map ( sizeof , seq ) )
+@ import cupy @ sizeof . register ( cupy . ndarray ) def sizeof_cupy_ndarray ( x ) : return int ( x . nbytes port cupy @ sizeof . register ( cupy . ndarray ) def sizeof_cupy_ndarray ( x ) : return int ( x . nbytes )
+self Callback . active . add ( self . _callback Callback . active . add ( self . _callback )
+self Callback . active . remove ( self . _callback Callback . active . remove ( self . _callback )
+callbacks = None global_callbacks = callbacks is None if global_callbacks : callbacks , Callback . active = Callback . active , set ( ) try : yield callbacks or ( ) finally : if global_callbacks : Callback . active = callbacks
+def return current_thread ( ) . idenreturn current_thread ( ) . ident
+x return [ turn [ ]
+results return _concat ( results lts return _concat ( results )
+self return self . _met return self . _meta
+self return self . _meta . dtyp return self . _meta . dtype
+self return [ None , None ]
+self return ( self . dask , self . _name , self . _meta return ( self . dask , self . _name , self . _meta )
+self return ( self . _name , 0 return ( self . _name , 0 )
+cls , op , inv = False return lambda self , other : _scalar_binary ( op , self , other , inv = inv , op , inv = False return lambda self , other : _scalar_binary ( op , self , other , inv = inv )
+self return new_dd_objec return new_dd_object
+self return len ( self . divisions ) - 1
+self return self . reduction ( methods . size , np . sum , token = " size " , meta = int , split_every = False )
+self return new_dd_object ( self . dask , self . _name , self . _meta , self . divisions )
+self return elemwis return elemwise
+self raise NotImplementedErro raise NotImplementedError
+self divisions = ( None , ) * ( self . npartitions + 1 ) return type ( self ) ( self . dask , self . _name , self . _meta , divisions )
+self , func , before , after , * args , ** kwargs from . rolling import map_overlap return map_overlap ( func , self , before , after , * args , ** kwargs )
+self , n = 5 , npartitions = 1 , compute = True return self . _head ( n = n , npartitions = npartitions , compute = compute , safe = True )
+self , lengths = None if lengths is True : lengths = tuple ( self . map_partitions ( len ) . compute ( ) ) arr = self . values chunks = self . _validate_chunks ( arr , lengths ) arr . _chunks = chunks return arr
+self , path_or_buf , key , mode = " a " , append = False , ** kwargs from . io import to_hdf return to_hdf ( self , path_or_buf , key , mode , append , ** kwargs )
+self , filename , ** kwargs from . io import to_csv return to_csv ( self , filename , ** kwargs )
+cls , op return lambda self : elemwise ( op , self , op return lambda self : elemwise ( op , self )
+self , cond , other = np . nan return map_partitions ( M . mask , self , cond , other , cond , other = np . nan return map_partitions ( M . mask , self , cond , other )
+self return self . map_partitions ( M . notnull return self . map_partitions ( M . notnull )
+self , other return self . map_partitions ( M . combine_first , other , other return self . map_partitions ( M . combine_first , other )
+self , split_every = None from . import hyperloglog return aca ( [ self ] , chunk = hyperloglog . compute_hll_array , combine = hyperloglog . reduce_state , aggregate = hyperloglog . estimate_count , split_every = split_every , b = 16 , meta = float , )
+self return self . map_partitions ( methods . values )
+x , funcname if isinstance ( x , Series ) and hasattr ( x , " dtype " ) and x . dtype == object : raise ValueError ( " `%s` not supported with object series " % funcname )
+self return self . _meta . nam return self . _meta . name
+self return ( self . size , )
+self return self . _meta . dtype
+self return self . reduction ( methods . nbytes , np . sum , token = " nbytes " , meta = int , split_every = False )
+self return _repr_data_series ( self . _meta , self . _repr_divisions return _repr_data_series ( self . _meta , self . _repr_divisions )
+self , decimals = 0 return elemwise ( M . round , self , decimals , decimals = 0 return elemwise ( M . round , self , decimals )
+self , npartitions , upsample = 1 . 0 from . partitionquantiles import partition_quantiles return partition_quantiles ( self , npartitions , upsample = upsample )
+self , how = " any " , subset = None return sel , how = " any " , subset = None return self
+self , split_every = False return super ( Series , self ) . count ( split_every = split_every , split_every = False return super ( Series , self ) . count ( split_every = split_every )
+self meta = self . _meta . explode ( ) return self . map_partitions ( M . explode , meta = meta meta = self . _meta . explode ( ) return self . map_partitions ( M . explode , meta = meta )
+self , split_every = None return self . drop_duplicates ( split_every = split_every ) . count ( , split_every = None return self . drop_duplicates ( split_every = split_every ) . count ( )
+self , values return super ( Series , self ) . isin ( values , values return super ( Series , self ) . isin ( values )
+self return self . map_partitions ( M . dropna return self . map_partitions ( M . dropna )
+self , threshold return self . map_partitions ( M . clip_lower , threshold = threshold , threshold return self . map_partitions ( M . clip_lower , threshold = threshold )
+self , threshold return self . map_partitions ( M . clip_upper , threshold = threshold , threshold return self . map_partitions ( M . clip_upper , threshold = threshold )
+self , other , func , fill_value = None return self . map_partitions ( M . combine , other , func , fill_value = fill_value , other , func , fill_value = None return self . map_partitions ( M . combine , other , func , fill_value = fill_value )
+self , other return self . map_partitions ( M . combine_first , other , other return self . map_partitions ( M . combine_first , other )
+self , max_rows = 5 return self . _repr_data ( ) . to_string ( max_rows = max_rows , max_rows = 5 return self . _repr_data ( ) . to_string ( max_rows = max_rows )
+self return self . map_partitions ( M . to_series , meta = self . _meta . to_series ( ) return self . map_partitions ( M . to_series , meta = self . _meta . to_series ( ) )
+self return self . _meta . column return self . _meta . columns
+self from . indexing import _iLocIndexer return _iLocIndexer ( self )
+self return self . columns . tolist ( return self . columns . tolist ( )
+self col_size = len ( self . columns ) row_size = delayed ( int ) ( self . size / col_size ) return ( row_size , col_size )
+self , expr , ** kwargs return self . map_partitions ( M . query , expr , ** kwargs )
+self , threshold return self . map_partitions ( M . clip_lower , threshold = threshold , threshold return self . map_partitions ( M . clip_lower , threshold = threshold )
+self , path , * args , ** kwargs from . io import to_parquet return to_parquet ( self , path , * args , ** kwargs )
+self , max_rows = 5 return self . _repr_data ( ) . to_string ( max_rows = max_rows , show_dimensions = False , max_rows = 5 return self . _repr_data ( ) . to_string ( max_rows = max_rows , show_dimensions = False )
+self , func , meta = " __no_default__ " return elemwise ( M . applymap , self , func , meta = meta , func , meta = " __no_default__ " return elemwise ( M . applymap , self , func , meta = meta )
+self , key return ( not is_dask_collection ( key ) and ( np . isscalar ( key ) or isinstance ( key , tuple ) ) and key in self . columns )
+df , cols = None return df [ cols , cols = None return df [ cols ]
+df , p , random_state = None p = list ( p ) index = pseudorandom ( len ( df ) , p , random_state ) return [ df . iloc [ index == i ] for i in range ( len ( p ) ) ]
+arg return map_partitions ( pd . isna , arg return map_partitions ( pd . isna , arg )
+o return get_parallel_type ( o . _meta turn get_parallel_type ( o . _meta )
+def return tuple ( k for k , v in get_parallel_type . _lookup . items ( ) if v is not get_parallel_type_object return tuple ( k for k , v in get_parallel_type . _lookup . items ( ) if v is not get_parallel_type_object )
+name from dask . dataframe import DataFrame return _register_accessor ( name , DataFrame )
+name from dask . dataframe import Series return _register_accessor ( name , Series )
+name from dask . dataframe import Index return _register_accessor ( name , Index )
+x , index = None return x . iloc [ : 0 index = None return x . iloc [ : 0 ]
+x , index = None return x [ 0 : 0 index = None return x [ 0 : 0 ]
+x if is_scalar ( x ) : return _nonempty_scalar ( x ) else : raise TypeError ( " Expected Pandas-like Index , Series , DataFrame , or scalar , " " got {0} " . format ( typename ( type ( x ) ) ) )
+dtype return _scalar_from_dtype ( dtype e return _scalar_from_dtype ( dtype )
+index if isinstance ( index , ( tuple , list ) ) and len ( index ) > 1 : return list ( range ( len ( index ) ) ) else : return 0
+df , levels , name return df . groupby ( level = levels , sort = False ) [ name ] . nunique ( , levels , name return df . groupby ( level = levels , sort = False ) [ name ] . nunique ( )
+df_like , column , func if column is None : return func ( df_like ) return func ( df_like [ column ] ike , column , func if column is None : return func ( df_like ) return func ( df_like [ column ] )
+a , b , fill_value = None return a . add ( b , fill_value = fill_value ) + b , fill_value = None return a . add ( b , fill_value = fill_value ) + 1
+self , ddof = 1 , split_every = None , split_out = 1 return self . cov ( split_every = split_every , split_out = split_out , std = True )
+self return self . obj . _nam return self . obj . _name
+self , iindexer , cindexer if cindexer is None : return self . obj else : return self . _meta_indexer [ : , cindexer ]
+self return self . obj . _meta . lo return self . obj . _meta . loc
+self , key return _coerce_loc_index ( self . obj . divisions , key , key return _coerce_loc_index ( self . obj . divisions , key )
+self return has_known_categories ( self . _series )
+p , part , meta , barrier_token res = p . get ( part ) return res if len ( res ) > 0 else meta
+g_head , i g , head = g_head if i in g : return g [ i ] else : return heaad , i g , head = g_head if i in g : return g [ i ] else : return head
+current , next_ , after return next_ [ next_ . index < ( current . index . max ( ) + after ) ]
+prevs , current , before selected = methods . concat ( [ prev [ prev . index > ( current . index . min ( ) - before ) ] for prev in prevs ] ) return selected
+self return ( self . axis in ( 1 , " columns " ) or ( isinstance ( self . window , Integral ) and self . window <= 1 ) or self . obj . npartitions == 1 )
+self return self . _call_method ( " count " return self . _call_method ( " count " )
+self return self . _call_method ( " sum " return self . _call_method ( " sum " )
+self return self . _call_method ( " mean " return self . _call_method ( " mean " )
+self return self . _call_method ( " min " return self . _call_method ( " min " )
+self , ddof = 1 return self . _call_method ( " var " , ddof = 1 , ddof = 1 return self . _call_method ( " var " , ddof = 1 )
+self return self . _call_method ( " skew " return self . _call_method ( " skew " )
+self return self . _call_method ( " kurt " return self . _call_method ( " kurt " )
+left , right if right . empty : return left return right . tail ( 1 , right if right . empty : return left return right . tail ( 1 )
+df , iindexer , cindexer = None if cindexer is None : return df . loc [ iindexer ] else : return df . loc [ iindexer , cindexer ]
+df , cindexer = None return df . iloc [ : , cindexer , cindexer = None return df . iloc [ : , cindexer ]
+df , iindexer , cindexer = None try : return loc ( df , iindexer , cindexer ) except KeyError : return df . head ( 0 ) . loc [ : , cindexer ]
+x return pd . notnull ( x ) . sum ( turn pd . notnull ( x ) . sum ( )
+df , * pairs kwargs = dict ( partition ( 2 , pairs ) ) return df . assign ( ** kwargs , * pairs kwargs = dict ( partition ( 2 , pairs ) ) return df . assign ( ** kwargs )
+x return x . groupby ( level = 0 ) . sum ( ) . sort_values ( ascending = False turn x . groupby ( level = 0 ) . sum ( ) . sort_values ( ascending = False )
+x return x . nbyteturn x . nbytes
+x return x . sizturn x . size
+df return df . valueeturn df . values
+df return df . groupby ( level = 0 ) . sum ( eturn df . groupby ( level = 0 ) . sum ( )
+df , ind df = df . copy ( ) df . index = ind return d, ind df = df . copy ( ) df . index = ind return df
+self return set ( dir ( self . _meta ) ) . difference ( self . _not_implemented return set ( dir ( self . _meta ) ) . difference ( self . _not_implemented )
+series , pat , flags return series . str . extractall ( pat , flags = flags es , pat , flags return series . str . extractall ( pat , flags = flags )
+series , index return series . str [ index ]
+rule try : return getattr ( rule , " nanos " , None ) except ValueError : return Non try : return getattr ( rule , " nanos " , None ) except ValueError : return None
+self return self . _agg ( " count " , fill_value = 0 return self . _agg ( " count " , fill_value = 0 )
+self return self . _agg ( " last " return self . _agg ( " last " )
+self return self . _agg ( " min " return self . _agg ( " min " )
+self return self . _agg ( " median " return self . _agg ( " median " )
+self return self . _agg ( " std " return self . _agg ( " std " )
+self return self . _agg ( " sum " return self . _agg ( " sum " )
+n , rstate return rstate . rand ( n ) * 2 - rstate return rstate . rand ( n ) * 2 - 1
+path , key , lock , kwargs if lock : lock . acquire ( ) try : result = pd . read_hdf ( path , key , ** kwargs ) finally : if lock : lock . release ( ) return result
+token , result return None
+df return df . map_partitions ( M . to_records )
+fs , piece , columns , index , ** kwargs raise NotImplementedError ( )
+df , path , fs , filename , partition_on , return_metadata , ** kwargs raise NotImplementedError
+def if SKIP_PYARROW : pytest . skip ( SKIP_PYARROW_REASON if SKIP_PYARROW : pytest . skip ( SKIP_PYARROW_REASON )
+request return request . paraest return request . param
+request return request . paraest return request . param
+path return os . path . split ( path ) [ 1 return os . path . split ( path ) [ 1 ]
+def blocksize = auto_blocksize ( 1000000000000 , 3 ) assert blocksize == int ( 64e6 ) assert isinstance ( blocksize , int blocksize = auto_blocksize ( 1000000000000 , 3 ) assert blocksize == int ( 64e6 ) assert isinstance ( blocksize , int )
+x return Decimal ( " 1 " turn Decimal ( " 1 " )
+x return np . fabs ( x - x . mean ( ) ) . mean ( turn np . fabs ( x - x . mean ( ) ) . mean ( )
+def assert repr ( dts . rolling ( " 4s " ) ) == ( " Rolling [window=4000000000 , center=False , win_type=freq , axis=0] " assert repr ( dts . rolling ( " 4s " ) ) == ( " Rolling [window=4000000000 , center=False , win_type=freq , axis=0] " )
+df , * args , ** kwargs return df . set_index ( * args , ** kwargs ) . division, * args , ** kwargs return df . set_index ( * args , ** kwargs ) . divisions
+def assert d . ndim == 2 assert d . a . ndim == 1 assert d . index . ndim == assert d . ndim == 2 assert d . a . ndim == 1 assert d . index . ndim == 1
+def assert ( d . dtypes == full . dtypes ) . all ( assert ( d . dtypes == full . dtypes ) . all ( )
+def assert len ( d ) == len ( full ) assert len ( d . a ) == len ( full . a assert len ( d ) == len ( full ) assert len ( d . a ) == len ( full . a )
+def renamer = { 0 : 1 } pytest . raises ( ValueError , lambda : d . rename ( index = renamer ) renamer = { 0 : 1 } pytest . raises ( ValueError , lambda : d . rename ( index = renamer ) )
+def assert has_parallel_type ( pd . DataFrame ( ) ) assert has_parallel_type ( pd . Series ( ) ) assert not has_parallel_type ( 123 assert has_parallel_type ( pd . DataFrame ( ) ) assert has_parallel_type ( pd . Series ( ) ) assert not has_parallel_type ( 123 )
+x return x if isinstance ( x , pd . CategoricalIndex ) else x . caturn x if isinstance ( x , pd . CategoricalIndex ) else x . cat
+left , right , check_divisions = False assert_eq ( left , pd . Index ( right ) if isinstance ( right , np . ndarray ) else right , check_divisions = check_divisions , )
+self return self . ite return self . item
+self return self . ite return self . item
+ddf_left return ddf_left . clear_divisions ( left return ddf_left . clear_divisions ( )
+df_right return dd . from_pandas ( df_right , npartitions = 1 , sort = False ight return dd . from_pandas ( df_right , npartitions = 1 , sort = False )
+request return request . paraest return request . param
+self , dsk self . _dsk . update ( dsk , dsk self . _dsk . update ( dsk )
+self , ** kwargs from . profile_visualize import plot_tasks return plot_tasks ( self . results , self . _dsk , ** kwargs , ** kwargs from . profile_visualize import plot_tasks return plot_tasks ( self . results , self . _dsk , ** kwargs )
+self , ** kwargs from . profile_visualize import visualize return visualize ( self , ** kwargs )
+self , dsk , state , failed if not self . _entered : self . _stop_collect ( , dsk , state , failed if not self . _entered : self . _stop_collect ( )
+self , ** kwargs from . profile_visualize import plot_resources return plot_resources ( self . results , ** kwargs , ** kwargs from . profile_visualize import plot_resources return plot_resources ( self . results , ** kwargs )
+self , ** kwargs from . profile_visualize import visualize return visualize ( self , ** kwargs )
+self , dsk self . _dsk . update ( dsk ) if not self . _start_time : self . _start_time = default_timer ( , dsk self . _dsk . update ( dsk ) if not self . _start_time : self . _start_time = default_timer ( )
+self self . results = [ ] self . _cache = { } self . _dsk = { } self . _start_time = None
+self , key , dsk , state self . _state = state self . _file . flush ( , key , dsk , state self . _state = state self . _file . flush ( )
+p , title return getattr ( p . title , " text " , p . title ) == titl title return getattr ( p . title , " text " , p . title ) == title
+capsys with ProgressBar ( ) : get_threaded ( { " x " : 1 } , " x " ) check_bar_completed ( capsys ys with ProgressBar ( ) : get_threaded ( { " x " : 1 } , " x " ) check_bar_completed ( capsys )
+@ saved_environ = dict ( os . environ ) try : yield finally : os . environ . clear ( ) os . environ . update ( saved_environ )
+s3 with pytest . raises ( IOError ) : read_bytes ( " s3:// " + test_bucket_name + " /non-existing/* " ith pytest . raises ( IOError ) : read_bytes ( " s3:// " + test_bucket_name + " /non-existing/* " )
+path return pathlib . Path ( os . path . abspath ( path ) ) . as_uri ( return pathlib . Path ( os . path . abspath ( path ) ) . as_uri ( )
+def fn = " not-a-file " with pytest . raises ( ( FileNotFoundError , OSError ) , match = fn ) : read_bytes ( fn fn = " not-a-file " with pytest . raises ( ( FileNotFoundError , OSError ) , match = fn ) : read_bytes ( fn )
+results return results [ 0 lts return results [ 0 ]
+self , pattern from fnmatch import fnmatch return self . _bag . filter ( partial ( fnmatch , pat = pattern ) )
+wrapper def _ ( wrapped ) : wrapped . __doc__ = wrapper . __doc__ return wrapped return _
+self , optimize_graph = True from dask . delayed import Delayed dsk = self . __dask_graph__ ( ) if optimize_graph : dsk = self . __dask_optimize__ ( dsk , self . __dask_keys__ ( ) ) return Delayed ( self . key , dsk )
+self , func , * args , ** kwargs return bag_map ( func , self , * args , ** kwargs )
+self , func , * args , ** kwargs return map_partitions ( func , self , * args , ** kwargs )
+self , split_every = None return self . reduction ( max , max , split_every = split_every )
+self , split_every = None return self . reduction ( min , min , split_every = split_every )
+self , split_every = None return self . reduction ( any , any , split_every = split_every )
+self , split_every = None return self . reduction ( all , all , split_every = split_every )
+self , ddof = 0 return self . var ( ddof = ddof ) . apply ( math . sqrt )
+d return list ( d . items ( ) )
+seqs , key = None return chunk_distinct ( toolz . concat ( seqs ) , key = key , key = None return chunk_distinct ( toolz . concat ( seqs ) , key = key )
+f , x , kwargs if kwargs : f = partial ( f , ** kwargs ) return itertools . starmap ( f , x x , kwargs if kwargs : f = partial ( f , ** kwargs ) return itertools . starmap ( f , x )
+k , stage def h ( x ) : return x [ 0 ] // k ** stage % k return stage def h ( x ) : return x [ 0 ] // k ** stage % k return h
+fs , path , compression from dask . bytes . core import OpenFile with OpenFile ( fs , path , compression = compression ) as f : head = read_header ( f ) size = fs . info ( path ) [ " size " ] return head , size
+x return x % 2 == turn x % 2 == 0
+x return x % 2 == turn x % 2 == 1
+def assert b . name == " x " assert b . npartitions == assert b . name == " x " assert b . npartitions == 3
+func assert str ( b . npartitions ) in func ( b ) assert b . name [ : 5 ] in func ( b assert str ( b . npartitions ) in func ( b ) assert b . name [ : 5 ] in func ( b )
+def assert list ( b . map ( lambda x : x + 1 ) ) == list ( b . map ( inc ) assert list ( b . map ( lambda x : x + 1 ) ) == list ( b . map ( inc ) )
+def assert_eq ( b . var ( ) , 2 . 0 ) assert float ( b . var ( ) ) == 2 . assert_eq ( b . var ( ) , 2 . 0 ) assert float ( b . var ( ) ) == 2 . 0
+def a = db . from_sequence ( range ( 50 ) , npartitions = 5 ) with pytest . raises ( ValueError ) : a . random_sample ( - 1 ) with pytest . raises ( ValueError ) : a . random_sample ( 1 . 1 )
+def a = db . from_sequence ( range ( 50 ) , npartitions = 5 ) b = a . random_sample ( 0 . 2 ) assert list ( b ) == list ( b )
+self , key , default = None return self . map ( lambda d : d . get ( key , default ) , key , default = None return self . map ( lambda d : d . get ( key , default ) )
+self , key , value def setter ( d ) : d [ key ] = value return d return self . map ( setter , key , value def setter ( d ) : d [ key ] = value return d return self . map ( setter )
+def list ( db . from_sequence ( [ ] ) ) == [ list ( db . from_sequence ( [ ] ) ) == [ ]
+def f = lambda : None b = db . from_sequence ( [ f ] ) assert_eq ( b , [ f ] f = lambda : None b = db . from_sequence ( [ f ] ) assert_eq ( b , [ f ] )
+def dsk = { " x " : 1 } assert get ( dsk , " x " ) == dsk = { " x " : 1 } assert get ( dsk , " x " ) == 1
+x raise ValueError ( ise ValueError ( )
+def from dask . distributed import Clienfrom dask . distributed import Client
+L , reverse = False return sorted ( L , reverse = reverse ) == reverse = False return sorted ( L , reverse = reverse ) == L
+line m = label_re . match ( line ) if m : return m . group ( 1 m = label_re . match ( line ) if m : return m . group ( 1 )
+line m = label_re . match ( line ) if m : return m . group ( 2 m = label_re . match ( line ) if m : return m . group ( 2 )
+x return x * turn x * 2
+args , ** kwargs rv1 = fuse_linear ( * args , ** kwargs ) if kwargs . get ( " rename_keys " ) is not False : return rv1 rv2 = fuse ( * args , ** kwargs ) assert rv1 == rv2 return rv1
+def raise ValueError ( " 12345 " raise ValueError ( " 12345 " )
+def return lambda x : x + return lambda x : x + 1
+def with pytest . raises ( ValueError ) : get_dependencies ( { } with pytest . raises ( ValueError ) : get_dependencies ( { } )
+def assert funcname ( sizeof ) == " sizeof "assert funcname ( sizeof ) == " sizeof "
+def x = delayed ( 1 ) + 2 x . compute ( bogus_keyword = 10 x = delayed ( 1 ) + 2 x . compute ( bogus_keyword = 10 )
+def delayed ( bytes . decode ) ( b " " delayed ( bytes . decode ) ( b " " )
+def import threading with set ( x = threading . Lock ( ) ) : with set ( y = 1 ) : pasimport threading with set ( x = threading . Lock ( ) ) : with set ( y = 1 ) : pass
+def def a_long_function_name_11111111111111111111111111111111111111111111111 ( ) : pass result = funcname ( a_long_function_name_11111111111111111111111111111111111111111111111 ) assert " a_long_function_name " in result assert len ( result ) < 6def a_long_function_name_11111111111111111111111111111111111111111111111 ( ) : pass result = funcname ( a_long_function_name_11111111111111111111111111111111111111111111111 ) assert " a_long_function_name " in result assert len ( result ) < 60
+def assert partial_by_order ( 5 , function = operator . add , other = [ ( 1 , 20 ) ] ) == 2assert partial_by_order ( 5 , function = operator . add , other = [ ( 1 , 20 ) ] ) == 25
+x flag . append ( x ) return x + ag . append ( x ) return x + 1
+duration , size , * args sleep ( duration ) return [ 0 ] * siztion , size , * args sleep ( duration ) return [ 0 ] * size
+def assert not Callback . active with Callback ( ) : assert Callback . active assert not Callback . activassert not Callback . active with Callback ( ) : assert Callback . active assert not Callback . active
+path with ignoring ( BaseException ) : return pytest . importorskip ( path ) return Non with ignoring ( BaseException ) : return pytest . importorskip ( path ) return None
+a , b , c = 1 pas b , c = 1 pass
+a , b = 1 , c = 2 pas b = 1 , c = 2 pass
+@ tokenize ( np . random . random ( 7 ) . astype ( dtype = " i2 " ) kenize ( np . random . random ( 7 ) . astype ( dtype = " i2 " ) )
+@ tokenize ( np . random . random ( 8 ) [ : : 2 ] kenize ( np . random . random ( 8 ) [ : : 2 ] )
+@ tokenize ( np . array ( [ " 2000-01-01T12:00:00 " ] , dtype = " M8[ns] " ) kenize ( np . array ( [ " 2000-01-01T12:00:00 " ] , dtype = " M8[ns] " ) )
+def for i in range ( 1000 ) : normalize_function ( lambda x : x ) assert 50 < len ( function_cache ) < 60for i in range ( 1000 ) : normalize_function ( lambda x : x ) assert 50 < len ( function_cache ) < 600
+x return x * turn x * 2
+a , b , asarray = True , lock = None return getter ( a , b , asarray = asarray , lock = lock )
+a , b , asarray = True , lock = None return getter ( a , b , asarray = asarray , lock = lock )
+numpy_functions def decorator ( dask_func ) : for numpy_function in numpy_functions : _HANDLED_FUNCTIONS [ numpy_function ] = dask_func return dask_func return decorator
+self return reduce ( mul , self . numblocks , 1 return reduce ( mul , self . numblocks , 1 )
+self return tuple ( map ( sum , self . chunks ) return tuple ( map ( sum , self . chunks ) )
+self return self . size * self . dtype . itemsize
+self return self . _nam return self . _name
+self , size = 500 from . svg import svg return svg ( self . chunks , size = size )
+self , filename , datapath , ** kwargs return to_hdf5 ( filename , datapath , self , ** kwargs )
+self return IndexCallable ( self . _blocks )
+self return self . blocks
+self from . routines import ravel return ravel ( self from . routines import ravel return ravel ( self )
+self , func , depth , boundary = None , trim = True , ** kwargs from . overlap import map_overlap return map_overlap ( self , func , depth , boundary , trim , ** kwargs )
+self , axis , dtype = None , out = None from . reductions import cumsum return cumsum ( self , axis , dtype , out = out )
+self , axis , dtype = None , out = None from . reductions import cumprod return cumprod ( self , axis , dtype , out = out )
+self , chunks , threshold = None , block_size_limit = None from . import rechunk return rechunk ( self , chunks , threshold , block_size_limit )
+self from . ufunc import real return real ( self from . ufunc import real return real ( self )
+self from . ufunc import imag return imag ( self from . ufunc import imag return imag ( self )
+self from . ufunc import conj return conj ( self from . ufunc import conj return conj ( self )
+self , min = None , max = None from . ufunc import clip return clip ( self , min , max , min = None , max = None from . ufunc import clip return clip ( self , min , max )
+self , decimals = 0 from . routines import round return round ( self , decimals = decimals , decimals = 0 from . routines import round return round ( self , decimals = decimals )
+self , repeats , axis = None from . creation import repeat return repeat ( self , repeats , axis = axis , repeats , axis = None from . creation import repeat return repeat ( self , repeats , axis = axis )
+self from . routines import nonzero return nonzero ( self from . routines import nonzero return nonzero ( self )
+self , * args , ** kwargs return to_zarr ( self , * args , ** kwargs )
+x while isinstance ( x , ( list , tuple ) ) : try : x = x [ 0 ] except ( IndexError , TypeError , KeyError ) : break return x
+out , index , lock return load_store_chunk ( None , out , index , lock , True , True , index , lock return load_store_chunk ( None , out , index , lock , True , True )
+seq if not isinstance ( seq , ( list , tuple ) ) : return seq else : return deepfirst ( seq [ 0 ] )
+name , i , okey return ( name , i ) + tuple ( k for k in okey if k is not None )
+block , points points = [ p if isinstance ( p , slice ) else list ( p ) for p in points ] return block [ tuple ( points ) ]
+block , axis axes = [ axis ] + list ( range ( axis ) ) + list ( range ( axis + 1 , block . ndim ) ) return block . transpose ( axes )
+x if x < math . e : return x elif x <= 100 : return math . log ( x + 12 . 4 ) # f(e) == e else : return math . log ( 100 + 12 . 4 )
+x , depth , boundary = None axes = coerce_depth ( x . ndim , depth ) boundary2 = coerce_boundary ( x . ndim , boundary ) return trim_internal ( x , axes = axes , boundary = boundary2 )
+x1 , x2 , out = None , dtype = None x = np . divide ( x1 , x2 , out ) if dtype is not None : x = x . astype ( dtype ) return x
+a return asanyarray ( a ) . map_blocks ( np . ma . masked_invalid turn asanyarray ( a ) . map_blocks ( np . ma . masked_invalid )
+x , v1 , v2 x = asanyarray ( x ) return x . map_blocks ( np . ma . masked_outside , v1 , v2 v1 , v2 x = asanyarray ( x ) return x . map_blocks ( np . ma . masked_outside , v1 , v2 )
+a , fill_value = None a = asanyarray ( a ) return a . map_blocks ( np . ma . fix_invalid , fill_value = fill_value fill_value = None a = asanyarray ( a ) return a . map_blocks ( np . ma . fix_invalid , fill_value = fill_value )
+chunks , const return [ tuple ( zip ( ( const , ) * ( 1 + len ( bds ) ) , accumulate ( add , ( 0 , ) + bds ) ) ) for bds in chunks ]
+cumold , cumnew return tuple ( sorted ( cumold + cumnew , key = itemgetter ( 1 ) ) )
+chunks return reduce ( mul , map ( len , chunks ) ks return reduce ( mul , map ( len , chunks ) )
+chunks assert isinstance ( chunks , tuple ) return tuple ( format_blocks ( c ) for c in chunks )
+x return x . shape and 0 not in x . shapturn x . shape and 0 not in x . shape
+wrapped , assigned = functools . WRAPPER_ASSIGNMENTS if all ( hasattr ( wrapped , attr ) for attr in assigned ) : return functools . wraps ( wrapped , assigned = assigned ) else : return lambda x : x
+a , shape , ** kwargs try : return np . empty_like ( a , shape = shape , ** kwargs ) except TypeError : return np . empty ( shape , ** kwargs )
+a , fill_value , shape , ** kwargs try : return np . full_like ( a , fill_value , shape = shape , ** kwargs ) except TypeError : return np . full ( shape , fill_value , ** kwargs )
+a , shape , ** kwargs try : return np . zeros_like ( a , shape = shape , ** kwargs ) except TypeError : return np . zeros ( shape , ** kwargs )
+a if a . shape [ 0 ] == 0 : return np . zeros ( ( 0 , 0 ) ) , np . zeros ( ( 0 , a . shape [ 1 ] ) ) else : return np . linalg . qr ( a )
+n , q , oversampling = 10 , min_subspace_size = 20 return min ( max ( min_subspace_size , q + oversampling ) , n )
+a import scipy . linalg return scipy . linalg . cholesky ( a , lower = True port scipy . linalg return scipy . linalg . cholesky ( a , lower = True )
+a , lower = False l , u = _cholesky ( a ) if lower : return l else : return u
+x x [ : : - 1 ] . sort ( ) return [ : : - 1 ] . sort ( ) return x
+df , t prob = ( delayed ( distributions . t . sf ) ( da . absolute ( t ) , df ) * 2 ) if t . ndim == 0 : t = t [ ( ) ] return t , prob
+x , axis = None if axis is None : return x . size else : return x . shape [ axis axis = None if axis is None : return x . size else : return x . shape [ axis ]
+func , func_like , * args , ** kwargs try : return func_like ( * args , ** kwargs ) except TypeError : return func ( * args , ** kwargs )
+a , s , axes if s is None : return a . chunks chunks = list ( a . chunks ) for i , axis in enumerate ( axes ) : chunks [ axis ] = ( s [ i ] , ) return chunks
+x , axes = None return _fftshift_helper ( x , axes = axes , inverse = False axes = None return _fftshift_helper ( x , axes = axes , inverse = False )
+m return flip ( m , 1 turn flip ( m , 1 )
+a , b return dot ( a . conj ( ) . ravel ( ) , b . ravel ( ) b return dot ( a . conj ( ) . ravel ( ) , b . ravel ( ) )
+arr , func1d , func1d_axis , func1d_args , func1d_kwargs return np . apply_along_axis ( func1d , func1d_axis , arr , * func1d_args , ** func1d_kwargs , func1d , func1d_axis , func1d_args , func1d_kwargs return np . apply_along_axis ( func1d , func1d_axis , arr , * func1d_args , ** func1d_kwargs )
+a , decimals = 0 return a . map_blocks ( np . round , decimals = decimals , dtype = a . dtype decimals = 0 return a . map_blocks ( np . round , decimals = decimals , dtype = a . dtype )
+array return array . shapy return array . shape
+array return array . reshape ( ( - 1 , ) y return array . reshape ( ( - 1 , ) )
+values import pandas as pd return np . asarray ( pd . isnull ( values ) es import pandas as pd return np . asarray ( pd . isnull ( values ) )
+values import pandas as pd return elemwise ( _asarray_isnull , values , dtype = " bool " )
+values return ~ isnull ( values )
+v return bool ( np . count_nonzero ( v ) turn bool ( np . count_nonzero ( v ) )
+a return argwhere ( asarray ( a ) . ravel ( ) ) [ : , 0 turn argwhere ( asarray ( a ) . ravel ( ) ) [ : , 0 ]
+x , ** kwargs return chunk . sum ( ~ np . isnan ( x ) , ** kwargs )
+a , idx return a , idx
+x , astype_dtype = None , ** kwargs return x . astype ( astype_dtype , ** kwargs astype_dtype = None , ** kwargs return x . astype ( astype_dtype , ** kwargs )
+func def _ ( func2 ) : if func . __doc__ is not None : func2 . __doc__ = skip_doctest ( func . __doc__ ) return func2 return _
+def assert " mean " in da . random . RandomState ( 5 ) . normal . __doc_assert " mean " in da . random . RandomState ( 5 ) . normal . __doc__
+def normal ( 10 , 1 , ( 1000000 , 1000000 ) , chunks = ( 100000 , 100000 ) normal ( 10 , 1 , ( 1000000 , 1000000 ) , chunks = ( 100000 , 100000 ) )
+a , b _assert_eq ( a , b , equal_nan = True b _assert_eq ( a , b , equal_nan = True )
+def with pytest . raises ( ValueError ) : fft_wrap ( np . ones with pytest . raises ( ValueError ) : fft_wrap ( np . ones )
+steps , expected assert len ( steps ) == len ( expected ) assert steps == expectes , expected assert len ( steps ) == len ( expected ) assert steps == expected
+def assert_eq ( concatenate3 ( [ 1 , 2 ] ) , np . array ( [ 1 , 2 ] ) assert_eq ( concatenate3 ( [ 1 , 2 ] ) , np . array ( [ 1 , 2 ] ) )
+self , * args , ** kwargs self . acquire_count += 1 return self . lock . acquire ( * args , ** kwargs , * args , ** kwargs self . acquire_count += 1 return self . lock . acquire ( * args , ** kwargs )
+self , * args , ** kwargs self . release_count += 1 return self . lock . release ( * args , ** kwargs , * args , ** kwargs self . release_count += 1 return self . lock . release ( * args , ** kwargs )
+def x = da . arange ( 10 , chunks = 2 ) . sum ( ) x . compute ( bogus_keyword = 10 x = da . arange ( 10 , chunks = 2 ) . sum ( ) x . compute ( bogus_keyword = 10 )
+def x = da . ones ( 5 , chunks = ( 2 , ) ) assert x . A is x = da . ones ( 5 , chunks = ( 2 , ) ) assert x . A is x
+def assert ( da . ones ( 5 , chunks = 2 ) + 1 ) . name . startswith ( " add- " assert ( da . ones ( 5 , chunks = 2 ) + 1 ) . name . startswith ( " add- " )
+def assert da . ones ( 5 , chunks = 2 ) . map_blocks ( inc ) . name . startswith ( " inc- " assert da . ones ( 5 , chunks = 2 ) . map_blocks ( inc ) . name . startswith ( " inc- " )
+num = 50 return da . from_array ( np . linspace ( - 1 , 1 , num = num ) , chunks = 10 = 50 return da . from_array ( np . linspace ( - 1 , 1 , num = num ) , chunks = 10 )
+request return np . dtype ( request . param est return np . dtype ( request . param )
+request return request . paraest return request . param
+l try : return len ( l ) except TypeError : return y : return len ( l ) except TypeError : return 0
+app app . connect ( " build-finished " , copy_legacy_redirects app . connect ( " build-finished " , copy_legacy_redirects )
+loader , standard_tests , unused_pattern this_dir = os . path . dirname ( __file__ ) package_tests = loader . discover ( start_dir = this_dir , pattern = " *_test . py " ) standard_tests . addTests ( package_tests ) return standard_tests
+arg return " : " in arreturn " : " in arg
+ability return ( ability . friendly_name or ability . button_name or ability . link_name ity return ( ability . friendly_name or ability . button_name or ability . link_name )
+def app . run ( main app . run ( main )
+self , count = 22 self . _controller . step ( count ) return self . _controller . observe ( , count = 22 self . _controller . step ( count ) return self . _controller . observe ( )
+paths for path in paths : if not os . path . exists ( path ) : os . makedirs ( path s for path in paths : if not os . path . exists ( path ) : os . makedirs ( path )
+unused_argv data = get_data ( ) generate_py_units ( data ) generate_py_buffs ( data ) generate_py_upgrades ( data ed_argv data = get_data ( ) generate_py_units ( data ) generate_py_buffs ( data ) generate_py_upgrades ( data )
+self return self . __class__ . __name_ return self . __class__ . __name__
+cls for s in cls . __subclasses__ ( ) : yield s for c in s . all_subclasses ( ) : yield c
+map_name if isinstance ( map_name , Map ) : return map_name maps = get_maps ( ) map_class = maps . get ( map_name ) if map_class : return map_class ( ) raise NoMapError ( " Map doesn ' t exist: %s " % map_name )
+mask y , x = mask . nonzero ( ) return list ( zip ( x , y ) )
+versions return { ver . game_version : ver for ver in versions ions return { ver . game_version : ver for ver in versions }
+self , replay_path return os . path . join ( self . replay_dir , replay_path )
+self , version = None , ** kwargs raise NotImplementedError ( )
+cls for s in cls . __subclasses__ ( ) : yield s for c in s . all_subclasses ( ) : yield c
+self , containing = None if containing is not None and containing not in VERSIONS : raise ValueError ( " Unknown game version: %s . Known versions: %s . " % ( containing , sorted ( VERSIONS . keys ( ) ) ) ) return VERSIONS
+cls if platform . system ( ) == " Windows " : return if platform . system ( ) == " Windows " : return 1
+cls if platform . system ( ) == " Darwin " : return if platform . system ( ) == " Darwin " : return 1
+cls if platform . system ( ) == " Linux " : return if platform . system ( ) == " Linux " : return 1
+self raise RestartError ( " Can ' t restart " raise RestartError ( " Can ' t restart " )
+self return self . _action_spec
+self return self . _observation_spec
+self , obs_spec , agent_index observation = { } for key , spec in obs_spec . items ( ) : observation [ key ] = np . zeros ( shape = spec , dtype = np . int32 ) return observation
+self , * args , ** kwargs
+self return self . step_type is StepType . FIRS return self . step_type is StepType . FIRST
+self return self . step_type is StepType . MI return self . step_type is StepType . MID
+self return self . step_type is StepType . LAS return self . step_type is StepType . LAST
+self , actual , expected np . testing . assert_equal ( actual , expected , actual , expected np . testing . assert_equal ( actual , expected )
+self self . assertEqual ( self . _env . action_spec ( ) , ( mock . sentinel . action_spec , ) self . assertEqual ( self . _env . action_spec ( ) , ( mock . sentinel . action_spec , ) )
+self self . _env . episode_length = float ( ' inf ' ) self . _test_episode ( self . _env self . _env . episode_length = float ( ' inf ' ) self . _test_episode ( self . _env )
+self self . _env . episode_length = 16 self . _test_episode_length ( self . _env , length = 16 self . _env . episode_length = 16 self . _test_episode_length ( self . _env , length = 16 )
+self for c in self . _controllers : c . close ( ) self . _controllers = [ for c in self . _controllers : c . close ( ) self . _controllers = [ ]
+self self . _controller . close ( ) self . _controller = Non self . _controller . close ( ) self . _controller = None
+self return self . _process . port
+arg return arg if isinstance ( arg , list ) else [ arg return arg if isinstance ( arg , list ) else [ arg ]
+self return self . _game_info
+self return tuple ( f . observation_spec ( ) for f in self . _features )
+self if not self . _realtime : raise ValueError ( " This method is only supported in realtime mode " ) return self . _action_delays
+self , messages , broadcast = True self . _parallel . run ( ( c . chat , message , sc_pb . ActionChat . Broadcast if broadcast else sc_pb . ActionChat . Team ) for c , message in zip ( self . _controllers , messages ) )
+self self . assertEqual ( self . _env . observation_spec ( ) , self . _mock_env . observation_spec ( ) self . assertEqual ( self . _env . observation_spec ( ) , self . _mock_env . observation_spec ( ) )
+self self . assertEqual ( self . _env . action_spec ( ) , self . _mock_env . action_spec ( ) self . assertEqual ( self . _env . action_spec ( ) , self . _mock_env . action_spec ( ) )
+self , * args , ** kwargs return self . _env . close ( * args , ** kwargs , * args , ** kwargs return self . _env . close ( * args , ** kwargs )
+self , * args , ** kwargs return self . _env . action_spec ( * args , ** kwargs , * args , ** kwargs return self . _env . action_spec ( * args , ** kwargs )
+self , * args , ** kwargs return self . _env . observation_spec ( * args , ** kwargs , * args , ** kwargs return self . _env . observation_spec ( * args , ** kwargs )
+self , * args , ** kwargs return self . _env . reset ( * args , ** kwargs , * args , ** kwargs return self . _env . reset ( * args , ** kwargs )
+self , * args , ** kwargs return self . _env . save_replay ( * args , ** kwargs , * args , ** kwargs return self . _env . save_replay ( * args , ** kwargs )
+self return self . _controlle return self . _controller
+self return self . _hos return self . _host
+self return self . _por return self . _port
+self if self . _proc : ret = _shutdown_proc ( self . _proc , 3 ) logging . info ( " Shutdown with return code: %s " , ret ) self . _proc = None
+self if FLAGS . sc2_port : return True return self . _proc and ( self . _proc . poll ( ) is None if FLAGS . sc2_port : return True return self . _proc and ( self . _proc . poll ( ) is None )
+self return self . _proc . pid if self . running else Non return self . _proc . pid if self . running else None
+self , frame self . writeFrame ( frame )
+self , other dx = self . x - other . x dy = self . y - other . y return dx ** 2 + dy ** 2
+self return Point ( int ( round ( self . x ) ) , int ( round ( self . y ) ) )
+self , max_size return self * ( max_size / self ) . min_dim ( )
+self , min_size return self * ( min_size / self ) . max_dim ( )
+self return min ( self . x , self . y return min ( self . x , self . y )
+self return max ( self . x , self . y return max ( self . x , self . y )
+self return Point ( self . y , self . x )
+self , angle return self . rotate_rad ( math . radians ( angle ) , angle return self . rotate_rad ( math . radians ( angle ) )
+self return self . return self . t
+self return self . return self . l
+self return self . return self . r
+self return self . r - self . return self . r - self . l
+self return Point ( self . r , self . b return Point ( self . r , self . b )
+self return Point ( self . width , self . height return Point ( self . width , self . height )
+self return Rect ( self . tl . floor ( ) , self . br . floor ( ) return Rect ( self . tl . floor ( ) , self . br . floor ( ) )
+self , pt , radius return ( self . l < pt . x - radius and self . r > pt . x + radius and self . t < pt . y - radius and self . b > pt . y + radius )
+self , hide_specific_actions self . features = features . Features ( features . AgentInterfaceFormat ( feature_dimensions = RECTANGULAR_DIMENSIONS , hide_specific_actions = hide_specific_actions ) , hide_specific_actions self . features = features . Features ( features . AgentInterfaceFormat ( feature_dimensions = RECTANGULAR_DIMENSIONS , hide_specific_actions = hide_specific_actions ) )
+self self . assertAvail ( [ ] self . assertAvail ( [ ] )
+self self . obs . player_common . army_count = 3 self . assertAvail ( [ " select_army " ] self . obs . player_common . army_count = 3 self . assertAvail ( [ " select_army " ] )
+self self . obs . player_common . larva_count = 2 self . assertAvail ( [ " select_larva " ] self . obs . player_common . larva_count = 2 self . assertAvail ( [ " select_larva " ] )
+self self . obs . abilities . add ( ability_id = 32 ) self . assertAvail ( [ " Effect_Salvage_quick " ] self . obs . abilities . add ( ability_id = 32 ) self . assertAvail ( [ " Effect_Salvage_quick " ] )
+self value = features . _to_point ( " 32 " ) self . assertEqual ( value , point . Point ( 32 , 32 ) value = features . _to_point ( " 32 " ) self . assertEqual ( value , point . Point ( 32 , 32 ) )
+self with self . assertRaises ( AssertionError ) : features . _to_point ( None with self . assertRaises ( AssertionError ) : features . _to_point ( None )
+self with self . assertRaises ( TypeError ) : features . _to_point ( ( None , 32 ) with self . assertRaises ( TypeError ) : features . _to_point ( ( None , 32 ) )
+self with self . assertRaises ( ValueError ) : features . _to_point ( ( 32 , ) with self . assertRaises ( ValueError ) : features . _to_point ( ( 32 , ) )
+self with self . assertRaises ( ValueError ) : features . Dimensions ( screen = 84 with self . assertRaises ( ValueError ) : features . Dimensions ( screen = 84 )
+self with self . assertRaises ( ValueError ) : features . Dimensions ( screen = ( 84 , 0 ) , minimap = 64 with self . assertRaises ( ValueError ) : features . Dimensions ( screen = ( 84 , 0 ) , minimap = 64 )
+self with self . assertRaises ( ValueError ) : features . Dimensions ( screen = ( 84 , 80 ) with self . assertRaises ( ValueError ) : features . Dimensions ( screen = ( 84 , 80 ) )
+self with self . assertRaises ( ValueError ) : features . Dimensions ( minimap = ( 64 , 67 ) with self . assertRaises ( ValueError ) : features . Dimensions ( minimap = ( 64 , 67 ) )
+self with self . assertRaises ( ValueError ) : features . Dimensions ( screen = 0 , minimap = 0 with self . assertRaises ( ValueError ) : features . Dimensions ( screen = 0 , minimap = 0 )
+self with self . assertRaises ( ValueError ) : features . Dimensions ( screen = - 64 , minimap = 32 with self . assertRaises ( ValueError ) : features . Dimensions ( screen = - 64 , minimap = 32 )
+self , screen , minimap with self . assertRaises ( ValueError ) : features . parse_agent_interface_format ( feature_screen = screen , feature_minimap = minimap , screen , minimap with self . assertRaises ( ValueError ) : features . parse_agent_interface_format ( feature_screen = screen , feature_minimap = minimap )
+self , screen , minimap with self . assertRaises ( ValueError ) : features . parse_agent_interface_format ( rgb_screen = screen , rgb_minimap = minimap , screen , minimap with self . assertRaises ( ValueError ) : features . parse_agent_interface_format ( rgb_screen = screen , rgb_minimap = minimap )
+self , num_steps = 1 del num_steps return _EventTimer ( )
+self return _EventTimer ( )
+ports for port in ports : if port in _contiguous_ports : _contiguous_ports . discard ( port ) else : portpicker . return_port ( port )
+self , obs planes = getattr ( obs . feature_layer_data , self . layer_set ) plane = getattr ( planes , self . name ) return self . unpack_layer ( plane )
+self return self . _scree return self . _screen
+self return self . _feature_dimension return self . _feature_dimensions
+self return self . _use_feature_unit return self . _use_feature_units
+self , value self . _raw_resolution = valu , value self . _raw_resolution = value
+self return self . _max_raw_action return self . _max_raw_actions
+self return self . _max_selected_unit return self . _max_selected_units
+self return self . _use_camera_positio return self . _use_camera_position
+self return self . _show_cloake return self . _show_cloaked
+self return self . _show_placeholder return self . _show_placeholders
+self return self . _send_observation_prot return self . _send_observation_proto
+self return self . _add_cargo_to_unit return self . _add_cargo_to_units
+self return self . _raw_crop_to_playable_are return self . _raw_crop_to_playable_area
+self , camera_center self . _world_tl_to_world_camera_rel . offset = ( - self . _world_to_world_tl . fwd_pt ( camera_center ) * self . _world_tl_to_world_camera_rel . scale )
+self return self . _valid_functions
+self return self . _map_siz return self . _map_size
+self return self . _requested_race return self . _requested_races
+self self . _client . close ( self . _client . close ( )
+self , req_create_game return self . _client . send ( create_game = req_create_game )
+self , map_path , map_data return self . _client . send ( save_map = sc_pb . RequestSaveMap ( map_path = map_path , map_data = map_data ) )
+self , req_join_game return self . _client . send ( join_game = req_join_game )
+self return self . _client . send ( restart_game = sc_pb . RequestRestartGame ( ) )
+self , req_start_replay return self . _client . send ( start_replay = req_start_replay )
+self return static_data . StaticData ( self . data_raw ( ) )
+self , action if action and action . ListFields ( ) : # Skip no-ops . return self . actions ( sc_pb . RequestAction ( actions = [ action ] ) )
+self , action if action and action . ListFields ( ) : # Skip no-ops . return self . observer_actions ( sc_pb . RequestObserverAction ( actions = [ action ] ) )
+self , message , channel = sc_pb . ActionChat . Broadcast if message : action_chat = sc_pb . ActionChat ( channel = channel , message = message ) action = sc_pb . Action ( action_chat = action_chat ) return self . act ( action )
+self res = self . _client . send ( save_replay = sc_pb . RequestSaveReplay ( ) ) return res . data
+self , debug_commands if isinstance ( debug_commands , sc_debug . DebugCommand ) : debug_commands = [ debug_commands ] return self . _client . send ( debug = sc_pb . RequestDebug ( debug = debug_commands ) )
+self , query return self . _client . send ( query = query )
+self return self . _client . send ( ping = sc_pb . RequestPing ( ) return self . _client . send ( ping = sc_pb . RequestPing ( ) )
+self , replay_data return self . _client . send ( replay_info = sc_pb . RequestReplayInfo ( replay_data = replay_data ) , replay_data return self . _client . send ( replay_info = sc_pb . RequestReplayInfo ( replay_data = replay_data ) )
+self if self . num == 0 : return 0 return math . sqrt ( max ( 0 , self . sum_sq / self . num - ( self . sum / self . num ) ** 2 ) )
+self , s print ( s , file = sys . stderr , s print ( s , file = sys . stderr )
+self self . _factory = lambda _ : fake_contex self . _factory = lambda _ : fake_context
+self self . _factory = lambda name : StopWatchContext ( self , name self . _factory = lambda name : StopWatchContext ( self , name )
+self self . _factory = lambda name : TracingStopWatchContext ( self , name self . _factory = lambda name : TracingStopWatchContext ( self , name )
+self , factory self . _factory = factor , factory self . _factory = factory
+self stack = self . _local . stack ret = " . " . join ( stack ) stack . pop ( ) return re stack = self . _local . stack ret = " . " . join ( stack ) stack . pop ( ) return ret
+self return " . " . join ( self . _local . stack return " . " . join ( self . _local . stack )
+self self . _times . clear ( self . _times . clear ( )
+self , name , duration self . _times [ name ] . add ( duration , name , duration self . _times [ name ] . add ( duration )
+self return self . _time return self . _times
+self if self . _sock : self . _sock . close ( ) self . _sock = None self . _status = Status . qui if self . _sock : self . _sock . close ( ) self . _sock = None self . _status = Status . quit
+self , request if FLAGS . sc2_verbose_protocol : self . _log ( " -------------- [%s] Writing request: %s --------------\%s " , self . _port , request . WhichOneof ( " request " ) , self . _packet_str ( request ) ) self . _write ( request )
+self , request self . write ( request ) return self . read ( )
+action , action_space del action , action_spacon , action_space del action , action_space
+action , action_space , select_point_act , screen select = spatial ( action , action_space ) . unit_selection_point screen . assign_to ( select . selection_screen_coord ) select . type = select_point_act
+action , action_space , select_add del action_space action . action_ui . select_army . selection_add = select_add
+action , action_space del action_space action . action_ui . select_larva . SetInParent ( )
+action , action_space , select_unit_act , select_unit_id del action_space select = action . action_ui . multi_panel select . type = select_unit_act select . unit_index = select_unit_id
+action , action_space , unload_id del action_space action . action_ui . cargo_panel . unit_index = unload_id
+action , action_space , ability_id , queued action_cmd = spatial ( action , action_space ) . unit_command action_cmd . ability_id = ability_id action_cmd . queue_command = queued
+action , action_space , ability_id , queued , screen action_cmd = spatial ( action , action_space ) . unit_command action_cmd . ability_id = ability_id action_cmd . queue_command = queued screen . assign_to ( action_cmd . target_screen_coord )
+action del actioon del action
+action , world action_cmd = action . action_raw . camera_move world . assign_to ( action_cmd . center_world_space )
+action , ability_id , queued , unit_tags action_cmd = action . action_raw . unit_command action_cmd . ability_id = ability_id action_cmd . queue_command = queued if not isinstance ( unit_tags , ( tuple , list ) ) : unit_tags = [ unit_tags ] action_cmd . unit_tags . extend ( unit_tags )
+cls , value return lambda i , name : cls ( i , name , ( value , ) , lambda a : a [ 0 ] , None , None )
+cls , id_ , name , sizes return cls ( id_ , name , sizes , None , None , None )
+cls , ** kwargs named = { name : factory ( RawArguments . _fields . index ( name ) , name ) for name , factory in six . iteritems ( kwargs ) } return cls ( ** named )
+cls , id_ , name , function_type , avail_fn = always return cls ( id_ , name , 0 , 0 , function_type , FUNCTION_TYPES [ function_type ] , avail_fn , False )
+cls , id_ , name , function_type , ability_id , general_id = 0 , avail_fn = always assert function_type in RAW_ABILITY_FUNCTIONS return cls ( id_ , name , ability_id , general_id , function_type , FUNCTION_TYPES [ function_type ] , avail_fn , True )
+lock def decorator ( func ) : @ functools . wraps ( func ) def _with_lock ( * args , ** kwargs ) : with lock : return func ( * args , ** kwargs ) return _with_lock return decorator
+n , smallest , largest return max ( smallest , min ( n , largest ) smallest , largest return max ( smallest , min ( n , largest ) )
+self return self . surf . world_to_surf . fwd_pt ( self . world_pos return self . surf . world_to_surf . fwd_pt ( self . world_pos )
+self , mouse_pos action = sc_pb . Action ( ) action_spatial = mouse_pos . action_spatial ( action ) mouse_pos . obs_pos . assign_to ( action_spatial . camera_move . center_minimap ) return action
+self , world_pos action = sc_pb . ObserverAction ( ) world_pos . assign_to ( action . camera_move . world_pos ) return action
+self , shift action = sc_pb . Action ( ) action . action_ui . select_army . selection_add = shift return action
+self , shift action = sc_pb . Action ( ) action . action_ui . select_warp_gates . selection_add = shift return action
+self action = sc_pb . Action ( ) action . action_ui . select_larva . SetInParent ( ) return action
+self , rect player_id = self . _obs . observation . player_common . player_id return [ u for u , p in self . _visible_units ( ) if rect . intersects_circle ( p , u . radius ) and u . owner == player_id ]
+self self . cond . acquire ( ) self . cond . notify_all ( ) self . cond . release ( self . cond . acquire ( ) self . cond . notify_all ( ) self . cond . release ( )
+scale = None return categorical ( static_data . BUFFS , scale )
+self return self . _abilitie return self . _abilities
+self return self . _upgrade return self . _upgrades
+self return self . _unit return self . _units
+self return self . _unit_stat return self . _unit_stats
+self return self . _general_abilitie return self . _general_abilities
+self return " pysc2 . lib . point . Point " return " pysc2 . lib . point . Point "
+self , value return str ( value , value return str ( value )
+name , default , help_string , flag_values = flags . FLAGS , ** args flags . DEFINE ( PointParser ( ) , name , default , help_string , flag_values , PointSerializer ( ) , ** args )
+self , num_ports reserved = portspicker . pick_unused_ports ( num_ports ) self . assertLen ( reserved , num_ports ) portspicker . return_ports ( reserved , num_ports reserved = portspicker . pick_unused_ports ( num_ports ) self . assertLen ( reserved , num_ports ) portspicker . return_ports ( reserved )
+self with self . assertRaises ( ValueError ) : portspicker . pick_unused_ports ( 0 with self . assertRaises ( ValueError ) : portspicker . pick_unused_ports ( 0 )
+self self . assertEqual ( point . Point ( 5 , 8 ) , point . Point . build ( FakePoint ( ) ) self . assertEqual ( point . Point ( 5 , 8 ) , point . Point . build ( FakePoint ( ) ) )
+self p = point . Point ( 3 , 4 ) self . assertEqual ( 5 , p . len ( ) p = point . Point ( 3 , 4 ) self . assertEqual ( 5 , p . len ( ) )
+self self . assertEqual ( 5 , point . Point ( 5 , 10 ) . min_dim ( ) self . assertEqual ( 5 , point . Point ( 5 , 10 ) . min_dim ( ) )
+self , pt raise NotImplementedError ( , pt raise NotImplementedError ( )
+self , pt raise NotImplementedError ( , pt raise NotImplementedError ( )
+self , dist return dist * self . scale . , dist return dist * self . scale . x
+self , dist return dist / self . scale . , dist return dist / self . scale . x
+self , pt return ( pt - self . offset ) / self . scal , pt return ( pt - self . offset ) / self . scale
+self , dist for transform in self . transforms : dist = transform . fwd_dist ( dist ) return dis , dist for transform in self . transforms : dist = transform . fwd_dist ( dist ) return dist
+self , pt for transform in reversed ( self . transforms ) : pt = transform . back_pt ( pt ) return p , pt for transform in reversed ( self . transforms ) : pt = transform . back_pt ( pt ) return pt
+str1 , str2 assert len ( str1 ) == len ( str2 ) return sum ( c1 != c2 for c1 , c2 in zip ( str1 , str2 ) )
+self , proto value = proto for k in self . _path : if isinstance ( k , int ) : value = value [ k ] else : value = getattr ( value , k ) return value
+self return ProtoPath ( tuple ( _ARRAY_PLACEHOLDER if isinstance ( t , int ) else t for t in self . _path ) )
+self return self . _pat return self . _path
+self return self . _proto_ return self . _proto_a
+self return self . _adde return self . _added
+self return self . _remove return self . _removed
+self return self . changed + self . added + self . remove return self . changed + self . added + self . removed
+self return np . array ( [ self . unit_type , self . player_relative , self . health , self . shields , self . energy , self . transport_slots_taken , int ( self . build_progress * 100 ) ] , dtype = np . int32 )
+self , game_loop self . _game_loop = game_loop return sel , game_loop self . _game_loop = game_loop return self
+self , build_queue , production = None self . _build_queue = build_queue self . _production = production return sel , build_queue , production = None self . _build_queue = build_queue self . _production = production return self
+obs return list ( filter ( None , ( a . action_raw . unit_command . ability_id for a in obs . actions ) ) return list ( filter ( None , ( a . action_raw . unit_command . ability_id for a in obs . actions ) ) )
+stage logging . info ( ( " %s " % stage ) . center ( 80 , " - " ) e logging . info ( ( " %s " % stage ) . center ( 80 , " - " ) )
+args , ** kwargs try : return next ( iter ( get_units ( * args , ** kwargs ) . values ( ) ) ) except StopIteration : return None
+self , count = 4 return self . _parallel . run ( ( c . step , count ) for c in self . _controllers , count = 4 return self . _parallel . run ( ( c . step , count ) for c in self . _controllers )
+self , disable_fog = False return self . _parallel . run ( ( c . observe , disable_fog ) for c in self . _controllers , disable_fog = False return self . _parallel . run ( ( c . observe , disable_fog ) for c in self . _controllers )
+self self . debug ( 0 , game_state = sc_debug . god ) self . debug ( 1 , game_state = sc_debug . god )
+self obs = self . _get_obs ( ) self . _check_layer ( obs . render_data . map , 128 , 124 , 24 obs = self . _get_obs ( ) self . _check_layer ( obs . render_data . map , 128 , 124 , 24 )
+self self . _builder . game_loop ( 1234 ) obs = self . _get_obs ( ) self . assertEqual ( obs . game_loop , 1234 self . _builder . game_loop ( 1234 ) obs = self . _get_obs ( ) self . assertEqual ( obs . game_loop , 1234 )
+self obs = self . _get_obs ( ) self . _check_layer ( obs . render_data . minimap , 64 , 60 , 24 obs = self . _get_obs ( ) self . _check_layer ( obs . render_data . minimap , 64 , 60 , 24 )
+self return self . _builder . build ( ) . observatio return self . _builder . build ( ) . observation
+self , proto , builder return self . _check_attributes_match ( proto , builder , vars ( builder ) . keys ( ) , proto , builder return self . _check_attributes_match ( proto , builder , vars ( builder ) . keys ( ) )
+name , args return lambda _ : actions . FUNCTIONS [ name ] ( * args , args return lambda _ : actions . FUNCTIONS [ name ] ( * args )
+self return self . _controlle return self . _controller
+self if self . _controller : self . _controller . quit ( ) self . _controller = None if self . _sc2_proc : self . _sc2_proc . close ( ) self . _sc2_proc = None
+path norm_path = os . path . normpath ( path ) return norm_path . replace ( ' \\\\ ' , ' \\\\\\\\ ' norm_path = os . path . normpath ( path ) return norm_path . replace ( ' \\\\ ' , ' \\\\\\\\ ' )
+self return trch . Parameter_getDescription ( self . param return trch . Parameter_getDescription ( self . param )
+self return trch . Parameter_getFormat ( self . param return trch . Parameter_getFormat ( self . param )
+self return trch . Parameter_getMarshalledDefault ( self . param return trch . Parameter_getMarshalledDefault ( self . param )
+self return trch . Parameter_hasValidValue ( self . param return trch . Parameter_hasValidValue ( self . param )
+self return [ return [ ]
+self return [ Param ( self . getName ( ) , self . getValue ( ) ) return [ Param ( self . getName ( ) , self . getValue ( ) ) ]
+self return trch . Parameter_isRequired ( self . param return trch . Parameter_isRequired ( self . param )
+self b = trch . Parameter_Boolean_getValue ( self . param ) if b : return " True " else : return " False " b = trch . Parameter_Boolean_getValue ( self . param ) if b : return " True " else : return " False "
+self return trch . Parameter_IPv4_getValue ( self . param return trch . Parameter_IPv4_getValue ( self . param )
+self , value trch . Parameter_IPv4_setValue ( self . param , value , value trch . Parameter_IPv4_setValue ( self . param , value )
+self return trch . Parameter_IPv6_getValue ( self . param return trch . Parameter_IPv6_getValue ( self . param )
+self , value trch . Parameter_IPv6_setValue ( self . param , value , value trch . Parameter_IPv6_setValue ( self . param , value )
+self return os . path . normpath ( trch . Parameter_LocalFile_getValue ( self . param ) return os . path . normpath ( trch . Parameter_LocalFile_getValue ( self . param ) )
+self return str ( trch . Parameter_Port_getValue ( self . param ) return str ( trch . Parameter_Port_getValue ( self . param ) )
+self , value trch . Parameter_S16_setValue ( self . param , int ( value ) , value trch . Parameter_S16_setValue ( self . param , int ( value ) )
+self , value trch . Parameter_S32_setValue ( self . param , int ( value ) , value trch . Parameter_S32_setValue ( self . param , int ( value ) )
+self , value trch . Parameter_S8_setValue ( self . param , int ( value ) , value trch . Parameter_S8_setValue ( self . param , int ( value ) )
+self return str ( trch . Parameter_Socket_getValue ( self . param ) return str ( trch . Parameter_Socket_getValue ( self . param ) )
+self return trch . Parameter_String_getValue ( self . param return trch . Parameter_String_getValue ( self . param )
+self return str ( trch . Parameter_U16_getValue ( self . param ) return str ( trch . Parameter_U16_getValue ( self . param ) )
+self , value trch . Parameter_U16_setValue ( self . param , int ( value ) , value trch . Parameter_U16_setValue ( self . param , int ( value ) )
+self , value trch . Parameter_U32_setValue ( self . param , int ( value ) , value trch . Parameter_U32_setValue ( self . param , int ( value ) )
+self return str ( trch . Parameter_U64_getValue ( self . param ) return str ( trch . Parameter_U64_getValue ( self . param ) )
+self , value trch . Parameter_U8_setValue ( self . param , int ( value ) , value trch . Parameter_U8_setValue ( self . param , int ( value ) )
+self , value arg = self . _tokenize_list ( value ) trch . Parameter_IPv4_List_setValue ( self . param , arg , value arg = self . _tokenize_list ( value ) trch . Parameter_IPv4_List_setValue ( self . param , arg )
+self , value self . TcpPort_List_setValue ( value , value self . TcpPort_List_setValue ( value )
+self , value arg = self . _tokenize_list ( value ) trch . Parameter_String_List_setValue ( self . param , arg , value arg = self . _tokenize_list ( value ) trch . Parameter_String_List_setValue ( self . param , arg )
+self return trch . Paramgroup_getDescription ( self . group return trch . Paramgroup_getDescription ( self . group )
+self , name return self . paramList [ name . lower ( ) , name return self . paramList [ name . lower ( ) ]
+self , name return self . choiceList [ name . lower ( ) , name return self . choiceList [ name . lower ( ) ]
+self return [ return [ ]
+self alist = [ Param ( self . getName ( ) , self . getDescription ( ) ) ] return alis alist = [ Param ( self . getName ( ) , self . getDescription ( ) ) ] return alist
+self return self . isValid ( return self . isValid ( )
+self return trch . Paramchoice_getDefaultValue ( self . choice return trch . Paramchoice_getDefaultValue ( self . choice )
+self if self . hasValue ( ) : return trch . Paramchoice_getValue ( self . choice ) else : return " " if self . hasValue ( ) : return trch . Paramchoice_getValue ( self . choice ) else : return " "
+self , name return trch . Paramchoice_matchName ( self . choice , str ( name ) , name return trch . Paramchoice_matchName ( self . choice , str ( name ) )
+self return trch . Paramchoice_hasValue ( self . choice return trch . Paramchoice_hasValue ( self . choice )
+self return ' Scalar ' return ' Scalar '
+self c = trch . Config_marshal ( self . config , " t " , None ) return c = trch . Config_marshal ( self . config , " t " , None ) return c
+self return self . nam return self . name
+self return self . versio return self . version
+self return trch . Params_getNumParameters ( self . parameters return trch . Params_getNumParameters ( self . parameters )
+self , name = None return self . findOption ( name ) . hasValidValue ( , name = None return self . findOption ( name ) . hasValidValue ( )
+self , name param = self . findOption ( name ) return param . hasValue ( , name param = self . findOption ( name ) return param . hasValue ( )
+self , name return self . findOption ( name ) . getFormat ( , name return self . findOption ( name ) . getFormat ( )
+self , name , value return self . findOption ( name ) . setValue ( value , name , value return self . findOption ( name ) . setValue ( value )
+self , name self . findOption ( name ) . resetValue ( , name self . findOption ( name ) . resetValue ( )
+self return self . name
+self , type self . type = type
+self , name return getattr ( self , ' do_ ' + name . lower ( ) , name return getattr ( self , ' do_ ' + name . lower ( ) )
+self , name return getattr ( self , ' help_ ' + name . lower ( ) , name return getattr ( self , ' help_ ' + name . lower ( ) )
+self return self . get_name ( )
+self return " %s %s " % ( self . prefix , self . error return " %s %s " % ( self . prefix , self . error )
+self return " %s " % self . prefi return " %s " % self . prefix
+s if _logfile : print >> _logfile , s _logfile . flush ( _logfile : print >> _logfile , s _logfile . flush ( )
+lists SetClipboardText ( make_tab ( lists ) s SetClipboardText ( make_tab ( lists ) )
+self value = self . _history_cursor log_sock ( " get_history_cursor:%d " % value , " history " ) return valu value = self . _history_cursor log_sock ( " get_history_cursor:%d " % value , " history " ) return value
+self ' ' ' Clear readline history . ' ' ' self . history [ : ] = [ ] self . history_cursor = ' ' ' Clear readline history . ' ' ' self . history [ : ] = [ ] self . history_cursor = 0
+str , is_segment return str_find_all ( mark_start_segment ( str , is_segment ) , " s " , is_segment return str_find_all ( mark_start_segment ( str , is_segment ) , " s " )
+str if len ( str ) != 1 or str in " \\t\ " : return True else : return Falsif len ( str ) != 1 or str in " \\t\ " : return True else : return False
+text , attr = None a = AnsiWriter ( defaultstate ) return a . write_color ( text , attr , attr = None a = AnsiWriter ( defaultstate ) return a . write_color ( text , attr )
+self , text raise NotImplementedErro , text raise NotImplementedError
+self return Tru return True
+self , line self . _history . add_history ( lineobj . TextLine ( line ) , line self . _history . add_history ( lineobj . TextLine ( line ) )
+self , string ' ' ' Insert text into the command line . ' ' ' self . l_buffer . insert_text ( string , string ' ' ' Insert text into the command line . ' ' ' self . l_buffer . insert_text ( string )
+pstr return pstr . index ( " # " return pstr . index ( " # " )
+mstr try : return mstr . index ( " # " ) except ValueError : return - try : return mstr . index ( " # " ) except ValueError : return - 1
+def dsz . env . Set ( KiSuEnabledEnv , ' on ' ) return Trudsz . env . Set ( KiSuEnabledEnv , ' on ' ) return True
+def dsz . env . Set ( KiSuEnabledEnv , ' off ' ) return Trudsz . env . Set ( KiSuEnabledEnv , ' off ' ) return True
+def return " _pc_FelonyCrowbar_Dir "return " _pc_FelonyCrowbar_Dir "
+str dsz . ui . Echo ( str , checkForStop = False dsz . ui . Echo ( str , checkForStop = False )
+str dsz . ui . Echo ( str , dsz . WARNING , checkForStop = False dsz . ui . Echo ( str , dsz . WARNING , checkForStop = False )
+xml import _dsz import mcl_platform mcl_platform . TransferXmlToCore ( xml ) _dsz . dszObj . xml_store ( import _dsz import mcl_platform mcl_platform . TransferXmlToCore ( xml ) _dsz . dszObj . xml_store ( )
+def import _dsz _dsz . dszObj . go_to_background ( import _dsz _dsz . dszObj . go_to_background ( )
+demarsh import socket return socket . ntohs ( demarsh . GetU16 ( ) rsh import socket return socket . ntohs ( demarsh . GetU16 ( ) )
+str import mcl_platform . tasking mcl_platform . tasking . EchoWarning ( str import mcl_platform . tasking mcl_platform . tasking . EchoWarning ( str )
+def import mcl_platform . tasking return mcl_platform . tasking . GetProcedureNumber ( import mcl_platform . tasking return mcl_platform . tasking . GetProcedureNumber ( )
+rpcInfo , wait = False import mcl_platform . tasking return mcl_platform . tasking . RpcPerformCall ( rpcInfo , wait nfo , wait = False import mcl_platform . tasking return mcl_platform . tasking . RpcPerformCall ( rpcInfo , wait )
+def import mcl_platform . tasking mcl_platform . tasking . TaskGoToBackground ( import mcl_platform . tasking mcl_platform . tasking . TaskGoToBackground ( )
+self , dest self . dest = des , dest self . dest = dest
+self self . taskInfo_disable = Tru self . taskInfo_disable = True
+self , msgType self . messagingType = msgTyp , msgType self . messagingType = msgType
+self , mask self . m_xml . AddSubElementWithText ( ' SearchMask ' , ' %s ' % mask , mask self . m_xml . AddSubElementWithText ( ' SearchMask ' , ' %s ' % mask )
+self , param self . m_xml . AddSubElementWithText ( ' SearchParam ' , ' %s ' % param , param self . m_xml . AddSubElementWithText ( ' SearchParam ' , ' %s ' % param )
+self self . m_xml . Clear ( ) self . m_xml . Start ( ' TaskingInfo ' self . m_xml . Clear ( ) self . m_xml . Start ( ' TaskingInfo ' )
+self , maxMatches self . m_xml . AddSubElementWithText ( ' SearchMaxMatches ' , ' %u ' % maxMatches , maxMatches self . m_xml . AddSubElementWithText ( ' SearchMaxMatches ' , ' %u ' % maxMatches )
+self , type self . m_xml . AddSubElementWithText ( ' TaskType ' , ' %s ' % type , type self . m_xml . AddSubElementWithText ( ' TaskType ' , ' %s ' % type )
+resName = None import mcl_platform . tasking . resource return mcl_platform . tasking . resource . GetName ( resName ame = None import mcl_platform . tasking . resource return mcl_platform . tasking . resource . GetName ( resName )
+name , globalValue = False import mcl_platform . tasking . env return mcl_platform . tasking . env . CheckValue ( name , globalValue , globalValue = False import mcl_platform . tasking . env return mcl_platform . tasking . env . CheckValue ( name , globalValue )
+name , globalValue = False import mcl_platform . tasking . env mcl_platform . tasking . env . DeleteValue ( name , globalValue , globalValue = False import mcl_platform . tasking . env mcl_platform . tasking . env . DeleteValue ( name , globalValue )
+name , globalValue = False import mcl_platform . tasking . env return mcl_platform . tasking . env . GetValue ( name , globalValue , globalValue = False import mcl_platform . tasking . env return mcl_platform . tasking . env . GetValue ( name , globalValue )
+self , attr , value self . m_attributes [ attr ] = XmlOutput . CleanAttribute ( value , attr , value self . m_attributes [ attr ] = XmlOutput . CleanAttribute ( value )
+self return self . m_defaultNamespac return self . m_defaultNamespace
+self return self . m_subelement return self . m_subelements
+self return self . m_tex return self . m_text
+self , namespace self . m_defaultNamespace = namespac , namespace self . m_defaultNamespace = namespace
+text return XmlOutput . CleanString ( text , bAttribute = True return XmlOutput . CleanString ( text , bAttribute = True )
+text return XmlOutput . CleanString ( text , bText = True return XmlOutput . CleanString ( text , bText = True )
+self return self . m_typ return self . m_type
+self return self . m_nanosecond return self . m_nanoseconds
+self return self . m_second return self . m_seconds
+self return self . m_typ return self . m_type
+self return len ( self . m_data ) - self . m_onInde return len ( self . m_data ) - self . m_onIndex
+self , endian = _BIG_ENDIAN return ( self . GetU32 ( endian ) , self . GetU32 ( endian ) , endian = _BIG_ENDIAN return ( self . GetU32 ( endian ) , self . GetU32 ( endian ) )
+self return self . m_onInde return self . m_onIndex
+self val = self . GetU8 ( ) if val & 128 : val = ( val & 127 ) - 128 return va val = self . GetU8 ( ) if val & 128 : val = ( val & 127 ) - 128 return val
+self self . m_onIndex = 0 self . m_isValid = Tru self . m_onIndex = 0 self . m_isValid = True
+self , newIndex self . m_onIndex = newIndex self . m_isValid = Tru , newIndex self . m_onIndex = newIndex self . m_isValid = True
+self return self . addres return self . address
+self return self . m_typ return self . m_type
+self return self . m_ipv6_scope_i return self . m_ipv6_scope_id
+self if self . m_type != self . IPADDR_TYPE_IPV4 or self . m_ipv4 != 0 : return True else : return Fals if self . m_type != self . IPADDR_TYPE_IPV4 or self . m_ipv4 != 0 : return True else : return False
+type if type & ( MSG_TYPE_MODIFIER_LITTLE_ENDIAN | MSG_TYPE_MODIFIER_BIG_ENDIAN ) == MSG_TYPE_MODIFIER_BIG_ENDIAN : return True else : return Fals if type & ( MSG_TYPE_MODIFIER_LITTLE_ENDIAN | MSG_TYPE_MODIFIER_BIG_ENDIAN ) == MSG_TYPE_MODIFIER_BIG_ENDIAN : return True else : return False
+type if type & ( MSG_TYPE_MODIFIER_LITTLE_ENDIAN | MSG_TYPE_MODIFIER_BIG_ENDIAN ) == MSG_TYPE_MODIFIER_LITTLE_ENDIAN : return True else : return Fals if type & ( MSG_TYPE_MODIFIER_LITTLE_ENDIAN | MSG_TYPE_MODIFIER_BIG_ENDIAN ) == MSG_TYPE_MODIFIER_LITTLE_ENDIAN : return True else : return False
+endianess if endianess & ( MSG_TYPE_MODIFIER_LITTLE_ENDIAN | MSG_TYPE_MODIFIER_BIG_ENDIAN ) == MSG_TYPE_MODIFIER_NATIVE_ENDIAN : return True else : return Falsaness if endianess & ( MSG_TYPE_MODIFIER_LITTLE_ENDIAN | MSG_TYPE_MODIFIER_BIG_ENDIAN ) == MSG_TYPE_MODIFIER_NATIVE_ENDIAN : return True else : return False
+self , key , type = MSG_TYPE_BINARY , instance = - 1 return self . _GetCacheEntryData ( key , type , instance , key , type = MSG_TYPE_BINARY , instance = - 1 return self . _GetCacheEntryData ( key , type , instance )
+self , key , instance = - 1 return self . _GetCacheEntryData ( key , MSG_TYPE_S8 , instance , key , instance = - 1 return self . _GetCacheEntryData ( key , MSG_TYPE_S8 , instance )
+self , key , instance = - 1 return self . _GetCacheEntryData ( key , MSG_TYPE_S16 , instance , key , instance = - 1 return self . _GetCacheEntryData ( key , MSG_TYPE_S16 , instance )
+self , key , instance = - 1 return self . _GetCacheEntryData ( key , MSG_TYPE_S64 , instance , key , instance = - 1 return self . _GetCacheEntryData ( key , MSG_TYPE_S64 , instance )
+self , key , instance = - 1 return self . _GetCacheEntryData ( key , MSG_TYPE_U8 , instance , key , instance = - 1 return self . _GetCacheEntryData ( key , MSG_TYPE_U8 , instance )
+self , key , instance = - 1 return self . _GetCacheEntryData ( key , MSG_TYPE_U16 , instance , key , instance = - 1 return self . _GetCacheEntryData ( key , MSG_TYPE_U16 , instance )
+self , key , instance = - 1 return self . _GetCacheEntryData ( key , MSG_TYPE_U32 , instance , key , instance = - 1 return self . _GetCacheEntryData ( key , MSG_TYPE_U32 , instance )
+self , key , instance = - 1 return self . _GetCacheEntryData ( key , MSG_TYPE_U64 , instance , key , instance = - 1 return self . _GetCacheEntryData ( key , MSG_TYPE_U64 , instance )
+self return self . m_numRetrieve return self . m_numRetrieved
+self , key , data , endianess = MSG_TYPE_MODIFIER_NATIVE_ENDIAN self . Add ( MSG_TYPE_S8 , key , data , endianess , key , data , endianess = MSG_TYPE_MODIFIER_NATIVE_ENDIAN self . Add ( MSG_TYPE_S8 , key , data , endianess )
+self , key , data , endianess = MSG_TYPE_MODIFIER_NATIVE_ENDIAN self . Add ( MSG_TYPE_S32 , key , data , endianess , key , data , endianess = MSG_TYPE_MODIFIER_NATIVE_ENDIAN self . Add ( MSG_TYPE_S32 , key , data , endianess )
+self , key , data , endianess = MSG_TYPE_MODIFIER_NATIVE_ENDIAN self . Add ( MSG_TYPE_S64 , key , data , endianess , key , data , endianess = MSG_TYPE_MODIFIER_NATIVE_ENDIAN self . Add ( MSG_TYPE_S64 , key , data , endianess )
+self , key , data , endianess = MSG_TYPE_MODIFIER_NATIVE_ENDIAN self . Add ( MSG_TYPE_U64 , key , data , endianess , key , data , endianess = MSG_TYPE_MODIFIER_NATIVE_ENDIAN self . Add ( MSG_TYPE_U64 , key , data , endianess )
+self self . m_marsh . Clear ( self . m_marsh . Clear ( )
+self , truefalse if truefalse : self . AddU8 ( 1 ) else : self . AddU8 ( 0 , truefalse if truefalse : self . AddU8 ( 1 ) else : self . AddU8 ( 0 )
+self , moduleError , osError , endian = _BIG_ENDIAN self . AddU32 ( moduleError , endian ) self . AddU32 ( osError , endian , moduleError , osError , endian = _BIG_ENDIAN self . AddU32 ( moduleError , endian ) self . AddU32 ( osError , endian )
+self , data self . AddS8 ( data , data self . AddS8 ( data )
+self , data , endian = _BIG_ENDIAN self . AddS16 ( data , endian , data , endian = _BIG_ENDIAN self . AddS16 ( data , endian )
+self , data , endian = _BIG_ENDIAN self . AddS32 ( data , endian , data , endian = _BIG_ENDIAN self . AddS32 ( data , endian )
+self import array self . m_data = array . array ( ' B ' import array self . m_data = array . array ( ' B ' )
+self return self . m_dat return self . m_data
+self return len ( self . m_data return len ( self . m_data )
+self , xml raise RuntimeError ( ' DataHandlerOutput . RecordXml must be overriden ' , xml raise RuntimeError ( ' DataHandlerOutput . RecordXml must be overriden ' )
+self , status raise RuntimeError ( ' DataHandlerOutput . SetTaskStatus must be overriden ' , status raise RuntimeError ( ' DataHandlerOutput . SetTaskStatus must be overriden ' )
+self , elementName , namespace , attributes raise RuntimeError ( ' DataHandlerOutput . Start must be overriden ' , elementName , namespace , attributes raise RuntimeError ( ' DataHandlerOutput . Start must be overriden ' )
+self , osError raise RuntimeError ( ' DataHandlerOutput . TranslateOsError must be overriden ' , osError raise RuntimeError ( ' DataHandlerOutput . TranslateOsError must be overriden ' )
+self return self . m_collectTim return self . m_collectTime
+self , collectTime self . m_collectTime = collectTim , collectTime self . m_collectTime = collectTime
+self , data self . m_data = dat , data self . m_data = data
+self return self . m_des return self . m_dest
+self return self . m_messageTyp return self . m_messageType
+self , messageType self . m_messageType = messageTyp , messageType self . m_messageType = messageType
+self , priority self . m_priority = priorit , priority self . m_priority = priority
+self , iface self . m_producerInterface = ifac , iface self . m_producerInterface = iface
