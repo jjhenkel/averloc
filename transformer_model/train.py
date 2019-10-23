@@ -5,7 +5,7 @@ This script handling the training process.
 import argparse
 import math
 import time
-
+import os, sys
 from tqdm import tqdm
 import torch
 import torch.nn.functional as F
@@ -62,7 +62,10 @@ def train_epoch(model, training_data, optimizer, device, smoothing):
     n_word_correct = 0
 
     # for batch in tqdm(training_data, mininterval=2, desc='  - (Training)   ', leave=False):
-    for batch in training_data:
+    for i, batch in enumerate(training_data):
+        if i%(len(training_data)//100) == 0:
+            print(i*100//len(training_data), end=' ')
+            sys.stdout.flush()
 
         # prepare data
         src_seq, src_pos, tgt_seq, tgt_pos = map(lambda x: x.to(device), batch)
