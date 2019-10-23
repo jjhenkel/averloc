@@ -28,6 +28,8 @@ def process_method_body(body, keep_docstring=False):
 		post = post[post.find('"""')+3:]
 		body = pre+post
 
+	# to split up camelcase
+	body = ' '.join(re.sub('([A-Z][a-z]+)', r' \1', re.sub('([A-Z]+)', r' \1', body)).split()).lower()
 
 	a = [t for t in body.split(' ') if len(t)>0]
 
