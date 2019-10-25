@@ -1,0 +1,9 @@
+Issues:
+
+
+1. Should we include docstrings or not?
+2. Remove methods like __init__, __len__, etc. 
+3. Remove \n
+4. Split up camelcase
+5. Restrict length of sequence (to 50?)
+6. Do we want to retain symbols such as .,'%* in the data?

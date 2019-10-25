@@ -1,0 +1,4000 @@
+add soup
+set cookiejar
+get cookiejar
+set user agent
+request
+get
+submit
+launch browser
+set input
+uncheck all
+set textarea
+set
+new control
+find by type
+set debug
+get debug
+set verbose
+get verbose
+page
+new control
+absolute url
+open relative
+refresh
+list links
+links
+find link
+follow link
+download link
+launch browser
+test construct form fail
+test choose submit twice
+test choose submit multiple match
+test set select multiple
+test form set radio checkbox
+test form print summary
+test issue180
+test request select none
+test request disabled attr
+test no 404
+test 404
+test set cookiejar
+test post
+setup mock browser
+prepare mock browser
+mock get
+open legacy httpbin
+test request forward
+test properties
+test get selected form unselected
+test no 404
+test get set debug
+test find link
+test form noaction
+test form noname
+test select form tag object
+test follow link arg
+test download link
+test download link nofile
+test download link 404
+test download link referer
+test refresh error
+vformat
+get indirect dict array
+read object
+overwrite object
+extend dict
+next object number
+write new object
+write object
+start writing
+write pdf embedded files
+from page
+ascii lower
+element has link type
+handle element
+handler
+make replaced box
+handle embed
+handle object
+integer attribute
+handle col
+handle a
+find base url
+parse w3c date
+get intrinsic size
+device units per user units
+cairosvg url fetcher
+normalize stop postions
+get intrinsic size
+layout
+ua stylesheets
+get metadata
+render
+write image surface
+write png
+stacked
+rgb2hsv
+darken
+lighten
+xy offset
+draw replacedbox
+close
+parse email
+url is absolute
+get url attribute
+ensure url
+safe decodebytes
+copy
+write png
+dlopen
+utf8 slice
+unicode to char p
+get ink position
+get font metrics
+set wrap
+deactivate
+reactivate
+create layout
+can break text
+register style
+register formatter
+numeric
+alphabetic
+symbolic
+non repeating
+additive
+format
+format list marker
+all children
+anonymous from
+copy
+deepcopy
+translate
+padding height
+margin width
+margin height
+content box x
+content box y
+padding box x
+padding box y
+border box x
+border box y
+rounded padding box
+rounded border box
+rounded content box
+is floated
+is absolutely positioned
+is running
+is in normal flow
+all children
+copy with children
+deepcopy
+descendants
+get wrapped table
+anonymous from
+hit area
+copy with text
+all children
+translate
+page values
+get cells
+make box
+collect missing counter
+set content lists
+anonymous table boxes
+flex boxes
+set viewport overflow
+box text before
+box text after
+block content width
+min max
+adjust
+block min content width
+block max content width
+inline min content width
+inline max content width
+column group content width
+table cell max content width
+flex min content width
+flex max content width
+contain constraint image sizing
+cover constraint image sizing
+constraint image sizing
+float width
+get clearance
+outer
+outer min content size
+outer max content size
+shrink to fit
+restore box attributes
+max content size
+restore box attributes
+max content size
+page width
+page height
+inline block baseline
+inline block width
+justify line
+count spaces
+is phantom linebox
+block replaced box layout
+collapse margin
+establishes formatting context
+block level page name
+remove placeholders
+add top padding
+table wrapper width
+cell baseline
+find in flow baseline
+layout backgrounds
+set laid out box
+copy
+absolute layout
+handle min max width
+handle min max height
+percentage
+resolve position percentages
+normalize url
+run
+run
+register computer
+compute position
+length or percentage tuple
+break before after
+bleed
+pixel length
+background size
+border width
+column width
+border radius
+column gap
+bookmark label
+string set
+content
+compute float
+line height
+link
+tab size
+word spacing
+ex ratio
+split on comma
+remove whitespace
+safe urljoin
+comma separated list
+get keyword
+get custom ident
+get single keyword
+single keyword
+single token
+get string
+get length
+get resolution
+get url
+evaluate media query
+get cascaded styles
+get child text
+anchor name from token
+collect anchor
+collect computed target
+collect missing counters
+check pending targets
+property
+background attachment
+outline color
+border collapse
+empty cells
+transform origin
+background position
+object position
+border spacing
+border corner radius
+border style
+break before after
+break inside
+box decoration break
+marks
+outline style
+border width
+column width
+column span
+box sizing
+caption side
+clear
+clip
+counter increment
+counter reset
+width height
+column gap
+column fill
+direction
+font kerning
+font language override
+font variant position
+font variant caps
+font size
+font style
+font stretch
+object fit
+image resolution
+spacing
+list style position
+list style type
+min width height
+length or precentage
+opacity
+orphans widows
+column count
+text overflow
+position
+quotes
+table layout
+text align
+text decoration line
+text indent
+text transform
+vertical align
+visibility
+white space
+overflow wrap
+flex basis
+flex direction
+flex grow shrink
+order
+flex wrap
+align self
+align content
+image rendering
+anchor
+link
+tab size
+hyphens
+hyphenate character
+hyphenate limit zone
+lang
+bookmark label
+bookmark level
+bookmark state
+string set
+descriptor
+font family
+src
+font style
+font weight
+font stretch
+expander
+expand border
+expand border side
+expand page break before after
+expand page break inside
+expand columns
+font variant
+expand word wrap
+test font face
+serialize stacking
+resource filename
+capture logs
+assert no logs
+serialize
+parse
+parse all
+render pages
+assert tree
+sanity checks
+test page counters
+test display none root
+write
+getvalue
+png size
+test assert bookmarks
+assert rect almost equal
+test page size zoom
+test bookmarks 2
+test links none
+test embed gif
+test embed jpeg
+test variable simple
+test variable inherit override
+test variable case sensitive
+test variable chain
+test variable initial
+make text
+test line with any width
+white space lines
+test white space 3
+test white space 6
+test white space 7
+test white space 8
+test white space 9
+test white space 10
+test text floating pre line
+outer area
+test preferred widths 3
+test style dict
+test page selectors
+test warnings
+test warnings stylesheet
+test error recovery
+test current color 1
+test current color 4
+test overflow 1
+test overflow 3
+test 2d transform 1
+test 2d transform 3
+test 2d transform 7
+test 2d transform 9
+test opacity 1
+test canvas background
+test background image
+test background image zero size background
+test background clip
+test background size
+write png
+html to pixels
+document to pixels
+test images
+test images no src
+test images no width
+test images no height
+test images no width height
+test images padding
+test outlines
+test visibility 2
+test visibility 3
+to pix
+test linear gradients 1
+test linear gradients 2
+test linear gradients 3
+test linear gradients 4
+test linear gradients 7
+test linear gradients 8
+test radial gradients 1
+test radial gradients 2
+test block percentage heights no html height
+test page size basic
+test recto verso break
+test flex no baseline
+get img
+test images 2
+test images 5
+test images 6
+test images 7
+test images 9
+test images 10
+test empty linebox
+test empty linebox removed space
+test layout table auto 26
+test layout table auto 28
+test layout table auto 29
+test layout table auto 30
+test layout table auto 31
+test layout table auto 36
+test layout table auto 37
+test layout table auto 39
+test table html tag
+group phoneme
+get attrs
+target2phoneme
+list dirs
+get dims
+state size
+output size
+output size
+state size
+check path exists
+seq to single char strings
+spectrogram power
+delta
+log fbank
+hz2mel
+mel2hz
+spectrum power
+c2n
+get complex
+convert section
+process string
+convert digit2 character
+convert digit2 character
+squashing
+num capsules
+save obj
+inc dict
+load data
+load data
+show
+declare
+width in bits
+get field
+emit initializer
+declare array
+increase indent
+decrease indent
+to string
+space
+newline
+append
+append format
+append line
+emit indent
+block start
+block end
+serialize arguments as struct
+check size
+transform arguments
+width in bits
+register type
+width in bits
+alignment
+serialize
+declare array
+add edge to
+add node
+is internal action
+is array element instance
+emit warning
+generate license
+generate new name
+generate tables
+generate header instance
+generate deparser
+get stack instance
+get header instance
+get instance
+get action
+get table
+get counter
+get conditional
+generate pipeline
+declare
+declare array
+get includes
+serialize lookup
+serialize update
+serialize update
+generate dword
+serialize code section
+serialize license
+get size
+declare
+emit initializer
+declare
+translate
+serialize type
+field rank
+serialize construction
+serialize key type
+message
+get ip address
+add endpoint
+get ns
+remove
+execute
+get interface name
+get interface
+delete
+run method in node
+start simulation
+drop extension
+is root
+get online cpus
+get possible cpus
+detect language
+printb
+size prefix
+get context
+get text
+enumerate probes
+attach uprobes
+enumerate active probes
+disassemble instruction
+disassemble prog
+format size info
+decode map
+get num open probes
+resolve name
+monotonic time
+generate auto includes
+find exe
+load funcs
+dump func
+disassemble func
+decode table
+check probe quota
+add kprobe fd
+del kprobe fd
+add uprobe fd
+del uprobe fd
+get syscall fnname
+fix syscall fnname
+detach kprobe
+detach kretprobe
+find library
+tracepoint exists
+detach raw tracepoint
+support raw tracepoint
+get user functions
+detach uprobe
+trace readline
+trace print
+sym cache
+ksym
+ksymname
+num open kprobes
+num open uprobes
+perf buffer poll
+kprobe poll
+free bcc memory
+add module
+get table type name
+itervalues
+items
+values
+clear
+zero
+iter
+keys
+next
+clearitem
+clean up
+event
+open perf buffer
+open perf event
+sum
+max
+average
+sum
+max
+average
+walk
+parse syscall
+syscall name
+positive int
+positive nonzero int
+stack id err
+signal ignore
+aksym
+vec to name
+print event
+neighbors
+edges
+nodes
+attributes
+subgraph
+snoop
+signum to signame
+main
+positive float
+sort fn
+signal ignore
+args str
+get syms
+check runnable weight field
+positive int
+positive nonzero int
+substitute aliases
+bail
+parse expr types
+make valid identifier
+generate streq function
+is string
+generate hash field
+generate hash update
+attach
+v2s
+configure
+get err
+get if top
+generate entry
+generate exit
+generate bottom
+generate program
+attach
+def pid struct
+attach probes
+main loop
+run
+range check
+pid to comm
+get ipv4 session key
+get ipv6 session key
+signal ignore
+handle errno
+print stats
+print event
+print event
+print hist
+print section
+positive int
+positive nonzero int
+stack id err
+signal ignore
+check runnable weight field
+print event
+mask to int
+generate bpf subnets
+positive int
+stack id err
+signal ignore
+print tpoint
+update
+run command get output
+run command get pid
+is kernel probe
+signal ignore
+print comm
+comm for pid
+print event write
+print event read
+usage
+is default action
+bail
+generate streq function
+generate python field decl
+time off str
+display function
+attach k
+create probes
+signal ignore
+get meminfo
+sys name
+usage
+print event
+verify limit
+is kernel probe
+clear
+get file
+stack id err
+decode flags
+decode flags
+decode mount flags
+decode umount flags
+decode errno
+escape character
+decode mount string
+pid to comm
+usage
+signal ignore
+usage
+positive int
+positive nonzero int
+signal ignore
+aksym
+signal ignore
+signal ignore
+decode stack
+run command get output
+run command get pid
+signal ignore
+print frame
+inet ntoa
+clear data
+formatter
+find targets
+generate tables
+generate functions
+get usdts
+usage
+usage
+usage
+to hex
+usage
+get libc path
+signal handler
+usage
+trigger alert event
+cb
+test sched1
+set up
+set up
+test simple
+test hash map flags
+has executable
+kernel version ge
+test tracepoint
+test tracepoint data loc
+test complex
+test printk
+test probe read2
+test probe read3
+test probe read4
+test probe read whitelist2
+test iosnoop
+test blk start request
+test bpf hash
+test consecutive probe read
+test char array probe
+test probe read helper
+test probe unnamed union deref
+test probe struct assign
+test task switch
+test probe simple assign
+test probe simple member assign
+test probe member expr deref
+test probe member expr
+test unop probe read
+test probe read nested deref
+test probe read nested deref2
+test probe read nested deref func
+test probe read nested member3
+test paren probe read
+test complex leaf types
+test exported maps
+test syntax error
+test nested union
+test update macro arg
+test ext ptr maps1
+test ext ptr maps reverse
+test ext ptr maps indirect
+test ext ptr from helper
+test unary operator
+test printk f
+test printk lf
+test printk 2s
+test prog array delete
+test invalid noninline call
+test incomplete type
+test enumerations
+test padding types
+test probe read tracepoint context
+test probe read kprobe ctx
+test probe read ctx array
+test probe read tc ctx
+test probe read return
+test probe read return expr
+test no probe read addrof
+test probe read array accesses1
+test probe read array accesses2
+test probe read array accesses3
+test probe read array accesses4
+test probe read array accesses6
+test probe read array accesses7
+test probe read array accesses8
+test arbitrary increment simple
+test packed structure
+test close extern
+kernel version ge
+set up
+set up
+set up
+test count
+set up
+test probe quota
+test uprobe quota
+set up
+test not exist
+test struct
+test chars
+test multiple key
+get next iface
+set up
+set up
+test periods
+build instr
+test func
+test return
+kernel version ge
+get libc path
+test ksymname
+test ksym
+debug command
+tear down
+test resolve addr
+test resolve name
+tear down
+test resolve name
+test resolve addr
+test get online cpus
+test detect language
+kernel version ge
+tear down
+test malloc
+test realloc
+test posix memalign
+test memalign
+test pvalloc
+test aligned alloc
+test rlimit memlock
+test lru hash
+set up
+kernel version ge
+run with duration
+kmod loaded
+test argdist
+test bashreadline
+test biosnoop
+test biotop
+test bitesize
+test bpflist
+test btrfsdist
+test btrfsslower
+test cachestat
+test capable
+test cpudist
+test cpuunclaimed
+test dcsnoop
+test drsnoop
+test execsnoop
+test ext4dist
+test ext4slower
+test filelife
+test filetop
+test funccount
+test funclatency
+test funcslower
+test gethostlatency
+test killsnoop
+test mdflush
+test nfsslower
+test nfsdist
+test offcputime
+test offwaketime
+test oomkill
+test pidpersec
+test runqlat
+test sofdsnoop
+test slabratetop
+test softirqs
+test solisten
+test sslsniff
+test stackcount
+test syncsnoop
+test syscount
+test tcpconnect
+test tcplife
+test tcpdrop
+test tcptop
+test tplist
+test ucalls
+test uobjnew
+test ustat
+test uthreads
+test vfscount
+test vfsstat
+test wakeuptime
+tear down
+set up
+tear down
+license
+load bpf code
+test default
+test gpl helper macro
+test proprietary macro
+test gpl compatible macro
+test proprietary words macro
+test cflags fail
+test empty fail macro
+test proprietary fail macro
+test proprietary cflags fail
+finalize options
+fix
+fix identities
+fix repeating arguments
+flat
+single match
+parse
+single match
+single match
+match
+match
+from pattern
+current
+parse pattern
+parse seq
+parse section
+formal usage
+test formal usage
+test set
+test matching paren
+test language errors
+test default value for positional arguments
+test issue 59
+test issue 68 options shortcut does not include options in usage pattern
+test issue 126 defaults not parsed correctly when tabs
+pytest collect file
+runtest
+repr failure
+reportinfo
+docopt cmd
+do tcp
+do serial
+load json config
+initialize
+update
+add
+value
+average
+accuracy
+process range
+parse devices
+imresize
+img transform
+segm transform
+round2nearest multiple
+conv bn
+conv 1x1 bn
+forward
+mobilenetv2
+conv3x3
+resnet101
+conv3x3
+make branches
+get num inchannels
+conv3x3
+resnext101
+cumsum
+cummulative sizes
+random split
+set epoch
+get batch
+put indices
+process next batch
+get
+register slave
+nr slaves
+replicate
+patch replication callback
+sum ft
+unsqueeze ft
+check input dim
+check input dim
+check input dim
+as numpy
+handy var
+find bn
+sync parameters
+test sync batch norm normal train
+gather
+user scattered collate
+get stream
+read
+append pythonpath
+get module import dir
+append module path
+handle
+emit
+create lock
+skip unless
+requires progs
+requires poller
+ulimit
+assert oserror
+assert deprecated
+set up
+tear down
+test unicode arg
+test pipe fd
+test trunc exc
+test number arg
+test exit code
+test patched glob
+test patched glob with recursive argument
+test exit code with hasattr
+test exit code from exception
+test ok code none
+test manual stdin string
+test manual stdin iterable
+test which
+test which paths
+test no arg
+test incompatible special args
+test piped exception1
+test piped exception2
+test command wrapper equivalence
+test multiple args short option
+test short option
+test long option
+test raw args
+test custom separator
+test custom separator space
+test custom long prefix
+test background exception
+test with context
+test with context args
+test binary input
+test err to out
+test err to out and sys stdout
+test err piped
+test subcommand and bake
+test multiple bakes
+test arg preprocessor
+test bake args come first
+test output equivalence
+test stdout pipe
+test stdout callback no wait
+test stdout callback line buffered
+test stdout callback line unbuffered
+test stdout callback buffered
+test stdout callback with input
+test stdout callback exit
+test general signal
+test iter generator
+test iter unicode
+test for generator to err
+test sigpipe
+test generator and callback
+test cast bg
+test fg env
+test fg alternative
+test fg exc
+test out filename
+test bg exit code
+test tty output
+test stringio input
+test callable interact
+test timeout overstep
+test binary pipe
+test failure with large output
+test non ascii error
+test tty stdin
+test decode error handling
+test signal exception
+test pushd cd
+test non existant cwd
+test baked command can be printed
+test fork exc
+test callable stdin
+test custom timeout signal
+test append stdout
+test shadowed subcommand
+test no proc no attr
+test grandchild no sighup
+test unchecked producer failure
+test unchecked pipeline failure
+test fd over 1024
+test args deprecated
+test cant import all
+test percent doesnt fail logging
+test stdin nohang
+test wraps
+test signal exception aliases
+test stop iteration doesnt block
+test eintr
+test basic
+test no interfere2
+test reimport no interfere
+test importer detects module name
+test importer only works with sh
+callable
+get num args
+get num args
+set fileobject
+remove fileobject
+get file descriptor
+get file object
+register write
+register error
+unregister
+register
+unregister
+register read
+register write
+register error
+unregister
+indent text
+get exc from name
+get rc exc
+glob
+resolve command
+set context
+get child
+info
+debug
+error
+exception
+default logger str
+handle command exit code
+stdout
+exit code
+next
+get prepend stack
+ob is tty
+ob is pipe
+compile args
+setwinsize
+handle process exit code
+no interrupt
+output thread exc
+input thread exc
+change out bufsize
+change err bufsize
+stdout
+stderr
+get pgid
+signal group
+signal
+kill group
+kill
+terminate
+event wait
+background thread
+get queue chunk reader
+get callable chunk reader
+get iter string reader
+get iter chunk reader
+bufsize type to bufsize
+get fd chunk consumer
+get stringio chunk consumer
+fileno
+with lock
+pushd
+args
+b cd
+b which
+git
+sudo
+in importlib
+fetch module from frame
+find module
+versions from parentdir
+versions from file
+write to version file
+plus or dot
+render pep440
+render pep440 pre
+render pep440 post
+render git describe
+render git describe long
+pytest runtest setup
+is dask collection
+visualize
+persist
+compute
+compute as if collection
+dont optimize
+optimization function
+normalize ordered dict
+normalize set
+normalize seq
+normalize object
+colorize
+wait
+hash xxhash
+hash sha1
+hash buffer
+hash buffer hex
+flat set
+unwrap partial
+functions of
+fuse selections
+ishashable
+has tasks
+preorder traversal
+lists to tuples
+execute task
+get
+flatten
+getcycle
+isdag
+quote
+queue get
+release data
+nested get
+default pack exception
+reraise
+apply sync
+sortkey
+inc
+add
+test data not in dict is ok
+test get works with unhashables in values
+test get stack limit
+apply
+deepmap
+homogeneous deepmap
+ndeepmap
+ignoring
+import required
+filetext
+changed cwd
+tmp cwd
+concrete
+random state data
+is integer
+getargspec
+get named args
+register
+dispatch
+ensure not exists
+skip doctest
+unsupported arguments
+typename
+ensure bytes
+ensure unicode
+insert
+put lines
+acquire
+release
+locked
+get scheduler lock
+ensure dict
+get unary operator
+get binary operator
+partial by order
+is arraylike
+is dataframe like
+is series like
+format time
+format bytes
+has keyword
+task label
+has sub tasks
+name
+label
+box label
+dot graph
+update
+merge
+collect env
+collect
+refresh
+get
+rename
+update defaults
+expand environment variables
+dependents
+dicts
+items
+keys
+values
+subs
+index subs
+zero broadcast dimensions
+args
+copy
+next
+current
+skip
+edges
+patterns
+apply
+iter matches
+rewrite
+process match
+pretask
+finish
+dumps
+remote exception
+reraise
+initialize worker process
+timeseries
+generate mimesis
+make mimesis
+unzip
+tokenize
+right
+rebuild
+key
+dask
+dask
+single key
+globalmethod
+get keywords
+get config
+register vcs handler
+versions from parentdir
+render pep440
+render pep440 pre
+render pep440 post
+render pep440 old
+sizeof python collection
+register cupy
+register numpy
+register spmatrix
+callback
+register
+unpack callbacks
+local callbacks
+normalize callback
+thread get id
+dataclass fields
+register cudf
+finalize
+meta nonempty
+dtype
+args
+key
+to delayed
+constructor
+npartitions
+size
+meta nonempty
+args
+copy
+elemwise
+repr data
+index
+index
+reset index
+known divisions
+clear divisions
+get partition
+scalarfunc
+map partitions
+map overlap
+head
+tail
+loc
+partitions
+replace
+to dask array
+to hdf
+to csv
+to delayed
+get unary operator
+get binary operator
+diff
+abs
+all
+any
+min
+cummin
+where
+isna
+combine
+combine first
+bind operator method
+resample
+nunique approx
+values
+is index level reference
+contains index name
+name
+name
+shape
+dtype
+dt
+nbytes
+repr data
+to timestamp
+get numeric data
+iteritems
+validate axis
+groupby
+count
+explode
+unique
+nunique
+nlargest
+dropna
+between
+clip lower
+clip upper
+squeeze
+combine first
+to bag
+to frame
+to string
+bind comparison method
+apply
+memory usage
+index
+head
+max
+min
+to series
+columns
+iloc
+ipython key completions
+shape
+dtypes
+get dtype counts
+get ftype counts
+select dtypes
+set index
+pop
+nlargest
+nsmallest
+groupby
+categorize
+rename
+dropna
+clip
+clip lower
+clip upper
+to timestamp
+explode
+to bag
+to parquet
+to string
+iterrows
+itertuples
+bind comparison method
+applymap
+cov
+corr
+memory usage
+pivot table
+melt
+to html
+repr data
+repr html
+select columns or index
+is column label reference
+is broadcastable
+maybe from pandas
+split evenly
+split out on index
+split out on cols
+emulate
+rename dask
+pd split
+total mem usage
+iter chunks
+reduction chunk
+reduction combine
+reduction aggregate
+to timedelta
+isna
+repr data series
+get parallel type dataframe
+get parallel type frame
+parallel types
+mapseries
+mapseries combine
+register dataframe accessor
+register series accessor
+register index accessor
+shard df on index
+has known categories
+make meta pandas
+make meta index
+hash object pandas
+
+is dataframe like
+is series like
+index summary
+assert max deps
+valid divisions
+normalize index
+is aligned
+groupby slice apply
+groupby aggregate
+cov combine
+mul cols
+drop duplicates rename
+nunique series chunk
+make agg id
+build agg args std
+compute sum of squares
+apply func to column
+finalize mean
+finalize std
+cum agg aligned
+cum agg filled
+cumcount aggregate
+meta nonempty
+cumprod
+cumcount
+min
+max
+count
+size
+std
+corr
+last
+aggregate
+agg
+agg
+name
+meta indexer
+make meta
+meta indexer
+iloc
+meta indexer
+maybe partial time string
+loc series
+loc array
+get partitions
+coerce loc index
+partitions of index values
+coerce loc index
+reduce state
+known
+as known
+ordered
+codes
+tree groups
+percentiles to weights
+dtype info
+remove nans
+rearrange by divisions
+partitioning index
+barrier
+collect
+shuffle group get
+shuffle group
+shuffle group 3
+set index post scalar
+set index post series
+head timedelta
+tail timedelta
+rolling kwargs
+has single partition
+count
+cov
+sum
+min
+max
+std
+var
+skew
+kurt
+quantile
+maybe align partitions
+require
+most recent tail
+most recent tail summary
+compute tails
+most recent head
+most recent head summary
+compute heads
+merge asof padded
+get unsorted columns
+concat and unsort
+concat and check
+loc
+iloc
+try loc
+index count
+mean aggregate
+wrap var reduction
+var mixed concat
+cummin aggregate
+cummax aggregate
+assign
+unique
+value counts combine
+value counts aggregate
+nbytes
+size
+values
+sample
+drop columns
+pivot agg
+pivot sum
+assign index
+maybe wrap pandas
+delegate property
+delegates
+str extractall
+getnanos
+agg
+count
+last
+mean
+min
+median
+max
+ohlc
+std
+var
+resample
+read json file
+auto blocksize
+write csv
+make float
+make int
+make string
+make categorical
+pd to hdf
+read orc stripe
+df to bag
+to records
+read parquet part
+read metadata
+read partition
+initialize write
+write partition
+write metadata
+get md row groups
+check fastparquet
+check pyarrow
+engine
+test gather statistics no index
+pandas metadata
+test informative error messages
+normalize text
+parse filename
+test pandas read text kwargs
+test read csv large skiprows
+test skipinitialspace
+test consistent dtypes
+test consistent dtypes 2
+test empty csv file
+test read csv no sample
+test read csv sensitive to enforce
+test auto blocksize
+test read csv raises on no files
+test csv with integer names
+test read csv header issue 823
+test none usecols
+test parse dates multi column
+test read csv sep
+test read csv singleton dtype
+db
+test simple
+test range
+test no character index without divisions
+test orc with backend
+
+
+test scalar
+shifted sum
+test rolling repr
+test time rolling repr
+test time rolling constructor
+test index with non series
+make part
+test coerce loc index
+test iloc series
+test ufunc numpy scalar comparison
+test duplicate columns repr
+test sum intna
+test get dummies
+test index head
+test series
+test map partitions type
+test ndim
+test len
+test size
+test nbytes
+test known divisions
+test repartition npartitions numeric edge case
+test rename dict
+test rename function
+test rename index
+test series iter
+test timeseries sorted
+test isna
+test boundary slice empty
+test boundary slice same
+test broadcast
+test has parallel type
+test categorical set index npartitions vs ncategories
+get cat
+assert array index eq
+test properties
+test categorical string ops
+test categorical non string raises
+test hash pandas object
+test object missing values
+test hash object dispatch
+test basic
+agg func
+test groupby set index
+test groupby agg custom name clash with internal same column
+test timeseries
+prop
+method
+test dt accessor not available
+test str accessor not available
+test str accessor getitem
+test str accessor extractall
+ddf left
+ddf left unknown
+ddf left single
+ddf right
+ddf right unknown
+ddf right single
+how
+on
+pretask
+posttask
+finish
+plot
+visualize
+clear
+is running
+start collect
+stop collect
+start
+finish
+close
+clear
+plot
+shutdown
+update pids
+start
+plot
+clear
+format time
+start
+pretask
+timer func
+fix bounds
+test register
+test array compute
+test progressbar
+test minimum time
+test clean exit
+test register
+test no tasks
+test store time
+read block from file
+hdfs
+ensure safe environment variables
+test read bytes non existing glob
+test read bytes blocksize none
+test get pyarrow fs s3
+to uri
+test recursive glob expand
+test parse sample bytes
+test read bytes no sample
+test read bytes blocksize none
+test read bytes blocksize float errs
+test read bytes include path
+test bad compression
+test not found
+test get pyarrow filesystem
+test simple
+test bag
+test read csv
+test infer storage options c
+lazify task
+lazify
+optimize
+finalize item
+strmap
+match
+robust wraps
+from delayed
+args
+map
+args
+remove
+map partitions
+unzip
+to avro
+fold
+frequencies
+topk
+distinct
+sum
+max
+min
+all
+mean
+std
+flatten
+to delayed
+partition
+collect
+from url
+dictitems
+concat
+merge distinct
+bag range
+bag zip
+map chunk
+starmap chunk
+reduce
+make group
+empty safe apply
+empty safe aggregate
+random sample
+random state data python
+split
+assert eq
+read long
+read bytes
+read chunk
+read file
+write avro part
+decode
+iseven
+isodd
+test bag
+test remove
+test iter
+test repr
+test fold bag
+test topk with multiarg lambda
+test lambdas
+test std
+test var
+test random sample different definitions
+test random sample random state
+test take
+test map is lazy
+test can use dict to make concrete
+test from sequence
+test from long sequence
+test from empty sequence
+test flatten
+test concat after map
+test args
+test string namespace with unicode
+test ensure compute output is concrete
+get
+set
+test bag compute forward kwargs
+test range
+test groupby tasks 2
+test groupby tasks 3
+test reduction empty
+test reduction with non comparable objects
+test msgpack unicode
+test repeated groupby
+test get without computation
+bad
+test exceptions rise to top
+test reuse pool
+test mimesis
+test full dataset
+test no mimesis
+test deterministic
+test can import client
+test to hdf distributed
+test to hdf scheduler distributed
+test prefer deep
+test stacklimit
+test order doesnt fail on mixed type keys
+test prefer short dependents
+test string ordering
+test string ordering dependents
+get label
+get shape
+test aliases
+test dot graph no filename
+test filenames and formats
+test delayed kwargs apply
+double
+fuse2
+with deps
+test inline doesnt shrink fast functions at top
+func with kwargs
+bad
+test unpicklable results generate errors
+test reuse pool
+test dumps loads
+test fuse doesnt clobber intermediates
+test custom context ignored elsewhere
+test get context always default
+contains
+test istask
+test get dependencies empty
+test get dependencies nothing
+test flatten
+test subs no key data eq
+test literal serializable
+test base
+test name
+test containers
+test numpy
+foo
+bar
+test attributes
+test method getattr call same task
+test np dtype of delayed
+test common subexpressions
+test literates keys
+test lists are concrete
+test delayed compute forward kwargs
+test delayed method descriptor
+test delayed callable
+test delayed name on call
+test sensitive to partials
+test attribute of attribute
+test collect env none
+test set hard to copyables
+test rename
+test env var canonical name
+test get set roundtrip
+test merge none to dict
+test hash buffer
+test hash buffer hex
+test hashers
+test dispatch variadic on first argument
+test extra titles
+test serializable lock locked
+test serializable lock acquire blocking
+test funcname long
+test funcname toolz
+test funcname multipledispatch
+test itemgetter
+test derived from func
+test start state with redirects
+test start state with independent but runnable tasks
+test get sync num workers
+test add remove mutates not replaces
+import or none
+f1
+test tokenize
+test tokenize numpy array consistent on values
+test tokenize numpy array supports uneven sizes
+test tokenize numpy datetime
+test tokenize pandas invalid unicode
+test tokenize pandas no pickle
+test tokenize same repr
+test tokenize set
+test tokenize object array with nans
+test tokenize base types
+test tokenize numpy matrix
+test compute dataframe valid unicode in bytes
+test compute dataframe invalid unicode
+test compute with literal
+inc to dec
+test optimizations keyword
+test default imports
+test persist literals
+test normalize function limited size
+test raise get keyword
+test callable scheduler
+double
+test args
+test rewrite rule subs
+percentiles from tdigest
+empty like
+ones like
+zeros like
+full like
+np fromfunction
+get pad shapes chunks
+linear ramp chunk
+normalize slice
+register sparse
+getter nofancy
+getter inline
+implements
+slices from chunks
+dotmany
+npartitions
+shape
+chunksize
+dtype
+get chunks
+set chunks
+ndim
+size
+nbytes
+itemsize
+name
+name
+elemwise
+store
+to svg
+to hdf5
+vindex
+blocks
+partitions
+dot
+a
+t
+transpose
+ravel
+choose
+topk
+argtopk
+any
+all
+argmin
+argmax
+sum
+trace
+prod
+mean
+std
+var
+moment
+map blocks
+map overlap
+cumsum
+cumprod
+squeeze
+rechunk
+real
+conj
+swapaxes
+copy
+to delayed
+repeat
+nonzero
+to zarr
+to tiledb
+ensure int
+round to
+check regular chunks
+load store chunk
+store chunk
+load chunk
+retrieve from ooc
+is scalar for elemwise
+offset func
+deepfirst
+shapelist
+concatenate axes
+interleave none
+keyname
+get axis
+vindex slice
+vindex transpose
+svg lines
+svg 1d
+grid points
+draw sizes
+ratio response
+constant
+add leading dimension
+divide
+take along axis
+map reduce
+walk
+filled
+masked invalid
+masked inside
+masked outside
+getdata
+getmaskarray
+masked array
+set fill value
+average
+cumdims label
+breakpoints
+intersect chunks
+number of blocks
+estimate graph size
+divide to width
+format blocks
+format chunks
+same keys
+not empty
+assert eq shape
+safe wraps
+empty like safe
+full like safe
+ones like safe
+zeros like safe
+validate axis
+cumsum blocks
+cumsum part
+wrapped qr
+svd
+solve triangular lower
+solve
+inv
+sort decreasing
+chisquare
+moment
+equal var ttest denom
+ttest ind from stats
+count
+sum of squares
+square of sums
+atop
+wrap func like safe
+wrap
+fft out chunks
+irfft out chunks
+fftfreq block
+fftfreq
+rfftfreq
+fftshift
+ifftshift
+array
+result type
+atleast 1d
+vstack
+hstack
+dstack
+flipud
+fliplr
+dot
+vdot
+inner apply along axis
+ptp
+gradient kernel
+bincount sum
+digitize
+isin kernel
+shape
+extract
+take dask array from numpy
+isnull
+notnull
+isclose
+allclose
+variadic choose
+choose
+isnonzero vec
+count nonzero
+flatnonzero
+nonzero
+int piecewise
+unravel index kernel
+piecewise
+split at breaks
+frompyfunc
+angle
+divmod
+partition by size
+posify index
+expander
+expander
+replace ellipsis
+getitem variadic
+shuffle slice
+divide
+min
+max
+any
+nancumsum
+nanmin
+nanmax
+nannumel
+arg agg
+make arg reduction
+nanargmin
+nanargmax
+cumsum
+cumprod
+topk
+trace
+tiledb to chunks
+trim
+arange
+astype
+slice with int dask array
+doc wraps
+beta
+binomial
+chisquare
+exponential
+f
+gamma
+geometric
+gumbel
+hypergeometric
+laplace
+lognormal
+logseries
+negative binomial
+noncentral chisquare
+pareto
+permutation
+poisson
+power
+randint
+random integers
+random sample
+rayleigh
+standard cauchy
+standard exponential
+standard gamma
+standard normal
+standard t
+tomaxint
+triangular
+vonmises
+wald
+weibull
+zipf
+choice
+apply random
+expand tuple
+contract tuple
+test array function dask
+test array notimpl function dask
+test serializability
+test unique names
+test docs
+test can make really big random array
+test auto chunks
+test randint dtype
+assert eq
+test reduction errors
+test arg reductions unknown chunksize
+test reduction on scalar
+assert max deps
+test topk argtopk2
+check lu result
+parses
+test 3d
+test slice singleton value on boundary
+test slice stop 0
+test slice list then none
+test empty slice
+test new blockdim
+test sanitize index element
+test index with int dask array negindex
+test cull
+test slicing with nones
+test slicing integer no warnings
+test negative n slicing
+test negative list slicing
+test cached cumsum non tuple
+test setitem with different chunks preserves shape
+test gh3579
+test shuffle slice
+test array ufunc out
+test unsupported ufunc methods
+test out shape mismatch
+test size as list
+test singleton size
+test kwargs
+test cant fft chunked axis
+test fft
+test wrap bad kind
+test fftfreq
+test apply gufunc pass additional kwargs
+test apply gufunc scalar output
+test apply gufunc two scalar output
+test rechunk 1d
+test rechunk 2d
+test rechunk 4d
+test rechunk method
+test rechunk blockshape
+test dtype
+test rechunk with empty input
+test rechunk with null dimensions
+test rechunk with integer
+test rechunk 0d
+test rechunk empty
+test rechunk minus one
+test rechunk intermediates
+test rechunk warning
+assert chunks match
+test rechunk zero dim
+test rechunk empty chunks
+test rechunk auto 1d
+test rechunk zero
+test percentiles with empty arrays
+test percentiles with scaler percentile
+test mean
+test asanyarray
+test top len
+test blockwise names
+test svd
+test map overlap no depth
+test bad depth raises
+test sizeof
+test integer input
+test concatenate3 on scalars
+test broadcast dimensions works with singleton dimensions
+test stack zero size
+test concatenate types
+test block with mismatched shape
+test block no lists
+test block empty lists
+test block tuple
+test t
+test reshape exceptions
+test map blocks with kwargs
+test repr meta
+test slicing flexible type
+test bool
+release
+test np array with zero dimensions
+test size
+test nbytes
+test itemsize
+test array normalizes dtype
+test from array ndarray getitem
+test from array minus one
+test from array copy
+test from array dask array
+test asarray
+test chunks is immutable
+test raise on bad kwargs
+test long slice
+test ellipsis slicing
+test index with integer types
+test vindex negative
+test empty array
+test chunks error
+test array compute forward kwargs
+test timedelta op
+test from delayed
+test from delayed meta
+test npartitions
+test astype gh1151
+test map blocks name
+test from array names
+test from array raises on bad chunks
+test warn bad rechunking
+test setitem errs
+test zero slice dtypes
+test blockwise with numpy arrays
+test no warnings on metadata
+test delayed array key hygeine
+test empty chunks in array len
+test meta
+test normalize chunks auto 1d
+test normalize chunks auto 2d
+test normalize chunks object dtype
+test normalize chunks tuples of tuples
+test from zarr unique name
+test to zarr unknown chunks raises
+test regular chunks
+test 3851
+test 3925
+test slice reversed
+test from array meta
+known
+unknown
+test compute chunk sizes warning fixes rechunk
+test compute chunk sizes warning fixes to svg
+test compute chunk sizes warning fixes reduction
+test compute chunk sizes warning fixes reshape
+test moments
+test nan raises
+test power divergence invalid
+test skew raises
+dtype
+test slice dtype
+test from array
+test map blocks
+test arange dtypes
+test arange cast float int step
+test indices wrong chunks
+test tril triu errors
+test tile neg reps
+test tile array reps
+test derived docstrings
+test atleast nd no args
+test tensordot more than 26 dims
+test ptp
+maybe len
+test isnull result is an array
+test argwhere str
+test einsum split every
+setup
+trivial
+load tests
+sorted dict str
+update
+valid replay
+print
+replay queue filler
+generate name
+sort key
+main
+main
+entry point
+get unit
+xy locs
+step
+replay paths
+generate py upgrades
+main
+main
+main
+entry point
+entry point
+entry point
+path
+data
+name
+all subclasses
+get maps
+get
+setup
+reset
+step
+xy locs
+setup
+reset
+setup
+reset
+setup
+version dict
+map data
+abs replay path
+replay data
+replay paths
+all subclasses
+name
+get versions
+get version
+priority
+priority
+priority
+udp server
+log msg
+udp to tcp
+tcp to udp
+read tcp
+read tcp size
+write tcp
+restart
+reset
+action spec
+default observation
+save replay
+first
+mid
+assert spec
+assert equal
+assert first step
+assert mid step
+assert last step
+set up
+test observation spec
+test action spec
+test default observation
+test two episodes
+test episode length
+test episode
+test
+disconnect
+reconnect
+save replay
+hosts
+host ports
+lan ports
+close
+reconnect
+save replay
+host
+host port
+close
+print
+get default
+game info
+static data
+observation spec
+action spec
+action delays
+send chat messages
+tear down class
+restart
+close
+reset
+step
+save replay
+host
+version
+launch
+shutdown
+running
+pid
+shutdown proc
+shutdown
+indices
+get index
+add
+build
+assign to
+dist
+dist sq
+round
+floor
+abs
+scale
+scale max size
+min dim
+max dim
+rotate deg
+rotate rand
+bound
+center
+top
+left
+bottom
+width
+height
+tl
+br
+tr
+bl
+diagonal
+size
+round
+ceil
+intersects circle
+set up
+hide specific actions
+assert avail
+test always
+test select idle workder
+test select army
+test select warp gates
+test select larva
+test quick
+test screen
+test screen minimap
+test screen autocast
+test general
+test int as string
+test int string two tuple
+test none input returns none output
+test none as first element of tuple raises
+test none as second element of tuple raises
+test three tuple raises
+test screen size without minimap raises
+test screen width without height raises
+test screen width height without minimap raises
+test none none raises
+test singular zeroes raises
+test three tuple screen raises
+test negative screen raises
+test negative minimap raises
+test negative screen tuple raises
+test negative minimap tuple raises
+test no arguments raises
+test invalid feature combinations raise
+test invalid minimap combinations raise
+test invalid action space raises
+test use feature units is parsed
+test functions ids are consistent
+test can pickle function call
+test can deepcopy numpy function call
+test creation from tuple
+test creation from list
+test creation from generator
+test string repr
+test equals
+test no diffs
+measure step time
+measure observation time
+unpack
+unpack rgb image
+screen
+minimap
+action space
+camera width world units
+use feature units
+use raw units
+raw resolution
+raw resolution
+use raw actions
+max raw actions
+max selected units
+use unit counts
+use camera position
+show cloaked
+show burrowed shadows
+show placeholders
+hide specific actions
+action delay fn
+send observation proto
+add cargo to units
+crop to playable area
+raw crop to playable area
+allow cheating layers
+update camera
+map size
+requested races
+check error
+skip status
+valid status
+close
+status ended
+create game
+save map
+restart
+game info
+data raw
+data
+available maps
+step
+actions
+act
+observer actions
+observer act
+chat
+leave
+query
+quit
+replay info
+status
+reset
+add
+dev
+merge
+build
+parse
+log
+disable
+enable
+trace
+custom
+decorate
+push
+pop
+cur stack
+clear
+add
+times
+catch websocket connection errors
+status
+close
+send req
+packet str
+log
+read
+write
+spatial
+no op
+move camera
+select point
+select idle worker
+select army
+select warp gates
+select larva
+select unit
+control group
+unload
+cmd quick
+cmd screen
+autocast
+raw move camera
+raw cmd
+raw cmd pt
+raw cmd unit
+raw autocast
+enum
+scalar
+point
+spec
+unit tags
+types
+types
+define position based enum
+ui func
+ability
+raw ability
+raw ui func
+spec
+str
+with lock
+clamp
+draw arc
+write world
+action spatial
+circle mask
+zoom
+get mouse pos
+camera action
+camera action raw
+camera action observer pt
+camera action observer player
+select idle worker
+select army
+units in area
+get unit name
+draw help
+draw screen
+draw feature layer
+all surfs
+render
+get unit type
+wait
+clear
+bad
+test run in parallel
+test avoids deadlock
+set
+round
+ceil
+shuffled hue
+buffs
+categorical
+upgrades
+units
+unit stats
+general abilities
+flag type
+serialize
+define point
+test non contiguous reservation
+test invalid reservation
+test invalid contiguous reservation
+test build
+test assign to
+test dist
+test dist sq
+test len
+test scale
+test max dim
+test round
+test ceil
+test floor
+test contained circle
+test area
+test filtered out
+memoize
+fwd pt
+back dist
+back pt
+fwd dist
+fwd pt
+back dist
+back pt
+fwd dist
+fwd pt
+back dist
+fwd dist
+fwd pt
+image differencer
+test divide zero
+test decorator enabled
+test summarize array diffs
+with anonymous array indices
+path
+proto b
+changed
+added
+all diffs
+truncate
+dict path to proto path
+fill
+as array
+as dict
+as dict
+game loop
+player common
+score
+score details
+score by category
+score by vital
+multi select
+build queue
+feature units
+raw ability ids
+print stage
+set up
+tear down
+get units
+xy locs
+only in game
+start replay
+observe
+move camera
+debug
+kill unit
+set energy
+assert point
+get maps
+cache sc2 proc
+tear down class
+test list all maps
+test feature screen matches spec
+test feature minimap matches spec
+test rgb screen matches spec
+test game loop can be set
+test score can be set
+test score by category spec
+test score by vital spec
+test rgb minimap matches spec
+test no single select
+test with single select
+test no multi select
+check attributes match
+check unit
+check feature unit
+identity function
+any point
+select
+initialize
+controller
+test replay observations match
+major version
+log center
+normpath
+main
+setup and run
+getextensionfiles
+configlistsearch
+get elements
+parse consolemode
+parse iparamorder
+parse forward
+attribute convert
+tokenize barelist
+get description
+get format
+get name
+get type
+get marshalled default
+has value
+get attribute value list
+get parameter list ext
+is hidden
+is required
+is valid
+mark invalid
+match name
+reset value
+boolean get value
+i pv4 get value
+i pv4 set value
+i pv6 set value
+local file set value
+tcp port get value
+tcp port set value
+udp port set value
+s16 get value
+s16 set value
+s32 get value
+s32 set value
+s64 set value
+s8 get value
+s8 set value
+socket set value
+string get value
+string set value
+u16 set value
+u32 get value
+u64 get value
+u64 set value
+u8 get value
+u8 set value
+u string get value
+u string set value
+buffer get value
+buffer set value
+boolean list get value
+i pv4 list set value
+i pv6 list get value
+local file list set value
+udp port list set value
+s16 list set value
+s16 list get value
+s32 list get value
+s64 list set value
+s64 list get value
+s8 list set value
+s8 list get value
+socket list get value
+string list get value
+u16 list set value
+u32 list set value
+u32 list get value
+u64 list set value
+u64 list get value
+u8 list get value
+u string list get value
+buffer list get value
+get description
+get num paramchoices
+get parameter
+get paramchoice
+get attribute value list
+get parameter list
+get parameter list ext
+is valid
+match name
+get default value
+get description
+get name
+get num paramgroups
+get paramgroup
+get value
+get attribute value list
+get parameter list
+is valid
+reset value
+has value
+get type
+get format
+get marshalled in config
+put marshalled config
+get version
+get config version
+get binary hash
+get config hash
+find paramchoice
+find parameter
+get num paramchoices
+get num parameters
+has valid value
+is valid
+is paramchoice
+is parameter
+find option
+get type
+set
+reset
+get attribute list
+get root parameter list
+get parameter list
+get parameter list ext
+get type
+set name
+set type
+lookup function
+lookup compfunction
+lookup helpfunction
+get active name
+get err
+get doc
+get rest
+start log
+log
+log sock
+send data
+set clipboard text
+get clipboard text and convert
+get history length
+set history length
+get history cursor
+set history cursor
+clear history
+beginning of history
+end of history
+non incremental forward search history
+history search forward
+markwords
+mark start segment
+mark start segment index
+mark end segment index
+is word token
+is non word token
+get winattr
+set winattr
+copy
+parse color
+write color
+bell
+pos
+size
+getkeypress
+isatty
+add history
+insert text
+size
+cursor
+bell
+write
+run tests
+get point pos
+get mark pos
+is connected
+connected id
+use ki su
+enable ki su
+disable ki su
+is kisu available
+connect ki su
+disconnect ki su
+translate id to name
+marshal
+marshal
+marshal
+marshal
+load data
+marshal
+marshal
+load data
+load data
+load data
+load data
+marshal
+marshal
+load data
+set id
+check config local
+finalize
+finalize
+get default path
+get destination dir
+main
+main
+check for stop
+echo
+echo error
+echo warning
+output xml
+task go to background
+task set status
+get u16
+get u32
+get s16
+get s32
+get s64
+get dir
+get node text
+check value
+get value
+go to background
+record xml
+set task status
+start
+translate os error
+start output
+check value
+get value
+echo
+echo error
+echo good
+get parameters
+get procedure number
+output error
+rpc perform call
+task go to background
+task set status
+set messaging type
+add provider
+add search mask
+add search path
+clear
+get xml object
+set max matches
+set target local
+set target remote
+set type
+get dir
+open
+check value
+delete value
+get value
+set value
+set
+add attribute
+add sub element
+add namespace definition
+clear
+get default namespace
+get name
+get namespace
+get namespace defs
+get sub elements
+get text
+set default namespace
+set text as data
+start
+clean attribute
+clean text
+get nanoseconds
+get seconds
+get time type
+bytes left
+get bool
+get error
+get index
+get time
+get s8
+get s16
+get s32
+is valid
+reset
+set data
+set index
+size
+get address
+set address
+set address
+get type
+get addr
+get scope id
+is valid
+set scope id
+is big endian
+is little endian
+is native endianess
+next
+find bool
+find data
+find message
+find s8
+find s16
+find s64
+find u16
+find u32
+find u64
+get num retrieved
+add bool
+add data
+add message
+add string utf8
+add string utf16
+add s8
+add s16
+add s32
+add u8
+add u16
+add u32
+add u64
+clear
+get size
+serialize
+add bool
+add data
+add error
+add s8
+add u8
+add u16
+add u32
+add u64
+clear
+get size
+create log file
+end with status
+record xml
+start
+translate os error
+get collect time
+set collect time
+get data
+set data
+set dest
+get message type
+set message type
+get priority
+get producer interface
+set producer interface
+get producer provider
+set producer provider
+get status
+get task ids
+get uuid
+set uuid
+check value
+get value
+set value
+add set parameter
+append parameters
+get data name
+is optional
+set data name
+set help
+set name
+set optional
+get data value
+get default value
+get name
+get type
+is data set
+is default set
+get value u8
+get value s16
+get value u32
+get value s32
+get value u64
+get value time
+get value byte array
+get value ip addr
+set name
+copy arguments
+copy help
+copy options
+get option prefix
+get command id
+get command name
+get command script
+set command script
+get text from single element
+add argument
+add rejected option
+add required option
+get data name
+get maximum num arguments
+get minimum num arguments
+get rejected options
+get required options
+get set data map
+is arguments empty
+is set data empty
+set data name
+was found
+get group name
+has group
+has valid values
+set group name
+record usage
+split step
+on
+off
+enter
+exit
+on
+off
+disable
+enable
+check stop
+is local
+add
+clear
+end
+start
+store
+last id
+run
+run ex
+clear
+get
+object get
+size
+check
+delete
+get
+timestamp
+is system
+is root
+marshal
+get possible
+check info
+get node text
+get payload node info
+is driver signing enabled
+register command
+start command
+create command
+should display
+next
+evaluate
+display
+get logs
+get status
+get bytes sent
+get bytes received
+load data
+parse file
+characters
+get logs
+is alive
+get log path
+get range
+append
+update all
+as bytes
+get range
+check value range
+get range
+set time in seconds
+get time in seconds
+check length
+marshal
+load data
+load data
+marshal
+load data
+marshal
+marshal
+marshal
+marshal
+load data
+load data
+load data
+load data
+load data
+load data
+load data
+load data
+load data
+load data
+marshal
+marshal
+load data
+load data
+marshal
+load data
+marshal
+marshal
+load data
+load data
+load data
+marshal
+load data
+marshal
+load data
+marshal
+marshal
+load data
+marshal
+characters
+set flag
+get flag
+set
+get
+display
+load data
+load data
+marshal
+marshal
+load data
+load data
+marshal
+marshal
+marshal
+marshal
+marshal
+marshal
+marshal
+marshal
+marshal
+characters
+display
+display
+display
+evaluate
+marshal
+load data
+load data
+load data
+load data
+load data
+marshal
+marshal
+characters
+display
+display
+marshal
+load data
+marshal
+load data
+load data
+release
+prompt command
+set detach
+set location
+set size
+set focus
+set close
+set disable
+set name
+set command
+getenvvalue
+get arch
+get compiled arch
+get os
+get major version
+get other version
+getenvvalue
+is os64 bit
+is unix
+is windows
+is nt family
+is nt4
+is xp
+is xp or greater
+is2003
+is vista
+is vista or greater
+is2008
+is7
+is7 or greater
+is8
+is8 or greater
+is wow64
+is linux
+is solaris
+background
+get string
+get int
+prompt
+marshal
+marshal
+marshal
+marshal
+is full path
+get typevalue
+log query
+fcmp
+get query paths
+get actual paths
+process
+store
+get query paths
+get query paths
+get query paths
+get actual paths
+get query paths
+get actual paths
+get local
+store
+store
+set implementation
+print task
+print outcome
+print success
+print impl
+open listen socket
+get appropriate plugin set
+does arch match
+does platform match
+print task
+print success
+print failure
+print impl
+checkplugin
+checkflav
+bgprecompile
+parse usbargs
+main
+getmostrecentrecordnum
+write job list
+kill session
+write excludes
+list sessions
+write escalate rule
+delete escalate rule
+check escalation
+get database conn
+whats your job
+whats your name
+parse arptasking
+check escalation
+verify escalation
+whats your name
+find files
+min time
+min range
+whats your job
+check escalation
+verify escalation
+whats your job
+whats your name
+return success message
+verify escalation
+return data
+get display headers
+get data fields
+get raw fields
+verify job
+whats your job
+return success message
+verify escalation
+check escalation
+return data
+get display headers
+get data fields
+get raw fields
+verify job
+min time
+whats your name
+return success message
+check escalation
+verify escalation
+return data
+get display headers
+get raw fields
+verify job
+min time
+whats your job
+whats your name
+return success message
+verify escalation
+check escalation
+return data
+get display headers
+get data fields
+get raw fields
+min time
+whats your job
+whats your name
+return success message
+verify escalation
+return data
+get display headers
+get data fields
+get raw fields
+whats your name
+recall data
+execute scan
+get raw fields
+whats your job
+whats your name
+return success message
+check escalation
+return data
+get raw fields
+verify job
+whats your job
+whats your name
+verify escalation
+check escalation
+return data
+get display headers
+get raw fields
+verify job
+min time
+whats your job
+whats your name
+verify escalation
+return data
+get display headers
+get data fields
+get raw fields
+verify job
+min time
+whats your job
+return success message
+return data
+get display headers
+get data fields
+get raw fields
+verify job
+min time
+get files
+build cmd
+check options
+help
+check path list
+printscans
+checkip
+getinfo
+gettime
+yakexit
+uninstall
+verify
+collect
+changename
+main
+main
+handle config
+handle netbios
+handle netmap
+handle netconnections
+handle ping
+main
+main
+pre get
+pre get
+get local location
+set volatile
+set project
+clear target
+clear volatile
+clear project
+get target
+get volatile
+get all target
+get all volatile
+get gmttime from remote
+delta
+delete
+upper
+bool
+numeric
+test ascii
+test always unicode
+test unicode
+test numeric hex
+test bool true
+test bool false
+test lower
+ensuretargettempdir
+timestamp
+datestamp
+datetimestamp
+targetdatetimestamp
+utf8
+info
+warn
+error
+pause
+preload
+get all project logdirs
+get all project d bs
+add target
+remove target
+get name
+set name
+get project db
+get targets
+set targets
+setmacs
+get target db
+makedict
+get all i ps
+get all macs
+get full path
+makekeyvaldict
+friendly gmt time
+friendly local time
+skew
+datainit
+get all output
+get last error
+get auditing failure
+get friendly name
+get friendly type
+get filename
+get all connection data
+get friendly name
+get friendly type
+get full bin path
+get is update
+main
+main
+start activitymon
+treecurse
+complete
+error
+state
+is started
+is error
+flags
+print sub header
+flags
+continue processing
+validate
+validate
+validate
+process
+validate
+process
+get interfaces
+get all netconnections
+get current netconnections
+get listeners
+convert str
+verify dsz cmd redirect object
+validate input
+validate input
+get mask
+set mask
+get path
+set recursive
+get dirsonly
+set dirsonly
+get time
+set time
+get age
+get before
+get max
+set max
+get hash
+set hash
+get chunksize
+set chunksize
+get hive
+get key
+get value
+get recursive
+set recursive
+set wow64
+set wow32
+get chunksize
+get initial buffer size
+set initial buffer size
+get bare
+set bare
+get target
+validate input
+safety check
+get background
+set background
+getmonitor
+setmonitor
+getuser
+setlog
+getdst
+setdst
+get success
+get channel
+get plugin
+get bool option
+get value option
+set bool option
+disable command
+get disable
+get force
+get status
+set status
+get on
+set on
+get off
+set off
+get running commands
+validate input
+validate input
+get auto minimal
+set auto minimal
+validate input
+get protocol
+set protocol
+get tcp
+get direction
+set direction
+get listen port
+set listen port
+set bind addr
+get lplisten
+get target addr
+set target addr
+get source addr
+set source addr
+get source port
+get client port
+get portsharing
+get limit addr
+set limit mask
+get connections
+set connections
+get redir notify
+set redir notify
+my safety check
+get list
+set list
+get monitor
+get minimal
+set minimal
+get ignore
+get target
+validate input
+get running services
+sync
+bias
+localtime
+get userprofiles dir
+verify drivertracker
+not recommended
+get target environs
+validateprocess
+execute
+get variable
+parse it
+add vendor
+get results
+get last psp
+execute
+execute
+is ip
+get config attributes
+get attribute display
+chkinstances
+chkvendors
+get psp from vendor
+dsz print
+find config
+find actions
+validate
+get last command meta
+stlaparse
+stlainstall
+stlacollect
+grokcollect
+cdreturn
+changename
+marshal
+marshal
+load data
+marshal
+characters
+get name
+add cell
+create command line
+create command line
+print header
+create command line
+generate tasking
+create command line
+create command line
+create command line
+is skip
+create command line
+display
+is verify
+create command line
+run
+make methods
+get value
+make methods
+is set
+clear
+recv handle
+recv handle
+reset
+reduce handle
+reduce connection
+rebuild connection
+fromfd
+rebuild socket
+reduce pipe connection
+rebuild pipe connection
+manager
+pipe
+freeze support
+get logger
+log to stderr
+allow connection pickling
+lock
+condition
+semaphore
+bounded semaphore
+event
+queue
+pool
+raw value
+array
+set executable
+enterabs
+enter
+cancel
+empty
+run
+main
+isabs
+join
+splitext
+splitdrive
+basename
+dirname
+islink
+samefile
+samestat
+ismount
+walk
+abspath
+resolve link
+relpath
+do post
+is cgi
+is executable
+is python
+nobody uid
+read code
+iter modules
+iter importer modules
+load module
+get data
+fix name
+is package
+get delegate
+iter importers
+get loader
+find loader
+get data
+add
+remove
+discard
+get
+get message
+get string
+get file
+iterkeys
+keys
+itervalues
+values
+iteritems
+items
+has key
+clear
+pop
+popitem
+lock
+unlock
+close
+discard
+get string
+get file
+iterkeys
+has key
+get folder
+clean
+lookup
+next
+add
+remove
+iterkeys
+has key
+lock
+unlock
+close
+append message
+get message
+get file
+pre message hook
+remove
+get file
+iterkeys
+has key
+lock
+unlock
+close
+list folders
+remove folder
+dump sequences
+remove
+get labels
+pre mailbox hook
+pre message hook
+become message
+explain to
+get subdir
+set subdir
+get flags
+add flag
+remove flag
+get date
+set date
+get info
+set info
+set from
+remove flag
+get sequences
+add sequence
+remove sequence
+get labels
+add label
+remove label
+get visible
+set visible
+update visible
+read
+readline
+readlines
+tell
+seek
+close
+read
+tell
+seek
+read
+unlock file
+create carefully
+create temporary
+sync flush
+sync close
