@@ -110,3 +110,4 @@ venv.bak/
 
 # torch checkpoints
 *.pt
+*.chkpt
