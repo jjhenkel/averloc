@@ -1,54 +1,91 @@
-import os
+import os, keyword, random
+
+def replace_elifs(body):
+	replacement = 'else : if '
+	if 'elif' in body:
+		body = body.replace('elif',replacement)
+		return body
+	else:
+		return body
+
+
+def remove_vowels_from_argname(body):
+	body_l = body.split()
+	if body_l[0] == 'self':
+		if body_l[1] == ',':
+			new_var_name = body_l[2]
+			for vowel in ['a','e','i','o','u']:
+				if random.random() < 0.75:
+					new_var_name = new_var_name.replace(vowel,'')
+			return body.replace(body_l[2], new_var_name)
+		else:
+			# dont change anything if self is the only argument
+			return body
+	else:
+		if keyword.iskeyword(body_l[0]):
+			return body
+		else:
+			new_var_name = body_l[0]
+			for vowel in ['a','e','i','o','u']:
+				new_var_name = new_var_name.replace(vowel,'')
+		return body.replace(body_l[0], new_var_name)
+
 
 def insert_dummy_if_statement(body):
-	statement = ['if', '1', '>', '2', ':', 'return', 'None', 'else', ':']
+	statement = 'if true : '
 
 	if 'return' in body:
 		i = body.index('return')
-		modified = body[:i] + ' '.join(statement) + body[i:]
-		return modified, True
+		modified = body[:i] + statement + body[i:]
+		return modified
 	else:
-		return body, False
+		return body
 
 
 def insert_print_statement(body):
 	statement = ' print ( )'
-	return body[:-1] + ' ' + statement, True
+	return body + ' ' + statement
+
 
 def replace_self(body):
 	replacement = 'me'
 	if 'self' in body:
 		body = body.replace('self',replacement)
-		return body, True
+		return body
 	else:
-		return body, False
+		return body
 
 
+TRANSFORMS = [insert_print_statement, insert_dummy_if_statement, replace_elifs, remove_vowels_from_argname]
 
-body = 'self return self . copy ( )'
-print(body)
-print(insert_dummy_if_statement(body)[0])
-print(insert_print_statement(body)[0])
-print(replace_self(body)[0])
+if __name__=="__main__":
 
-TRANSFORMS = [insert_print_statement, insert_dummy_if_statement, replace_self]
 
-data_dir = os.path.join('..','data','python_data')
+	body = 'self , dummy_varname a = 1 if a > 1 : pass elif a < 1 : pass else : return self . copy ( dummy_varname )'
+	print(body)
+	print(insert_dummy_if_statement(body))
+	print(insert_print_statement(body))
+	print(replace_elifs(body))
+	print(remove_vowels_from_argname(body))
+	print(replace_self(body))
 
-test_data_file = os.path.join(data_dir,'test_5000.data')
-test_adv_data_file = os.path.join(data_dir,'test_adv_5000.data')
+	
+	data_dir = os.path.join('..','data','python_data')
 
-f_orig = open(test_data_file, 'r')
-f_adv = open(test_adv_data_file, 'w')
+	test_data_file = os.path.join(data_dir,'test_500000.data')
+	test_adv_data_file = os.path.join(data_dir,'test_adv_500000.data')
 
-for body in f_orig.readlines():
-	adv_body = body
-	for t in TRANSFORMS:
-		adv_body = t(adv_body)[0]
-	f_adv.write(adv_body+'\n')
+	f_orig = open(test_data_file, 'r')
+	f_adv = open(test_adv_data_file, 'w')
 
-f_orig.close()
-f_adv.close()
+	for body in f_orig.readlines():
+		adv_body = body[:-1]
+		for t in TRANSFORMS:
+			adv_body = t(adv_body)
+		f_adv.write(adv_body+'\n')
+
+	f_orig.close()
+	f_adv.close()
 
 
 
