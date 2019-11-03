@@ -9,6 +9,7 @@ def calculate_metrics_from_files(pred_file, labels_file):
 	a = calculate_metrics(f_pred.readlines(), f_true.readlines())
 	for m in a:
 		print('%s: %.3f'%(m,a[m]))
+	print()
 	f_pred.close()
 	f_true.close()
 
@@ -26,9 +27,12 @@ def calculate_metrics(y_pred, y_true):
 	function returns dict with the calculated metrics
 	'''
 
-	assert len(y_pred)==len(y_true), 'The number of predictions and ground truths must be equal'
+	N = min(len(y_pred),len(y_true))
+	# N = 4500
+	if len(y_pred)!=len(y_true):
+		print('Warning: The number of predictions and ground truths are not equal, calculating metrics over %d points'%N)
 
-	N = len(y_pred)
+	
 
 	# for precision, recall, f1
 	tp = 0
