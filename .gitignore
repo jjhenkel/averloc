@@ -108,6 +108,8 @@ venv.bak/
 # data files
 *multi30k*
 *.tsv
+*.data
+*.labels
 
 # torch checkpoints
 *.pt
