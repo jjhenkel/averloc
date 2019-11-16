@@ -73,40 +73,40 @@ submodules: ## Ensures that submodules are setup.
 		git submodule update --init; \
 	fi
 
-datasets/code2seq/java-small: ## Download code2seq's Java small dataset (non-preprocessed sources) <!PRIVATE>
-	@$(call echo_debug,"Downloading dataset 'code2seq/java-small'...")
+datasets/raw/code2seq/java-small: ## Download code2seq's Java small dataset (non-preprocessed sources) <!PRIVATE>
+	@$(call echo_debug,"Downloading dataset 'raw/code2seq/java-small'...")
 	@$(call mkdir_cleanup_on_error,$@)
 	"${ROOT_DIR}/scripts/download-tar.sh" \
 		https://s3.amazonaws.com/code2seq/datasets/java-small.tar.gz \
-		"${ROOT_DIR}/datasets/code2seq"
+		"${ROOT_DIR}/datasets/raw/code2seq"
 	@$(call echo_debug,"  + Download complete!")
 
-datasets/code2seq/java-med: ## Downloads code2seq's Java medium dataset (non-preprocessed sources) <!PRIVATE>
-	@$(call echo_debug,"Downloading dataset 'code2seq/java-medium'...")
+datasets/raw/code2seq/java-med: ## Downloads code2seq's Java medium dataset (non-preprocessed sources) <!PRIVATE>
+	@$(call echo_debug,"Downloading dataset 'raw/code2seq/java-med'...")
 	@$(call mkdir_cleanup_on_error,$@)
 	"${ROOT_DIR}/scripts/download-tar.sh" \
 		https://s3.amazonaws.com/code2seq/datasets/java-med.tar.gz \
-		"${ROOT_DIR}/datasets/code2seq"
+		"${ROOT_DIR}/datasets/raw/code2seq"
 	@$(call echo_debug,"  + Download complete!")
 
-datasets/code-search-net/java: ## Downloads CodeSearchNet's Java data (GitHub's code search dataset) <!PRIVATE>
-	@$(call echo_debug,"Downloading dataset 'code-search-net/java'...")
+datasets/raw/code-search-net/java: ## Downloads CodeSearchNet's Java data (GitHub's code search dataset) <!PRIVATE>
+	@$(call echo_debug,"Downloading dataset 'raw/code-search-net/java'...")
 	@$(call mkdir_cleanup_on_error,$@)
 	"${ROOT_DIR}/scripts/download-zip.sh" \
 		https://s3.amazonaws.com/code-search-net/CodeSearchNet/v2/java.zip \
-		"${ROOT_DIR}/datasets/code-search-net" \
+		"${ROOT_DIR}/datasets/raw/code-search-net" \
 		"java/final/jsonl/*"
 	@$(call echo_debug,"  + Download complete!")
 
-datasets/code-search-net/python: ## Downloads CodeSearchNet's Python data (GitHub's code search dataset) <!PRIVATE>
-	@$(call echo_debug,"Downloading dataset 'code-search-net/python'...")
+datasets/raw/code-search-net/python: ## Downloads CodeSearchNet's Python data (GitHub's code search dataset) <!PRIVATE>
+	@$(call echo_debug,"Downloading dataset 'raw/code-search-net/python'...")
 	@$(call mkdir_cleanup_on_error,$@)
 	"${ROOT_DIR}/scripts/download-zip.sh" \
 		https://s3.amazonaws.com/code-search-net/CodeSearchNet/v2/python.zip \
-		"${ROOT_DIR}/datasets/code-search-net" \
+		"${ROOT_DIR}/datasets/raw/code-search-net" \
 		"python/final/jsonl/*"
 	@$(call echo_debug,"  + Download complete!")
 
-download-datasets: submodules | datasets/code2seq/java-small datasets/code2seq/java-med datasets/code-search-net/java datasets/code-search-net/python ## Downloads all prerequisite datasets
+download-datasets: submodules | datasets/raw/code2seq/java-small datasets/raw/code2seq/java-med datasets/raw/code-search-net/java datasets/raw/code-search-net/python ## Downloads all prerequisite datasets
 	@$(call echo_info,"Downloaded all datasets to './datasets/' directory.")
 
