@@ -52,6 +52,21 @@ export mkdir_cleanup_on_error
 
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
+define run_dataset_normalization
+	@RAW_PATH="${ROOT_DIR}/${1}/${2}"
+	@NORM_PATH="${ROOT_DIR}/$(subst raw,normalized,${1})/${3}"
+	@IMAGE_NAME="$(shell whoami)/averloc--normalize-raw-dataset:$(shell git rev-parse HEAD)"
+	@$(call echo_debug,"  - Normalizing $$(find "$${RAW_PATH}" -type f | wc -l) ${3} files...")
+	mkdir -p "$${NORM_PATH}"
+	docker run -it --rm \
+		-v "$${RAW_PATH}":/mnt/inputs \
+		-v "$${NORM_PATH}":/mnt/outputs \
+		"$${IMAGE_NAME}"
+	$(call echo_debug,"    + Done!")
+endef
+
+export run_dataset_normalization
+
 .DEFAULT_GOAL := help
 
 .PHONY: help
@@ -107,6 +122,58 @@ datasets/raw/code-search-net/python: ## Downloads CodeSearchNet's Python data (G
 		"python/final/jsonl/*"
 	@$(call echo_debug,"  + Download complete!")
 
+.PHONY: download-datasets
 download-datasets: submodules | datasets/raw/code2seq/java-small datasets/raw/code2seq/java-med datasets/raw/code-search-net/java datasets/raw/code-search-net/python ## Downloads all prerequisite datasets
-	@$(call echo_info,"Downloaded all datasets to './datasets/' directory.")
+	@$(call echo_info,"Downloaded all datasets to './datasets/raw/' directory.")
 
+.PHONY: build-normalizer
+build-normalizer: submodules ## Builds our dataset normalizer docker image
+	@IMAGE_NAME="$(shell whoami)/averloc--normalize-raw-dataset:$(shell git rev-parse HEAD)"
+	@IMAGE_CONTEXT="$(shell mktemp -d)"
+	@$(call echo_debug,"Building '$${IMAGE_NAME}'...")
+	@$(call mkdir_cleanup_on_error,$${IMAGE_CONTEXT})
+	mkdir -p "$${IMAGE_CONTEXT}/vendor"
+	cp -r "${ROOT_DIR}/tasks/normalize-raw-dataset" "$${IMAGE_CONTEXT}"
+	cp -r "${ROOT_DIR}/vendor/CodeSearchNet/function_parser" "$${IMAGE_CONTEXT}/vendor/function_parser"
+	docker build \
+		-t "$${IMAGE_NAME}" \
+		-f "${ROOT_DIR}/tasks/normalize-raw-dataset/Dockerfile" \
+		"$${IMAGE_CONTEXT}" | sed "s/^/$$(printf "\r\033[37m[DBG]:\033[0m ")/"
+	@rm -rf $${IMAGE_CONTEXT}
+	@$(call echo_debug,"  + Image built!")
+
+datasets/normalized/code2seq/java-small: ## Generate a normalized version of code2seq's Java small dataset <!PRIVATE>
+	@$(call echo_debug,"Normalizing dataset 'raw/code2seq/java-small'...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@$(call run_dataset_normalization,datasets/raw/code2seq/java-small,training,train)
+	@$(call run_dataset_normalization,datasets/raw/code2seq/java-small,validation,valid)
+	@$(call run_dataset_normalization,datasets/raw/code2seq/java-small,test,test)
+	@$(call echo_debug,"  + Normalization complete!")
+
+datasets/normalized/code2seq/java-med: ## Generate a normalized version of code2seq's Java med dataset <!PRIVATE>
+	@$(call echo_debug,"Normalizing dataset 'raw/code2seq/java-med'...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@$(call run_dataset_normalization,datasets/raw/code2seq/java-med,training,train)
+	@$(call run_dataset_normalization,datasets/raw/code2seq/java-med,validation,valid)
+	@$(call run_dataset_normalization,datasets/raw/code2seq/java-med,test,test)
+	@$(call echo_debug,"  + Normalization complete!")
+
+datasets/normalized/code-search-net/java: ## Generates a normalized version of CodeSearchNet's Java dataset <!PRIVATE>
+	@$(call echo_debug,"Normalizing dataset 'raw/code-search-net/java'...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@$(call run_dataset_normalization,datasets/raw/code-search-net/java,train,train)
+	@$(call run_dataset_normalization,datasets/raw/code-search-net/java,valid,valid)
+	@$(call run_dataset_normalization,datasets/raw/code-search-net/java,test,test)
+	@$(call echo_debug,"  + Normalization complete!")
+
+datasets/normalized/code-search-net/python: ## Generates a normalized version of CodeSearchNet's Python dataset <!PRIVATE>
+	@$(call echo_debug,"Normalizing dataset 'raw/code-search-net/python'...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@$(call run_dataset_normalization,datasets/raw/code-search-net/python,train,train)
+	@$(call run_dataset_normalization,datasets/raw/code-search-net/python,valid,valid)
+	@$(call run_dataset_normalization,datasets/raw/code-search-net/python,test,test)
+	@$(call echo_debug,"  + Normalization complete!")
+
+.PHONY: normalize-datasets
+normalize-datasets: submodules build-normalizer | datasets/normalized/code2seq/java-small datasets/normalized/code2seq/java-med datasets/normalized/code-search-net/java datasets/normalized/code-search-net/python ## Normalizes all downloaded datasets
+	@$(call echo_info,"Normalized all datasets to './datasets/normalized/' directory.")
