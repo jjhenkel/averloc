@@ -9,4 +9,4 @@
 	url = https://github.com/vovak/astminer
 [submodule "vendor/CodeSearchNet"]
 	path = vendor/CodeSearchNet
-	url = https://github.com/github/CodeSearchNet
+	url = https://github.com/jjhenkel/CodeSearchNet
