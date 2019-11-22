@@ -1,6 +1,10 @@
 export SHELL:=/bin/bash
 export SHELLOPTS:=$(if $(SHELLOPTS),$(SHELLOPTS):)pipefail:errexit
 
+.ONESHELL:
+
+ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+
 # Cross-platform realpath from 
 # https://stackoverflow.com/a/18443300
 # NOTE: Adapted for Makefile use
@@ -33,11 +37,6 @@ define echo_error
 	echo -e "\033[0;31m[ERR]:\033[0m" ${1}
 endef
 
-export echo_debug
-export echo_info
-export echo_warn
-export echo_error
-
 define mkdir_cleanup_on_error
 	function tearDown {
 		rm -rf ${1}
@@ -46,26 +45,25 @@ define mkdir_cleanup_on_error
 	mkdir -p ${1}
 endef
 
-export mkdir_cleanup_on_error
-
-.ONESHELL:
-
-ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-
-define run_dataset_normalization
-	@RAW_PATH="${ROOT_DIR}/${1}/${2}"
-	@NORM_PATH="${ROOT_DIR}/$(subst raw,normalized,${1})/${3}"
-	@IMAGE_NAME="$(shell whoami)/averloc--normalize-raw-dataset:$(shell git rev-parse HEAD)"
-	@$(call echo_debug,"  - Normalizing $$(find "$${RAW_PATH}" -type f | wc -l) ${3} files...")
-	mkdir -p "$${NORM_PATH}"
+define run_dataset_ast_paths_preprocessing
+	@NORM_PATH="${ROOT_DIR}/${1}/${2}"
+	@PROC_PATH="${ROOT_DIR}/$(subst normalized,preprocessed/ast-paths,${1})/${2}"
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
+	mkdir -p "$${PROC_PATH}"
 	docker run -it --rm \
-		-v "$${RAW_PATH}":/mnt/inputs \
-		-v "$${NORM_PATH}":/mnt/outputs \
+		-v "$${NORM_PATH}":/analysis/inputs/public/source-code \
+		-v "$${PROC_PATH}":/analysis/output/fs/ast-paths/${3} \
 		"$${IMAGE_NAME}"
 	$(call echo_debug,"    + Done!")
 endef
 
-export run_dataset_normalization
+export echo_debug
+export echo_info
+export echo_warn
+export echo_error
+
+export mkdir_cleanup_on_error
+export run_dataset_ast_paths_preprocessing
 
 .DEFAULT_GOAL := help
 
@@ -88,92 +86,106 @@ submodules: ## Ensures that submodules are setup.
 		git submodule update --init; \
 	fi
 
-datasets/raw/code2seq/java-small: ## Download code2seq's Java small dataset (non-preprocessed sources) <!PRIVATE>
-	@$(call echo_debug,"Downloading dataset 'raw/code2seq/java-small'...")
-	@$(call mkdir_cleanup_on_error,$@)
-	"${ROOT_DIR}/scripts/download-tar.sh" \
-		https://s3.amazonaws.com/code2seq/datasets/java-small.tar.gz \
-		"${ROOT_DIR}/datasets/raw/code2seq"
-	@$(call echo_debug,"  + Download complete!")
+.PHONY: build-image-download-c2s-dataset
+build-image-download-c2s-dataset: ## Builds tasks/download-c2s-dataset <!PRIVATE>
+	"${ROOT_DIR}/scripts/build-image.sh" \
+		download-c2s-dataset
 
-datasets/raw/code2seq/java-med: ## Downloads code2seq's Java medium dataset (non-preprocessed sources) <!PRIVATE>
-	@$(call echo_debug,"Downloading dataset 'raw/code2seq/java-med'...")
-	@$(call mkdir_cleanup_on_error,$@)
-	"${ROOT_DIR}/scripts/download-tar.sh" \
-		https://s3.amazonaws.com/code2seq/datasets/java-med.tar.gz \
-		"${ROOT_DIR}/datasets/raw/code2seq"
-	@$(call echo_debug,"  + Download complete!")
+.PHONY: build-image-download-csn-dataset
+build-image-download-csn-dataset: ## Builds tasks/download-csn-dataset <!PRIVATE>
+	"${ROOT_DIR}/scripts/build-image.sh" \
+		download-csn-dataset
 
-datasets/raw/code-search-net/java: ## Downloads CodeSearchNet's Java data (GitHub's code search dataset) <!PRIVATE>
-	@$(call echo_debug,"Downloading dataset 'raw/code-search-net/java'...")
-	@$(call mkdir_cleanup_on_error,$@)
-	"${ROOT_DIR}/scripts/download-zip.sh" \
-		https://s3.amazonaws.com/code-search-net/CodeSearchNet/v2/java.zip \
-		"${ROOT_DIR}/datasets/raw/code-search-net" \
-		"java/final/jsonl/*"
-	@$(call echo_debug,"  + Download complete!")
+datasets/raw/c2s/java-small: ## Download code2seq's Java small dataset (non-preprocessed sources) <!PRIVATE>
+	@IMAGE_NAME="$(shell whoami)/averloc--download-c2s-dataset:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/raw/c2s/java-small:/mnt" \
+		-e DATASET_URL=https://s3.amazonaws.com/code2seq/datasets/java-small.tar.gz \
+		"$${IMAGE_NAME}"
 
-datasets/raw/code-search-net/python: ## Downloads CodeSearchNet's Python data (GitHub's code search dataset) <!PRIVATE>
-	@$(call echo_debug,"Downloading dataset 'raw/code-search-net/python'...")
-	@$(call mkdir_cleanup_on_error,$@)
-	"${ROOT_DIR}/scripts/download-zip.sh" \
-		https://s3.amazonaws.com/code-search-net/CodeSearchNet/v2/python.zip \
-		"${ROOT_DIR}/datasets/raw/code-search-net" \
-		"python/final/jsonl/*"
-	@$(call echo_debug,"  + Download complete!")
+datasets/raw/c2s/java-med: ## Downloads code2seq's Java medium dataset (non-preprocessed sources) <!PRIVATE>
+	@IMAGE_NAME="$(shell whoami)/averloc--download-c2s-dataset:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/raw/c2s/java-med:/mnt" \
+		-e DATASET_URL=https://s3.amazonaws.com/code2seq/datasets/java-med.tar.gz \
+		"$${IMAGE_NAME}"
+
+datasets/raw/csn/java: ## Downloads CodeSearchNet's Java data (GitHub's code search dataset) <!PRIVATE>
+	@IMAGE_NAME="$(shell whoami)/averloc--download-csn-dataset:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/raw/csn/java:/mnt" \
+		-e DATASET_URL=https://s3.amazonaws.com/code-search-net/CodeSearchNet/v2/java.zip \
+		"$${IMAGE_NAME}"
+
+datasets/raw/csn/python: ## Downloads CodeSearchNet's Python data (GitHub's code search dataset) <!PRIVATE>
+	@IMAGE_NAME="$(shell whoami)/averloc--download-csn-dataset:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/raw/csn/python:/mnt" \
+		-e DATASET_URL=https://s3.amazonaws.com/code-search-net/CodeSearchNet/v2/python.zip \
+		"$${IMAGE_NAME}"
 
 .PHONY: download-datasets
-download-datasets: submodules | datasets/raw/code2seq/java-small datasets/raw/code2seq/java-med datasets/raw/code-search-net/java datasets/raw/code-search-net/python ## Downloads all prerequisite datasets
+download-datasets: submodules build-image-download-csn-dataset build-image-download-c2s-dataset | datasets/raw/c2s/java-small datasets/raw/c2s/java-med datasets/raw/csn/java datasets/raw/csn/python ## Downloads all prerequisite datasets
 	@$(call echo_info,"Downloaded all datasets to './datasets/raw/' directory.")
 
-.PHONY: build-normalizer
-build-normalizer: submodules ## Builds our dataset normalizer docker image
+.PHONY: build-image-normalize-raw-dataset
+build-image-normalize-raw-dataset: submodules ## Builds our dataset normalizer docker image  <!PRIVATE>
+	@"${ROOT_DIR}/scripts/build-image.sh" \
+		normalize-raw-dataset
+
+datasets/normalized/c2s/java-small: ## Generate a normalized version of code2seq's Java small dataset <!PRIVATE>
+	@$(call echo_debug,"Normalizing dataset 'raw/c2s/java-small'...")
+	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--normalize-raw-dataset:$(shell git rev-parse HEAD)"
-	@IMAGE_CONTEXT="$(shell mktemp -d)"
-	@$(call echo_debug,"Building '$${IMAGE_NAME}'...")
-	@$(call mkdir_cleanup_on_error,$${IMAGE_CONTEXT})
-	mkdir -p "$${IMAGE_CONTEXT}/vendor"
-	cp -r "${ROOT_DIR}/tasks/normalize-raw-dataset" "$${IMAGE_CONTEXT}"
-	cp -r "${ROOT_DIR}/vendor/CodeSearchNet/function_parser" "$${IMAGE_CONTEXT}/vendor/function_parser"
-	docker build \
-		-t "$${IMAGE_NAME}" \
-		-f "${ROOT_DIR}/tasks/normalize-raw-dataset/Dockerfile" \
-		"$${IMAGE_CONTEXT}" | sed "s/^/$$(printf "\r\033[37m[DBG]:\033[0m ")/"
-	@rm -rf $${IMAGE_CONTEXT}
-	@$(call echo_debug,"  + Image built!")
-
-datasets/normalized/code2seq/java-small: ## Generate a normalized version of code2seq's Java small dataset <!PRIVATE>
-	@$(call echo_debug,"Normalizing dataset 'raw/code2seq/java-small'...")
-	@$(call mkdir_cleanup_on_error,$@)
-	@$(call run_dataset_normalization,datasets/raw/code2seq/java-small,training,train)
-	@$(call run_dataset_normalization,datasets/raw/code2seq/java-small,validation,valid)
-	@$(call run_dataset_normalization,datasets/raw/code2seq/java-small,test,test)
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/raw/c2s/java-small:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/normalized/c2s/java-small:/mnt/outputs" \
+		"$${IMAGE_NAME}"
 	@$(call echo_debug,"  + Normalization complete!")
 
-datasets/normalized/code2seq/java-med: ## Generate a normalized version of code2seq's Java med dataset <!PRIVATE>
-	@$(call echo_debug,"Normalizing dataset 'raw/code2seq/java-med'...")
+datasets/normalized/c2s/java-med: ## Generate a normalized version of code2seq's Java med dataset <!PRIVATE>
+	@$(call echo_debug,"Normalizing dataset 'raw/c2s/java-med'...")
 	@$(call mkdir_cleanup_on_error,$@)
-	@$(call run_dataset_normalization,datasets/raw/code2seq/java-med,training,train)
-	@$(call run_dataset_normalization,datasets/raw/code2seq/java-med,validation,valid)
-	@$(call run_dataset_normalization,datasets/raw/code2seq/java-med,test,test)
+	@IMAGE_NAME="$(shell whoami)/averloc--normalize-raw-dataset:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/raw/c2s/java-med:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/normalized/c2s/java-med:/mnt/outputs" \
+		"$${IMAGE_NAME}"
 	@$(call echo_debug,"  + Normalization complete!")
 
-datasets/normalized/code-search-net/java: ## Generates a normalized version of CodeSearchNet's Java dataset <!PRIVATE>
-	@$(call echo_debug,"Normalizing dataset 'raw/code-search-net/java'...")
+datasets/normalized/csn/java: ## Generates a normalized version of CodeSearchNet's Java dataset <!PRIVATE>
+	@$(call echo_debug,"Normalizing dataset 'raw/csn/java'...")
 	@$(call mkdir_cleanup_on_error,$@)
-	@$(call run_dataset_normalization,datasets/raw/code-search-net/java,train,train)
-	@$(call run_dataset_normalization,datasets/raw/code-search-net/java,valid,valid)
-	@$(call run_dataset_normalization,datasets/raw/code-search-net/java,test,test)
+	@IMAGE_NAME="$(shell whoami)/averloc--normalize-raw-dataset:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/raw/csn/java:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/normalized/csn/java:/mnt/outputs" \
+		"$${IMAGE_NAME}"
 	@$(call echo_debug,"  + Normalization complete!")
 
-datasets/normalized/code-search-net/python: ## Generates a normalized version of CodeSearchNet's Python dataset <!PRIVATE>
-	@$(call echo_debug,"Normalizing dataset 'raw/code-search-net/python'...")
+datasets/normalized/csn/python: ## Generates a normalized version of CodeSearchNet's Python dataset <!PRIVATE>
+	@$(call echo_debug,"Normalizing dataset 'raw/csn/python'...")
 	@$(call mkdir_cleanup_on_error,$@)
-	@$(call run_dataset_normalization,datasets/raw/code-search-net/python,train,train)
-	@$(call run_dataset_normalization,datasets/raw/code-search-net/python,valid,valid)
-	@$(call run_dataset_normalization,datasets/raw/code-search-net/python,test,test)
+	@IMAGE_NAME="$(shell whoami)/averloc--normalize-raw-dataset:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/raw/c2s/python:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/normalized/c2s/python:/mnt/outputs" \
+		"$${IMAGE_NAME}"
 	@$(call echo_debug,"  + Normalization complete!")
 
 .PHONY: normalize-datasets
-normalize-datasets: submodules build-normalizer | datasets/normalized/code2seq/java-small datasets/normalized/code2seq/java-med datasets/normalized/code-search-net/java datasets/normalized/code-search-net/python ## Normalizes all downloaded datasets
+normalize-datasets: submodules build-image-normalize-raw-dataset | datasets/normalized/c2s/java-small datasets/normalized/c2s/java-med datasets/normalized/csn/java datasets/normalized/csn/python ## Normalizes all downloaded datasets
 	@$(call echo_info,"Normalized all datasets to './datasets/normalized/' directory.")
+
+.PHONY: build-image-preprocess-dataset-c2s
+build-image-preprocess-dataset-c2s: submodules ## Builds a preprocessor for generating code2seq style data  <!PRIVATE>
+	@"${ROOT_DIR}/scripts/build-image" \
+		preprocess-datasets-c2s
+
+datasets/preprocessed/ast-paths/c2s/java-small: ## Generate a preprocessed (representation: ast-paths) version of code2seq's Java small dataset <!PRIVATE>
+	@$(call echo_debug,"Preprocessing dataset 'raw/c2s/java-small' (using 'ast-paths' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@$(call run_dataset_ast_paths_preprocessing,datasets/normalized/c2s/java-small,train,java)
+	@$(call run_dataset_ast_paths_preprocessing,datasets/normalized/c2s/java-small,valid,java)
+	@$(call run_dataset_ast_paths_preprocessing,datasets/normalized/c2s/java-small,test,java)
+	@$(call echo_debug,"  + Preprocessing (using 'ast-paths' representation) complete!")

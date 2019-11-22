@@ -29,11 +29,11 @@ RUN cd /src/vendor && git clone https://github.com/tree-sitter/tree-sitter-php.g
 
 RUN apt-get update && apt-get install --no-install-recommends -y jq parallel
 
-COPY vendor/function_parser/ /src/function-parser/
+COPY vendor/CodeSearchNet/function_parser/ /src/function-parser/
 
 RUN cd /src/function-parser/script && python setup.py
 WORKDIR /src/function-parser
 
-COPY normalize-raw-dataset/entrypoint.sh /src/entrypoint.sh
+COPY task/entrypoint.sh /src/entrypoint.sh
 
 ENTRYPOINT [ "/src/entrypoint.sh" ]
