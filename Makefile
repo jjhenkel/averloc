@@ -77,6 +77,17 @@ help: ## This help.
 		| awk 'BEGIN {FS = ":.*?## "}; \
 		       {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
+.PHONY: docker-cleanup
+.SILENT: docker-cleanup
+docker-cleanup: ## Cleans up old and out-of-sync Docker images.
+	$(call echo_debug,"Removing exited containers...")
+	docker rm $(docker ps -aqf status=exited)
+	$(call echo_debug,"  + Exited containers removed!")
+	$(call echo_debug,"Removing dangling images...")
+	docker rmi $(docker images -qf dangling=true)
+	$(call echo_debug,"  + Dangling images removed!")
+	"${ROOT_DIR}/scripts/sync-images.sh"
+
 .PHONY: submodules
 .SILENT: submodules
 submodules: ## Ensures that submodules are setup.
@@ -179,8 +190,8 @@ normalize-datasets: submodules build-image-normalize-raw-dataset | datasets/norm
 
 .PHONY: build-image-preprocess-dataset-c2s
 build-image-preprocess-dataset-c2s: submodules ## Builds a preprocessor for generating code2seq style data  <!PRIVATE>
-	@"${ROOT_DIR}/scripts/build-image" \
-		preprocess-datasets-c2s
+	@"${ROOT_DIR}/scripts/build-image.sh" \
+		preprocess-dataset-c2s
 
 datasets/preprocessed/ast-paths/c2s/java-small: ## Generate a preprocessed (representation: ast-paths) version of code2seq's Java small dataset <!PRIVATE>
 	@$(call echo_debug,"Preprocessing dataset 'raw/c2s/java-small' (using 'ast-paths' representation)...")
