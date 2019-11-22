@@ -1,5 +1,6 @@
 *.tsv
 !data-prep/python/example-data.tsv
+datasets/backups
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

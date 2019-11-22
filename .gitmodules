@@ -6,7 +6,7 @@
 	url = https://github.com/tech-srl/code2vec
 [submodule "vendor/astminer"]
 	path = vendor/astminer
-	url = https://github.com/vovak/astminer
+	url = https://github.com/jjhenkel/astminer
 [submodule "vendor/CodeSearchNet"]
 	path = vendor/CodeSearchNet
 	url = https://github.com/jjhenkel/CodeSearchNet
