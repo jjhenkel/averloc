@@ -179,8 +179,8 @@ datasets/normalized/csn/python: ## Generates a normalized version of CodeSearchN
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--normalize-raw-dataset:$(shell git rev-parse HEAD)"
 	docker run -it --rm \
-		-v "${ROOT_DIR}/datasets/raw/c2s/python:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/normalized/c2s/python:/mnt/outputs" \
+		-v "${ROOT_DIR}/datasets/raw/csn/python:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/normalized/csn/python:/mnt/outputs" \
 		"$${IMAGE_NAME}"
 	@$(call echo_debug,"  + Normalization complete!")
 
@@ -188,15 +188,51 @@ datasets/normalized/csn/python: ## Generates a normalized version of CodeSearchN
 normalize-datasets: submodules build-image-normalize-raw-dataset | datasets/normalized/c2s/java-small datasets/normalized/c2s/java-med datasets/normalized/csn/java datasets/normalized/csn/python ## Normalizes all downloaded datasets
 	@$(call echo_info,"Normalized all datasets to './datasets/normalized/' directory.")
 
-.PHONY: build-image-preprocess-dataset-c2s
-build-image-preprocess-dataset-c2s: submodules ## Builds a preprocessor for generating code2seq style data  <!PRIVATE>
+.PHONY: build-image-preprocess-dataset-c2s-1
+build-image-preprocess-dataset-c2s-1: submodules ## Builds a preprocessor for generating code2seq style data <!PRIVATE>
 	@"${ROOT_DIR}/scripts/build-image.sh" \
-		preprocess-dataset-c2s
+		preprocess-dataset-c2s-1
 
-datasets/preprocessed/ast-paths/c2s/java-small: ## Generate a preprocessed (representation: ast-paths) version of code2seq's Java small dataset <!PRIVATE>
-	@$(call echo_debug,"Preprocessing dataset 'raw/c2s/java-small' (using 'ast-paths' representation)...")
+datasets/preprocessed/ast-paths/_staging/c2s/java-small: ## Generate a preprocessed (representation: ast-paths) version of code2seq's Java small dataset (step 1/2) <!PRIVATE>
+	@$(call echo_debug,"Preprocessing dataset 'normalized/c2s/java-small' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
-	@$(call run_dataset_ast_paths_preprocessing,datasets/normalized/c2s/java-small,train,java)
-	@$(call run_dataset_ast_paths_preprocessing,datasets/normalized/c2s/java-small,valid,java)
-	@$(call run_dataset_ast_paths_preprocessing,datasets/normalized/c2s/java-small,test,java)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s-1:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/normalized/c2s/java-small:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/preprocessed/ast-paths/_staging/c2s/java-small:/mnt/outputs" \
+		"$${IMAGE_NAME}"
 	@$(call echo_debug,"  + Preprocessing (using 'ast-paths' representation) complete!")
+
+datasets/preprocessed/ast-paths/_staging/c2s/java-med: ## Generate a preprocessed (representation: ast-paths) version of code2seq's Java med dataset (step 1/2) <!PRIVATE>
+	@$(call echo_debug,"Preprocessing dataset 'normalized/c2s/java-med' (using 'ast-paths' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s-1:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/normalized/c2s/java-med:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/preprocessed/ast-paths/_staging/c2s/java-med:/mnt/outputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + Preprocessing (using 'ast-paths' representation) complete!")
+
+datasets/preprocessed/ast-paths/_staging/csn/java: ## Generate a preprocessed (representation: ast-paths) version of CodeSearchNet's Java dataset (step 1/2) <!PRIVATE>
+	@$(call echo_debug,"Preprocessing dataset 'normalized/csn/java' (using 'ast-paths' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s-1:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/normalized/csn/java:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/preprocessed/ast-paths/_staging/csn/java:/mnt/outputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + Preprocessing (using 'ast-paths' representation) complete!")
+
+datasets/preprocessed/ast-paths/_staging/csn/python: ## Generate a preprocessed (representation: ast-paths) version of CodeSearchNet's Python dataset (step 1/2) <!PRIVATE>
+	@$(call echo_debug,"Preprocessing dataset 'normalized/csn/python' (using 'ast-paths' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s-1:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/normalized/csn/python:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/preprocessed/ast-paths/_staging/csn/python:/mnt/outputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + Preprocessing (using 'ast-paths' representation) complete!")
+
+.PHONY: extract-ast-paths-stage-1
+extract-ast-paths-stage-1: submodules build-image-preprocess-dataset-c2s-1 | datasets/preprocessed/ast-paths/_staging/c2s/java-small datasets/preprocessed/ast-paths/_staging/c2s/java-med datasets/preprocessed/ast-paths/_staging/csn/java datasets/preprocessed/ast-paths/_staging/csn/python ## Extracts ast-paths style representation (part 1/2) for all downloaded datasets <!PRIVATE>
+	@$(call echo_info,"Extracted ast-paths style representation of all datasets to './datasets/preprocessed/ast-paths/_staging/' directory.")
