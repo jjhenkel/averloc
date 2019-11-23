@@ -8,5 +8,6 @@ COPY vendor/astminer/ /astminer/
 
 RUN /astminer/gradlew processMyExample || return 0
 
-# Setup entrypoint into the analysis code logic
-CMD [ "/astminer/gradlew", "processMyExample" ]
+COPY task/entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT [ "/entrypoint.sh" ]
