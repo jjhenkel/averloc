@@ -200,7 +200,7 @@ datasets/preprocessed/ast-paths/_staging/c2s/java-small: ## Generate a preproces
 	docker run -it --rm \
 		-v "${ROOT_DIR}/datasets/normalized/c2s/java-small:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/preprocessed/ast-paths/_staging/c2s/java-small:/mnt/outputs" \
-		"$${IMAGE_NAME}"
+		"$${IMAGE_NAME}" java
 	@$(call echo_debug,"  + Preprocessing (using 'ast-paths' representation) complete!")
 
 datasets/preprocessed/ast-paths/_staging/c2s/java-med: ## Generate a preprocessed (representation: ast-paths) version of code2seq's Java med dataset (step 1/2) <!PRIVATE>
@@ -210,7 +210,7 @@ datasets/preprocessed/ast-paths/_staging/c2s/java-med: ## Generate a preprocesse
 	docker run -it --rm \
 		-v "${ROOT_DIR}/datasets/normalized/c2s/java-med:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/preprocessed/ast-paths/_staging/c2s/java-med:/mnt/outputs" \
-		"$${IMAGE_NAME}"
+		"$${IMAGE_NAME}" java
 	@$(call echo_debug,"  + Preprocessing (using 'ast-paths' representation) complete!")
 
 datasets/preprocessed/ast-paths/_staging/csn/java: ## Generate a preprocessed (representation: ast-paths) version of CodeSearchNet's Java dataset (step 1/2) <!PRIVATE>
@@ -220,7 +220,7 @@ datasets/preprocessed/ast-paths/_staging/csn/java: ## Generate a preprocessed (r
 	docker run -it --rm \
 		-v "${ROOT_DIR}/datasets/normalized/csn/java:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/preprocessed/ast-paths/_staging/csn/java:/mnt/outputs" \
-		"$${IMAGE_NAME}"
+		"$${IMAGE_NAME}" java
 	@$(call echo_debug,"  + Preprocessing (using 'ast-paths' representation) complete!")
 
 datasets/preprocessed/ast-paths/_staging/csn/python: ## Generate a preprocessed (representation: ast-paths) version of CodeSearchNet's Python dataset (step 1/2) <!PRIVATE>
@@ -230,7 +230,7 @@ datasets/preprocessed/ast-paths/_staging/csn/python: ## Generate a preprocessed 
 	docker run -it --rm \
 		-v "${ROOT_DIR}/datasets/normalized/csn/python:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/preprocessed/ast-paths/_staging/csn/python:/mnt/outputs" \
-		"$${IMAGE_NAME}"
+		"$${IMAGE_NAME}" python
 	@$(call echo_debug,"  + Preprocessing (using 'ast-paths' representation) complete!")
 
 .PHONY: extract-ast-paths-stage-1
