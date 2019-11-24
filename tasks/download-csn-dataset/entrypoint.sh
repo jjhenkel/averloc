@@ -12,7 +12,7 @@ echo "    + Downloaded!"
 echo "  - Creating 'test.jsonl.gz'..."
 cat /tmp/*/final/jsonl/test/*.jsonl.gz \
   | gzip -cd \
-  | jq -c '{ language: .language, code: .code }' \
+  | jq -c '{ granularity: "method", language: .language, code: .code }' \
   | gzip \
 >> /mnt/test.jsonl.gz
 echo "    + Created!"
@@ -20,7 +20,7 @@ echo "    + Created!"
 echo "  - Creating 'train.jsonl.gz'..."
 cat /tmp/*/final/jsonl/train/*.jsonl.gz \
   | gzip -cd \
-  | jq -c '{ language: .language, code: .code }' \
+  | jq -c '{ granularity: "method", language: .language, code: .code }' \
   | gzip \
 >> /mnt/train.jsonl.gz
 echo "    + Created!"
@@ -28,7 +28,7 @@ echo "    + Created!"
 echo "  - Creating 'valid.jsonl.gz'..."
 cat /tmp/*/final/jsonl/valid/*.jsonl.gz \
   | gzip -cd \
-  | jq -c '{ language: .language, code: .code }' \
+  | jq -c '{ granularity: "method", language: .language, code: .code }' \
   | gzip \
 >> /mnt/valid.jsonl.gz
 echo "    + Created!"
