@@ -10,3 +10,6 @@
 [submodule "vendor/CodeSearchNet"]
 	path = vendor/CodeSearchNet
 	url = https://github.com/jjhenkel/CodeSearchNet
+[submodule "vendor/cubix"]
+	path = vendor/cubix
+	url = https://github.com/jjhenkel/cubix
