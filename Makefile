@@ -236,3 +236,51 @@ datasets/preprocessed/ast-paths/_staging/csn/python: ## Generate a preprocessed 
 .PHONY: extract-ast-paths-stage-1
 extract-ast-paths-stage-1: submodules build-image-preprocess-dataset-c2s-1 | datasets/preprocessed/ast-paths/_staging/c2s/java-small datasets/preprocessed/ast-paths/_staging/c2s/java-med datasets/preprocessed/ast-paths/_staging/csn/java datasets/preprocessed/ast-paths/_staging/csn/python ## Extracts ast-paths style representation (part 1/2) for all downloaded datasets <!PRIVATE>
 	@$(call echo_info,"Extracted ast-paths style representation of all datasets to './datasets/preprocessed/ast-paths/_staging/' directory.")
+
+.PHONY: build-image-preprocess-dataset-c2s-2
+build-image-preprocess-dataset-c2s-2: submodules ## Builds a preprocessor for generating code2seq style data <!PRIVATE>
+	@"${ROOT_DIR}/scripts/build-image.sh" \
+		preprocess-dataset-c2s-2
+
+datasets/preprocessed/ast-paths/c2s/java-small: ## Generate a preprocessed (representation: ast-paths) version of code2seq's Java small dataset (step 2/2) <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'preprocessed/ast-paths/c2s/java-small' (using 'ast-paths' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s-2:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/preprocessed/ast-paths/_staging/c2s/java-small:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/preprocessed/ast-paths/c2s/java-small:/mnt/outputs" \
+		"$${IMAGE_NAME}" java
+	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
+
+datasets/preprocessed/ast-paths/c2s/java-med: ## Generate a preprocessed (representation: ast-paths) version of code2seq's Java med dataset (step 2/2) <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'preprocessed/ast-paths/c2s/java-med' (using 'ast-paths' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s-2:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/preprocessed/ast-paths/_staging/c2s/java-med:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/preprocessed/ast-paths/c2s/java-med:/mnt/outputs" \
+		"$${IMAGE_NAME}" java
+	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
+
+datasets/preprocessed/ast-paths/csn/java: ## Generate a preprocessed (representation: ast-paths) version of CodeSearchNet's Java dataset (step 2/2) <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'preprocessed/ast-paths/csn/java' (using 'ast-paths' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s-2:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/preprocessed/ast-paths/_staging/csn/java:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/preprocessed/ast-paths/csn/java:/mnt/outputs" \
+		"$${IMAGE_NAME}" java
+	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
+
+datasets/preprocessed/ast-paths/csn/python: ## Generate a preprocessed (representation: ast-paths) version of CodeSearchNet's Python dataset (step 2/2) <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'preprocessed/ast-paths/csn/python' (using 'ast-paths' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s-2:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/preprocessed/ast-paths/_staging/csn/python:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/preprocessed/ast-paths/csn/python:/mnt/outputs" \
+		"$${IMAGE_NAME}" python
+	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
+
+extract-ast-paths: submodules build-image-preprocess-dataset-c2s-1 build-image-preprocess-dataset-c2s-2 | datasets/preprocessed/ast-paths/c2s/java-small datasets/preprocessed/ast-paths/c2s/java-med datasets/preprocessed/ast-paths/csn/java datasets/preprocessed/ast-paths/csn/python ## Generate preprocessed data in a form usable by code2seq style models. 
+	@$(call echo_info,"AST Paths (code2seq style) preprocessed representations extracted!")
