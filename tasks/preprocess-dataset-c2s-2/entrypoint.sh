@@ -40,10 +40,10 @@ echo "Extracting paths from validation set..."
 cat /mnt/inputs/valid/path_contexts*.csv > ${VAL_DATA_FILE}
 echo "Finished extracting paths from validation set"
 echo "Extracting paths from test set..."
-cat /mnt/inputs/test/path_contexts*.csv > ${TRAIN_DATA_FILE}
+cat /mnt/inputs/test/path_contexts*.csv > ${TEST_DATA_FILE}
 echo "Finished extracting paths from test set"
 echo "Extracting paths from training set..."
-cat /mnt/inputs/train/path_contexts*.csv > ${TEST_DATA_FILE}
+cat /mnt/inputs/train/path_contexts*.csv > ${TRAIN_DATA_FILE}
 echo "Finished extracting paths from training set"
 
 TARGET_HISTOGRAM_FILE=/mnt/outputs/histo.tgt.c2s
