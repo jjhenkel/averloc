@@ -282,5 +282,5 @@ datasets/preprocessed/ast-paths/csn/python: ## Generate a preprocessed (represen
 		"$${IMAGE_NAME}" python
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
 
-extract-ast-paths: submodules build-image-preprocess-dataset-c2s-1 build-image-preprocess-dataset-c2s-2 | datasets/preprocessed/ast-paths/c2s/java-small datasets/preprocessed/ast-paths/c2s/java-med datasets/preprocessed/ast-paths/csn/java datasets/preprocessed/ast-paths/csn/python ## Generate preprocessed data in a form usable by code2seq style models. 
+extract-ast-paths: submodules build-image-preprocess-dataset-c2s-1 build-image-preprocess-dataset-c2s-2 extract-ast-paths-stage-1 | datasets/preprocessed/ast-paths/c2s/java-small datasets/preprocessed/ast-paths/c2s/java-med datasets/preprocessed/ast-paths/csn/java datasets/preprocessed/ast-paths/csn/python ## Generate preprocessed data in a form usable by code2seq style models. 
 	@$(call echo_info,"AST Paths (code2seq style) preprocessed representations extracted!")
