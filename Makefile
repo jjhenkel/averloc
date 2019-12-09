@@ -93,9 +93,14 @@ docker-cleanup: ## Cleans up old and out-of-sync Docker images.
 submodules: ## Ensures that submodules are setup.
 	## https://stackoverflow.com/a/52407662
 	if git submodule status | egrep -q '^[-]|^[+]' ; then \
-		echo_debug "Need to reinitialize git submodules"; \
+		echo -e "\033[0;37m[DBG]:\033[0m" "Need to reinitialize git submodules"; \
 		git submodule update --init; \
 	fi
+
+.PHONY: build-image-train-model-code2seq
+build-image-train-model-code2seq: ## Build tasks/train-model-code2seq <!PRIVATE>
+	"${ROOT_DIR}/scripts/build-image.sh" \
+		train-model-code2seq
 
 .PHONY: build-image-download-c2s-dataset
 build-image-download-c2s-dataset: ## Builds tasks/download-c2s-dataset <!PRIVATE>
@@ -284,3 +289,35 @@ datasets/preprocessed/ast-paths/csn/python: ## Generate a preprocessed (represen
 
 extract-ast-paths: submodules build-image-preprocess-dataset-c2s-1 build-image-preprocess-dataset-c2s-2 extract-ast-paths-stage-1 | datasets/preprocessed/ast-paths/c2s/java-small datasets/preprocessed/ast-paths/c2s/java-med datasets/preprocessed/ast-paths/csn/java datasets/preprocessed/ast-paths/csn/python ## Generate preprocessed data in a form usable by code2seq style models. 
 	@$(call echo_info,"AST Paths (code2seq style) preprocessed representations extracted!")
+
+.PHONY: check-dataset-name
+check-dataset-name:
+ifndef DATASET_NAME
+	$(error DATASET_NAME is a required parameter for this target.)
+endif
+
+.PHONY: train-model-code2seq
+train-model-code2seq: check-dataset-name build-image-train-model-code2seq ## Trains the code2seq model on the Java Small dataset.
+	@IMAGE_NAME="$(shell whoami)/averloc--train-model-code2seq:$(shell git rev-parse HEAD)"
+	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		--gpus all \
+		-v "${ROOT_DIR}/models:/models" \
+		-v "${ROOT_DIR}/datasets:/datasets" \
+		-e DATASET_NAME="$${DATASET_NAME}" \
+		"$${IMAGE_NAME}"
+
+.PHONY: danger-clear-ast-paths-java-small
+danger-clear-ast-paths-java-small: ## Clears out the datasets/preprocessed/ast-paths/c2s/java-small directory (and its staging dir). <!PRIVATE>
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/preprocessed/ast-paths:/mnt" \
+		debian:9 \
+			rm -rf /mnt/_staging/c2s/java-small /mnt/c2s/java-small
+
+.PHONY: debug-e2e-java-small
+debug-e2e-java-small: submodules build-image-preprocess-dataset-c2s-1 build-image-preprocess-dataset-c2s-2 | danger-clear-ast-paths-java-small datasets/preprocessed/ast-paths/_staging/c2s/java-small datasets/preprocessed/ast-paths/c2s/java-small  ## Run data generation (pre-processing stage 1/2) and train models on code2seq's Java Small dataset.
+	@$(call echo_info,"AST Paths (code2seq style) preprocessed representations extracted for Java Small!")
+
+.PHONY: build-image-cubix-apply-transform
+build-image-cubix-apply-transform: ## Builds our dockerized version of cubix.
+	@"${ROOT_DIR}/scripts/build-image.sh" \
+		cubix-apply-transform
