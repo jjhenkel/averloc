@@ -68,18 +68,18 @@ export run_dataset_ast_paths_preprocessing
 .DEFAULT_GOAL := help
 
 .PHONY: help
-help: ## This help.
+help: ## (MISC) This help.
 	@grep -E \
 		'^[\/\.0-9a-zA-Z_-]+:.*?## .*$$' \
 		$(MAKEFILE_LIST) \
 		| grep -v '<!PRIVATE>' \
-		| sort \
+		| sort -t'(' -k2 \
 		| awk 'BEGIN {FS = ":.*?## "}; \
 		       {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: docker-cleanup
 .SILENT: docker-cleanup
-docker-cleanup: ## Cleans up old and out-of-sync Docker images.
+docker-cleanup: ## (MISC) Cleans up old and out-of-sync Docker images.
 	$(call echo_debug,"Removing exited containers...")
 	docker rm $(docker ps -aqf status=exited)
 	$(call echo_debug,"  + Exited containers removed!")
@@ -90,7 +90,7 @@ docker-cleanup: ## Cleans up old and out-of-sync Docker images.
 
 .PHONY: submodules
 .SILENT: submodules
-submodules: ## Ensures that submodules are setup.
+submodules: ## (MISC) Ensures that submodules are setup.
 	## https://stackoverflow.com/a/52407662
 	if git submodule status | egrep -q '^[-]|^[+]' ; then \
 		echo -e "\033[0;37m[DBG]:\033[0m" "Need to reinitialize git submodules"; \
@@ -141,7 +141,7 @@ datasets/raw/csn/python: ## Downloads CodeSearchNet's Python data (GitHub's code
 		"$${IMAGE_NAME}"
 
 .PHONY: download-datasets
-download-datasets: submodules build-image-download-csn-dataset build-image-download-c2s-dataset | datasets/raw/c2s/java-small datasets/raw/c2s/java-med datasets/raw/csn/java datasets/raw/csn/python ## Downloads all prerequisite datasets
+download-datasets: submodules build-image-download-csn-dataset build-image-download-c2s-dataset | datasets/raw/c2s/java-small datasets/raw/c2s/java-med datasets/raw/csn/java datasets/raw/csn/python ## (DS-1) Downloads all prerequisite datasets
 	@$(call echo_info,"Downloaded all datasets to './datasets/raw/' directory.")
 
 .PHONY: build-image-normalize-raw-dataset
@@ -190,7 +190,7 @@ datasets/normalized/csn/python: ## Generates a normalized version of CodeSearchN
 	@$(call echo_debug,"  + Normalization complete!")
 
 .PHONY: normalize-datasets
-normalize-datasets: submodules build-image-normalize-raw-dataset | datasets/normalized/c2s/java-small datasets/normalized/c2s/java-med datasets/normalized/csn/java datasets/normalized/csn/python ## Normalizes all downloaded datasets
+normalize-datasets: submodules build-image-normalize-raw-dataset | datasets/normalized/c2s/java-small datasets/normalized/c2s/java-med datasets/normalized/csn/java datasets/normalized/csn/python ## (DS-2) Normalizes all downloaded datasets
 	@$(call echo_info,"Normalized all datasets to './datasets/normalized/' directory.")
 
 .PHONY: build-image-preprocess-dataset-c2s-1
@@ -287,7 +287,7 @@ datasets/preprocessed/ast-paths/csn/python: ## Generate a preprocessed (represen
 		"$${IMAGE_NAME}" python
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
 
-extract-ast-paths: submodules build-image-preprocess-dataset-c2s-1 build-image-preprocess-dataset-c2s-2 extract-ast-paths-stage-1 | datasets/preprocessed/ast-paths/c2s/java-small datasets/preprocessed/ast-paths/c2s/java-med datasets/preprocessed/ast-paths/csn/java datasets/preprocessed/ast-paths/csn/python ## Generate preprocessed data in a form usable by code2seq style models. 
+extract-ast-paths: submodules build-image-preprocess-dataset-c2s-1 build-image-preprocess-dataset-c2s-2 extract-ast-paths-stage-1 | datasets/preprocessed/ast-paths/c2s/java-small datasets/preprocessed/ast-paths/c2s/java-med datasets/preprocessed/ast-paths/csn/java datasets/preprocessed/ast-paths/csn/python ## (DS-3) Generate preprocessed data in a form usable by code2seq style models. 
 	@$(call echo_info,"AST Paths (code2seq style) preprocessed representations extracted!")
 
 .PHONY: check-dataset-name
@@ -297,10 +297,10 @@ ifndef DATASET_NAME
 endif
 
 .PHONY: train-model-code2seq
-train-model-code2seq: check-dataset-name build-image-train-model-code2seq ## Trains the code2seq model on the Java Small dataset.
+train-model-code2seq: check-dataset-name build-image-train-model-code2seq ## (DEBUG) Trains the code2seq model on the Java Small dataset.
 	@IMAGE_NAME="$(shell whoami)/averloc--train-model-code2seq:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
-		--gpus all \
+		--gpus 1 \
 		-v "${ROOT_DIR}/models:/models" \
 		-v "${ROOT_DIR}/datasets:/datasets" \
 		-e DATASET_NAME="$${DATASET_NAME}" \
@@ -314,10 +314,10 @@ danger-clear-ast-paths-java-small: ## Clears out the datasets/preprocessed/ast-p
 			rm -rf /mnt/_staging/c2s/java-small /mnt/c2s/java-small
 
 .PHONY: debug-e2e-java-small
-debug-e2e-java-small: submodules build-image-preprocess-dataset-c2s-1 build-image-preprocess-dataset-c2s-2 | danger-clear-ast-paths-java-small datasets/preprocessed/ast-paths/_staging/c2s/java-small datasets/preprocessed/ast-paths/c2s/java-small  ## Run data generation (pre-processing stage 1/2) and train models on code2seq's Java Small dataset.
+debug-e2e-java-small: submodules build-image-preprocess-dataset-c2s-1 build-image-preprocess-dataset-c2s-2 | danger-clear-ast-paths-java-small datasets/preprocessed/ast-paths/_staging/c2s/java-small datasets/preprocessed/ast-paths/c2s/java-small  ## (DEBUG) Run data generation (pre-proc 1/2) and trains models on code2seq's Java Small dataset.
 	@$(call echo_info,"AST Paths (code2seq style) preprocessed representations extracted for Java Small!")
 
 .PHONY: build-image-cubix-apply-transform
-build-image-cubix-apply-transform: ## Builds our dockerized version of cubix.
+build-image-cubix-apply-transform: ## Builds our dockerized version of cubix. <!PRIVATE>
 	@"${ROOT_DIR}/scripts/build-image.sh" \
 		cubix-apply-transform
