@@ -12,4 +12,10 @@ WORKDIR /cubix
 
 ADD vendor/cubix /cubix/cubix
 
+RUN apt-get update && apt-get install -y jq
+
 RUN cd /cubix/cubix && stack build --ghc-options='-O0 -j +RTS -A256m -n2m -RTS'
+
+COPY task/entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT [ "/entrypoint.sh" ]
