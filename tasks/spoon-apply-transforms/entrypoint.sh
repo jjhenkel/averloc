@@ -11,10 +11,10 @@ while IFS="" read -r line; do
   echo -n "public " > "${TMP_FILE}" 
   jq -r '.source_code' <<< "${line}" >> "${TMP_FILE}" 
 
-  java -XX:-UsePerfData -cp /app/spoon.jar:/app Transforms \
+  java -XX:-UsePerfData -Xmx128g -d64 -cp /app/spoon.jar:/app Transforms \
     --input "${TMP_FILE}" \
     --output "/mnt/outputs-raw/" \
-    --processors "transforms.AddDeadCodeAtBeginning" \
+    --processors "transforms.RenameLocalVariable" \
     --output-type classes \
     --compile
 
