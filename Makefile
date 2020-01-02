@@ -317,7 +317,7 @@ danger-clear-ast-paths-java-small: ## Clears out the datasets/preprocessed/ast-p
 debug-e2e-java-small: submodules build-image-preprocess-dataset-c2s-1 build-image-preprocess-dataset-c2s-2 | danger-clear-ast-paths-java-small datasets/preprocessed/ast-paths/_staging/c2s/java-small datasets/preprocessed/ast-paths/c2s/java-small  ## (DEBUG) Run data generation (pre-proc 1/2) and trains models on code2seq's Java Small dataset.
 	@$(call echo_info,"AST Paths (code2seq style) preprocessed representations extracted for Java Small!")
 
-.PHONY: build-image-cubix-apply-transform
-build-image-cubix-apply-transform: ## Builds our dockerized version of cubix. <!PRIVATE>
+.PHONY: build-image-spoon-apply-transforms
+build-image-spoon-apply-transforms: ## Builds our dockerized version of spoon. <!PRIVATE>
 	@"${ROOT_DIR}/scripts/build-image.sh" \
-		cubix-apply-transform
+		spoon-apply-transforms
