@@ -3,26 +3,34 @@
 trap "echo Exited!; exit 1;" SIGINT SIGTERM
 
 echo "Running transforms..."
+cat /mnt/inputs/test.targets.histo.txt > /histo.txt
 while IFS="" read -r line; do
   THE_HASH="$(jq -r '.sha256_hash' <<< "${line}")"
 
   TMP_FILE=$(mktemp /tmp/XXX-XXX-XXX.java)
 
-  echo -n "public " > "${TMP_FILE}" 
-  jq -r '.source_code' <<< "${line}" >> "${TMP_FILE}" 
+  jq -r '.source_code' <<< "${line}" > "${TMP_FILE}" 
+
+  cat "${TMP_FILE}"
+  echo "-----------------------------------------------------------------------"
 
   java -XX:-UsePerfData -Xmx128g -d64 -cp /app/spoon.jar:/app Transforms \
     --input "${TMP_FILE}" \
     --output "/mnt/outputs-raw/" \
     --processors "transforms.RenameLocalVariable" \
-    --output-type classes \
-    --compile
+    --output-type classes
+
+  echo "-----------------------------------------------------------------------"
 
   rm -f /mnt/outputs-raw/spoon-log.log 
 
   mv /mnt/outputs-raw/WRAPPER.java "/mnt/outputs-raw/${THE_HASH}.AddDeadCodeAtBeginning.java"
 
+  cat "/mnt/outputs-raw/${THE_HASH}.AddDeadCodeAtBeginning.java"
+  echo "-----------------------------------------------------------------------"
+
   echo "  + Transformed ${THE_HASH}"
 
   rm "${TMP_FILE}"
-done < <(cat /mnt/inputs/test.jsonl.gz | gzip -cd)
+done < <(cat /mnt/inputs/test.jsonl.gz | gzip -cd | head -n20)
+# TODO: ^ head -n10 REMOVE JUST FOR DEBUG
