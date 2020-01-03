@@ -321,3 +321,10 @@ debug-e2e-java-small: submodules build-image-preprocess-dataset-c2s-1 build-imag
 build-image-spoon-apply-transforms: ## Builds our dockerized version of spoon. <!PRIVATE>
 	@"${ROOT_DIR}/scripts/build-image.sh" \
 		spoon-apply-transforms
+
+.PHONY: test-spoon-transforms
+test-spoon-transforms: ## Test spoon.
+	@IMAGE_NAME="$(shell whoami)/averloc--spoon-apply-transforms:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/normalized/c2s/java-small:/mnt/inputs" \
+		"$${IMAGE_NAME}"
