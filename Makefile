@@ -323,7 +323,7 @@ build-image-spoon-apply-transforms: ## Builds our dockerized version of spoon. <
 		spoon-apply-transforms
 
 .PHONY: test-spoon-transforms
-test-spoon-transforms: ## Test spoon.
+test-spoon-transforms: build-image-spoon-apply-transforms ## Test spoon.
 	@IMAGE_NAME="$(shell whoami)/averloc--spoon-apply-transforms:$(shell git rev-parse HEAD)"
 	docker run -it --rm \
 		-v "${ROOT_DIR}/datasets/normalized/c2s/java-small:/mnt/inputs" \
