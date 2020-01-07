@@ -21,7 +21,7 @@ public class RenameLocalVariable extends AbstractProcessor<CtExecutable> {
     final static int NAME_MIN_LENGTH = 1;
     final static int NAME_MAX_LENGTH = 5;
     final static double RENAME_PERCENT = 0.50;
-    final static Boolean SHUFFLE_MODE = false;
+    final static Boolean SHUFFLE_MODE = true;
     final static int USE_TOP_N_SUBTOKENS = 100;
 
     static ArrayList<String> TOP_N_SUBTOKENS;
@@ -62,11 +62,13 @@ public class RenameLocalVariable extends AbstractProcessor<CtExecutable> {
         // Keep a collection of CtLocalVariables
         // (That is, find all of the local variable decls and save them into an array for later use.)
         ArrayList<CtLocalVariable> localVarDefs = new ArrayList<CtLocalVariable>();
+        ArrayList<String> localVarNames = new ArrayList<String>();
         CtIterator iterator1 = new CtIterator(element);
         while (iterator1.hasNext()) {
             CtElement el = iterator1.next();
             if (el instanceof CtLocalVariable) {
                 localVarDefs.add((CtLocalVariable)el);
+                localVarNames.add(((CtLocalVariable)el).getSimpleName());
             }
         }
 
@@ -74,6 +76,7 @@ public class RenameLocalVariable extends AbstractProcessor<CtExecutable> {
         Collections.shuffle(localVarDefs);
         int take = (int)Math.floor(localVarDefs.size() * RENAME_PERCENT);
         ArrayList<CtLocalVariable> renameThese = new ArrayList<CtLocalVariable>();
+        ArrayList<String> renameTheseNames = new ArrayList<String>();
         if (take > 0) {
             renameThese = new ArrayList<CtLocalVariable>(localVarDefs.subList(0, take));
         }
@@ -81,7 +84,6 @@ public class RenameLocalVariable extends AbstractProcessor<CtExecutable> {
         // Rename them at random (two modes: shuffle, use top-K)
         HashMap<CtLocalVariable, String> renames = new HashMap<CtLocalVariable, String>();
 
-        // TODO: support shuffle mode
         if (!SHUFFLE_MODE) {
             for (CtLocalVariable var : renameThese) {
                 // Shuffle top tokens
@@ -94,8 +96,38 @@ public class RenameLocalVariable extends AbstractProcessor<CtExecutable> {
                 // in the corpus
                 String newName = camelCased(TOP_N_SUBTOKENS.subList(0, subLen));
                 
+                // Avoid name collisions
+                while (localVarNames.contains(newName)) {
+                    // Try again making a name
+                    newName = camelCased(TOP_N_SUBTOKENS.subList(0, rand.nextInt((NAME_MAX_LENGTH - NAME_MIN_LENGTH) + 1) + NAME_MIN_LENGTH));
+                }
+
                 // Save that renaming into our map
                 renames.put(var, newName);
+            }
+        } else if (SHUFFLE_MODE && renameThese.size() > 1) {
+            // Get the names (since we'll use a shuffled version of these as our renames)
+            for (CtLocalVariable var : renameThese) {
+                renameTheseNames.add(var.getSimpleName());
+            }
+
+            // Keep shuffling till we don't assign any name to itself
+            boolean validShuffle = false;
+            while (!validShuffle) {
+                validShuffle = true;
+                Collections.shuffle(renameTheseNames);
+                for (int i = 0; i < renameThese.size(); i++) {
+                    if (renameTheseNames.get(i).equals(renameThese.get(i).getSimpleName())) {
+                        validShuffle = false;
+                        break;
+                    }
+                }
+            }
+            
+            // Setup those renames now that we have a good shuffle
+            for (int i = 0; i < renameThese.size(); i++) {
+                System.out.println(renameTheseNames.get(i));
+                renames.put(renameThese.get(i), renameTheseNames.get(i));
             }
         }
 
@@ -107,7 +139,7 @@ public class RenameLocalVariable extends AbstractProcessor<CtExecutable> {
                 CtVariableReference<?> theVariable = ((CtVariableAccess)el).getVariable();
                 if (theVariable != null) {
                     CtNamedElement theDecl = theVariable.getDeclaration();
-                    if (renameThese.contains(theDecl)) {
+                    if (renameThese.contains(theDecl) && renames.containsKey(theDecl)) {
                         // Actually rename the reference 
                         theVariable.setSimpleName(renames.get(theDecl));
                     }
@@ -117,8 +149,10 @@ public class RenameLocalVariable extends AbstractProcessor<CtExecutable> {
 
         // Update decls
         for (CtLocalVariable var : renameThese) {
-            // Actually rename the decl
-            var.setSimpleName(renames.get(var));
+            if (renames.containsKey(var)) {
+                // Actually rename the decl
+                var.setSimpleName(renames.get(var));
+            }
         }
 	}
 }
