@@ -5,7 +5,7 @@ trap "echo Exited!; exit 1;" SIGINT SIGTERM
 echo "Running transforms..."
 cat /mnt/inputs/test.targets.histo.txt > /histo.txt
 while IFS="" read -r line; do
-  TRANSFORMER="RenameParameters"
+  TRANSFORMER="RenameFields"
 
   THE_HASH="$(jq -r '.sha256_hash' <<< "${line}")"
 

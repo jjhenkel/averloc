@@ -2,6 +2,8 @@ package transforms;
 
 import spoon.processing.AbstractProcessor;
 
+import spoon.reflect.cu.*;
+import spoon.reflect.cu.position.*;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.*;
@@ -163,7 +165,17 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
     return renames;
   }
 
-  protected void applyRenaming(CtExecutable method, IdentityHashMap<T, String> renames) {
+  protected String safeGetLine(CtElement element) {
+    SourcePosition position = element.getPosition();
+
+    if (position instanceof NoSourcePosition) {
+      return "???";
+    } else {
+      return String.format("%s", position.getLine());
+    }
+  }
+
+  protected void applyRenaming(CtExecutable method, boolean skipDecls, IdentityHashMap<T, String> renames) {
     ArrayList<CtVariableAccess> usages = getChildrenOfType(method, CtVariableAccess.class);
 
     if (debug) {
@@ -183,7 +195,7 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
           if (debug) {
             System.out.println(String.format(
               "[RENAMER]   + Applied renaming (%s ==> %s) to ref at line %s.",
-              theDecl.getSimpleName(), renames.get(theDecl), usage.getPosition().getLine()
+              theDecl.getSimpleName(), renames.get(theDecl), safeGetLine(usage)
             ));
           }
 
@@ -192,11 +204,20 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
       }
     }
 
+    if (skipDecls) {
+      if (debug) {
+        System.out.println(String.format(
+          "[RENAMER]   + Skipping decls."
+        ));
+      }
+      return;
+    }
+
     for (Map.Entry<T,String> item : renames.entrySet()) {
       if (debug) {
         System.out.println(String.format(
           "[RENAMER]   + Applied renaming (%s ==> %s) to decl at line %s.",
-          item.getKey().getSimpleName(), item.getValue(), item.getKey().getPosition().getLine()
+          item.getKey().getSimpleName(), item.getValue(), safeGetLine(item.getKey())
         ));
       }
 
