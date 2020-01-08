@@ -5,14 +5,10 @@ import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtExecutable;
 
-public class AddDeadCodeAtBeginning extends AbstractProcessor<CtExecutable> {
+public class AddDeadCode extends AverlocTransformer {
 
 	@Override
-	public void process(CtExecutable element) {
-		if (element.getSimpleName() == "<init>") {
-			return;
-		}
-
+	public void transform(CtExecutable method) {
 		CtCodeSnippetStatement snippet = getFactory().Core().createCodeSnippetStatement();
 
 		// Snippet which contains the log.
@@ -21,8 +17,8 @@ public class AddDeadCodeAtBeginning extends AbstractProcessor<CtExecutable> {
 		snippet.setValue(value);
 
 		// Inserts the snippet at the beginning of the method body.
-		if (element.getBody() != null) {
-			element.getBody().insertBegin(snippet);
+		if (method.getBody() != null) {
+			method.getBody().insertBegin(snippet);
 		}
 	}
 }
