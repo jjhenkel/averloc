@@ -21,7 +21,7 @@ public class RenameLocalVariables extends Renamer<CtLocalVariable> {
         takePercentage(RENAME_PERCENT);
 
         // Build new names and apply them
-        applyRenaming(method, generateRenaming(
+        applyRenaming(method, false, generateRenaming(
             SHUFFLE_MODE, NAME_MIN_LENGTH, NAME_MAX_LENGTH
         ));
 	}
