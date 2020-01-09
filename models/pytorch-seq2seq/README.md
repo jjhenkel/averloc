@@ -1,3 +1,7 @@
+Repository for training seq2seq models in pytorch (with Integrated Gradients)
+
+Readme from original repository:
+
 # pytorch-seq2seq
 
 [![Build Status](https://travis-ci.org/IBM/pytorch-seq2seq.svg?branch=master)](https://travis-ci.org/IBM/pytorch-seq2seq)
