@@ -18,14 +18,7 @@ import java.io.IOException;
 import java.lang.Math;
 
 public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
-
-  // Parameters to the renaming transform
-  final static int NAME_MIN_LENGTH = 1;
-  final static int NAME_MAX_LENGTH = 5;
-  final static double RENAME_PERCENT = 0.50;
-  final static Boolean SHUFFLE_MODE = true;
-  
-  protected boolean debug = true;
+  protected boolean debug = false;
 
   protected ArrayList<T> theDefs;
   protected ArrayList<T> targetDefs;
@@ -95,8 +88,8 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
     if (targetDefs == null || targetDefs.size() <= 0) {
       if (debug) {
         System.out.println("[RENAMER] - No renaming to be done: no targets selected.");
-        return null;
       }
+      return null;
     }
 
     if (debug) {
@@ -183,7 +176,9 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
     }
 
     if (renames == null) {
-      System.out.println("[RENAMER]   + No renames provided: stopping.");
+      if (debug) {
+        System.out.println("[RENAMER]   + No renames provided: stopping.");
+      }
       return;
     }
 

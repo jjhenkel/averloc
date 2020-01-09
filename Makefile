@@ -327,4 +327,5 @@ test-spoon-transforms: build-image-spoon-apply-transforms ## Test spoon.
 	@IMAGE_NAME="$(shell whoami)/averloc--spoon-apply-transforms:$(shell git rev-parse HEAD)"
 	docker run -it --rm \
 		-v "${ROOT_DIR}/datasets/normalized/c2s/java-small:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/transformed/c2s/java-small:/mnt/outputs" \
 		"$${IMAGE_NAME}"
