@@ -29,6 +29,8 @@ RUN cd /src/vendor && git clone https://github.com/tree-sitter/tree-sitter-php.g
 
 RUN apt-get update && apt-get install --no-install-recommends -y jq parallel
 
+RUN set -ex && pip3 --no-cache-dir install --upgrade sentencepiece
+
 COPY vendor/CodeSearchNet/function_parser/ /src/function-parser/
 
 RUN cd /src/function-parser/script && python setup.py

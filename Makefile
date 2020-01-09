@@ -329,3 +329,16 @@ test-spoon-transforms: build-image-spoon-apply-transforms ## Test spoon.
 		-v "${ROOT_DIR}/datasets/normalized/c2s/java-small:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/transformed/c2s/java-small:/mnt/outputs" \
 		"$${IMAGE_NAME}"
+
+.PHONY: normalize-c2s-transformed
+normalize-c2s-transformed: build-image-normalize-raw-dataset
+	@$(call echo_debug,"Normalizing dataset 'transformed/raw/c2s/java-small'...")
+	@IMAGE_NAME="$(shell whoami)/averloc--normalize-raw-dataset:$(shell git rev-parse HEAD)"
+	for trans in ${ROOT_DIR}/datasets/transformed/raw/c2s/java-small/*; do
+		mkdir -p "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/$$(basename $$trans)"
+		docker run -it --rm \
+			-v "${ROOT_DIR}/datasets/transformed/raw/c2s/java-small/$$(basename $$trans):/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/$$(basename $$trans):/mnt/outputs" \
+			"$${IMAGE_NAME}"
+	done;
+	@$(call echo_debug,"  + Normalization complete!")

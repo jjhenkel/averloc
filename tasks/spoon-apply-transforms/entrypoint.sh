@@ -6,16 +6,8 @@ trap "echo Exited!; exit 1;" SIGINT SIGTERM
 
 for THESET in test train valid; do
   
-  rm -rf /tmp/*
   echo "Getting ${THESET} files setup..."
-  cat /mnt/inputs/${THESET}.targets.histo.txt > /histo.txt
-  while IFS="" read -r line; do
-    THE_HASH="$(jq -r '.sha256_hash' <<< "${line}")"
-    
-    jq -r '.source_code' <<< "${line}" | \
-      sed -e "s/class WRAPPER {/class WRAPPER_${THE_HASH} {/g" \
-    > "/tmp/${THE_HASH}.java"
-  done < <(cat /mnt/inputs/${THESET}.jsonl.gz | gzip -cd)
+  time /app/util/ds-to-files.sh "${THESET}"
   echo "  + Done!"
   echo "Running transforms:"
 
