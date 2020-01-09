@@ -57,9 +57,19 @@ public class AverlocTransformer extends AbstractProcessor<CtExecutable> {
     if (element.getSimpleName().equals("<init>")) {
       return;
     }
+
+    // Skip lambda impls
+    if (!(element instanceof CtTypeMember)) {
+      return;
+    }
     
     // Also skip nested things...
-    if (!((CtTypeMember)element).getDeclaringType().getSimpleName().equals("WRAPPER")) {
+    if (!((CtTypeMember)element).getDeclaringType().getSimpleName().startsWith("WRAPPER_")) {
+      return;
+    }
+
+    // Also skip things with null body
+    if (element.getBody() == null) {
       return;
     }
 
