@@ -107,9 +107,9 @@ def get_IG_attributions(opt, src_seq, model, src_vocab, tgt_vocab):
     for i in range(N):
         l.append(baseline + (i/NUM_STEPS)*(np_embed-baseline))
 
-    IG_inputs = torch.tensor(np.array(l),dtype=torch.float32,device=device)    
-    lengths = [np_embed.shape[1]]*N
-    lengths = [IG_inputs.size()[1]]*(IG_inputs.size()[0])
+    IG_inputs = torch.tensor(np.array(l),dtype=torch.float32,device=device)
+    print(IG_inputs.size(), np_embed.shape, N)
+    lengths = [np_embed.shape[0]]*N
     
     # To ensure correct IG, need to do teacher forcing when getting output from decoder
     # target_variable is used to do teacher forcing
