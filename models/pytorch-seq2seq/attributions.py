@@ -70,7 +70,7 @@ def get_model_output(src_seq, model, src_vocab, tgt_vocab):
     return softmax_list, decoder_features, output_id_seq, output_seq
 
 
-def get_attention_attributions(opt, src_seq, model, src_vocab, tgt_vocab):
+def get_attention_attributions(src_seq, model, src_vocab, tgt_vocab):
     '''
     model object returned by load_model
     src_seq is a list of words
@@ -81,11 +81,13 @@ def get_attention_attributions(opt, src_seq, model, src_vocab, tgt_vocab):
     return output_seq, attention_scores
 
 
-def get_IG_attributions(opt, src_seq, model, src_vocab, tgt_vocab):
+def get_IG_attributions(src_seq, model, src_vocab, tgt_vocab, opt=None):
     '''
     model object returned by load_model
     src_seq is a list of words
     '''
+    
+    verbose = opt.verbose if opt is not None else False
     
     softmax_list, decoder_features, final_output_id_seq, final_output_seq = get_model_output(src_seq, model, src_vocab, tgt_vocab)
             
@@ -122,7 +124,7 @@ def get_IG_attributions(opt, src_seq, model, src_vocab, tgt_vocab):
 
     softmax_list, _, decoder_features = model(input_variable=src_id_seq, input_lengths=lengths, target_variable=target_variable, teacher_forcing_ratio=1.0, embedded=IG_inputs)
     
-    if opt.verbose:
+    if verbose:
         separator()
         print('Progression of IG outputs:')
         for i in range(0,N,25):
@@ -173,7 +175,7 @@ def get_IG_attributions(opt, src_seq, model, src_vocab, tgt_vocab):
     # Verifying the completeness axiom
     attr_sums = attr.sum(axis=1)
     
-    if opt.verbose:
+    if verbose:
         separator()
         print('Verifying IG attributions using completeness axiom...')
         print("Word             Actual difference     Predicted difference")
@@ -184,7 +186,7 @@ def get_IG_attributions(opt, src_seq, model, src_vocab, tgt_vocab):
         predicted_diff = attr_sums[i]
         assert abs(actual_diff-predicted_diff)<0.1, "Diverging from completeness axiom, consider increasing number of steps in IG"
         
-        if opt.verbose:
+        if verbose:
             word = output_seq[i] + " "*(15-len(output_seq[i]))
             print(word,"\t",(full-base).cpu().detach().numpy(), "\t", attr_sums[i])
     
@@ -229,14 +231,15 @@ def main(opt):
         print()
     
     if opt.attr_type=='attention':
-        output_seq, scores = get_attention_attributions(opt, src_seq, model, src_vocab, tgt_vocab)
+        output_seq, scores = get_attention_attributions(src_seq, model, src_vocab, tgt_vocab)
     elif opt.attr_type=='IG':
-        output_seq, scores = get_IG_attributions(opt, src_seq, model, src_vocab, tgt_vocab)
+        output_seq, scores = get_IG_attributions(src_seq, model, src_vocab, tgt_vocab, opt)
         
     if opt.verbose:
         separator()
         print('Attribution matrix')
-        print(scores)
+        with np.printoptions(precision=3, suppress=True):
+            print(scores)
         print()
     
     separator()
@@ -251,5 +254,4 @@ if __name__=="__main__":
         separator()
     main(opt)
     separator()
-    
     
