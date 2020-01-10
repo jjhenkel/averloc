@@ -8,7 +8,7 @@ DATASETS="$(
 
 for dataset in $DATASETS; do
   cat "${dataset}" | gzip -cd \
-    | jq -r '.target_tokens[]' \
+    | ~/jq -r '.target_tokens[]' \
     | sort \
     | uniq -c \
     | sort -nr \
