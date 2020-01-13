@@ -16,18 +16,24 @@ import java.io.IOException;
 import java.lang.Math;
 
 public class AverlocTransformer extends AbstractProcessor<CtExecutable> {
-  
-  final static int TARGET_SUBTOKENS_LIMIT = 100;
-  static ArrayList<String> TOP_N_TARGET_SUBTOKENS;
+  protected ArrayList<String> topTargetSubtokens;
 
-  static
-  {
-      // Load the top tokens once
-      try (Stream<String> lines = Files.lines(Paths.get("/histo.txt"))) {
-        TOP_N_TARGET_SUBTOKENS = new ArrayList<String>(
-              lines.limit(TARGET_SUBTOKENS_LIMIT).collect(Collectors.toList())
-          );
-      } catch (IOException ex) { }
+  protected ArrayList<String> changes = new ArrayList<String>();
+
+  public boolean changes(String name) {
+    return this.changes.contains(name);
+  }
+
+  protected void setChanged(CtExecutable method) {
+    String name = ((CtTypeMember)method).getDeclaringType().getSimpleName();
+    if (this.changes.contains(name)) {
+      return;
+    }
+    changes.add(name);
+  }
+  
+  public void setTopTargetSubtokens(ArrayList<String> topTargetSubtokens) {
+    this.topTargetSubtokens = topTargetSubtokens;
   }
 
   protected <T extends CtElement> ArrayList<T> getChildrenOfType(CtExecutable method, Class<T> baseCls) {

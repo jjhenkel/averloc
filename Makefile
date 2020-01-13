@@ -189,6 +189,15 @@ datasets/normalized/csn/python: ## Generates a normalized version of CodeSearchN
 		"$${IMAGE_NAME}"
 	@$(call echo_debug,"  + Normalization complete!")
 
+.PHONY: debug-normalize
+debug-normalize:
+	@IMAGE_NAME="$(shell whoami)/averloc--normalize-raw-dataset:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+	  -v "${ROOT_DIR}/vendor/CodeSearchNet/function_parser/function_parser:/src/function-parser/function_parser" \
+		-v "${ROOT_DIR}/datasets/raw/c2s/debug:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/normalized/c2s/debug:/mnt/outputs" \
+		"$${IMAGE_NAME}"
+
 .PHONY: normalize-datasets
 normalize-datasets: submodules build-image-normalize-raw-dataset | datasets/normalized/c2s/java-small datasets/normalized/c2s/java-med datasets/normalized/csn/java datasets/normalized/csn/python ## (DS-2) Normalizes all downloaded datasets
 	@$(call echo_info,"Normalized all datasets to './datasets/normalized/' directory.")
@@ -327,7 +336,8 @@ test-spoon-transforms: build-image-spoon-apply-transforms ## Test spoon.
 	@IMAGE_NAME="$(shell whoami)/averloc--spoon-apply-transforms:$(shell git rev-parse HEAD)"
 	docker run -it --rm \
 		-v "${ROOT_DIR}/datasets/normalized/c2s/java-small:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/transformed/c2s/java-small:/mnt/outputs" \
+		-v "${ROOT_DIR}/datasets/transformed/raw/c2s/java-small:/mnt/outputs" \
+		--entrypoint bash \
 		"$${IMAGE_NAME}"
 
 .PHONY: normalize-c2s-transformed

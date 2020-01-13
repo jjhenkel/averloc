@@ -27,10 +27,10 @@ public class InsertPrintStatements extends AverlocTransformer {
         (LITERAL_MAX_LENGTH - LITERAL_MIN_LENGTH) + 1
       ) + LITERAL_MIN_LENGTH;
 
-      Collections.shuffle(AverlocTransformer.TOP_N_TARGET_SUBTOKENS);
+      Collections.shuffle(topTargetSubtokens);
 
       String literal = camelCased(
-        AverlocTransformer.TOP_N_TARGET_SUBTOKENS.subList(0, literalLength)
+        topTargetSubtokens.subList(0, literalLength)
       );
 
       CtCodeSnippetStatement snippet = getFactory().Core().createCodeSnippetStatement();
@@ -42,6 +42,8 @@ public class InsertPrintStatements extends AverlocTransformer {
       } else {
         method.getBody().insertEnd(snippet);
       }
+      
+      this.setChanged(method);
     }
 	}
 }
