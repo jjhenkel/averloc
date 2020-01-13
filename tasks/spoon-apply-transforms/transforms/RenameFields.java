@@ -80,7 +80,7 @@ public class RenameFields extends Renamer<CtField> {
 
     // Get setup for renaming (use the fieldDecls we crafted earlier)
     setDefs(fieldDecls);
-    setSubtokens(AverlocTransformer.TOP_N_TARGET_SUBTOKENS);
+    setSubtokens(topTargetSubtokens);
     
     // Select some percentage of things to rename
     takePercentage(RENAME_PERCENT);

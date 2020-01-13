@@ -9,9 +9,10 @@ mkdir -p "${OUTPUT_DIR}"
 
 if [ -f /mnt/inputs/test.jsonl.gz ]; then
   echo "  - Normalizing 'test.jsonl.gz'..."
+  LANG=$(cat /mnt/inputs/test.jsonl.gz | gzip -cd | head -n1 | jq -r .language)
   cat /mnt/inputs/test.jsonl.gz \
     | gzip -cd \
-    | python3 /src/function-parser/function_parser/parser_cli.py \
+    | python3 /src/function-parser/function_parser/parser_cli.py "${LANG}" \
     | gzip \
   > /mnt/outputs/test.jsonl.gz
   echo "    + Normalized!"
@@ -19,9 +20,10 @@ fi
 
 if [ -f /mnt/inputs/train.jsonl.gz ]; then
   echo "  - Normalizing 'train.jsonl.gz'..."
+  LANG=$(cat /mnt/inputs/train.jsonl.gz | gzip -cd | head -n1 | jq -r .language)
   cat /mnt/inputs/train.jsonl.gz \
     | gzip -cd \
-    | python3 /src/function-parser/function_parser/parser_cli.py \
+    | python3 /src/function-parser/function_parser/parser_cli.py "${LANG}" \
     | gzip \
   > /mnt/outputs/train.jsonl.gz
   echo "    + Normalized!"
@@ -29,9 +31,10 @@ fi
 
 if [ -f /mnt/inputs/valid.jsonl.gz ]; then
   echo "  - Normalizing 'valid.jsonl.gz'..."
+  LANG=$(cat /mnt/inputs/valid.jsonl.gz | gzip -cd | head -n1 | jq -r .language)
   cat /mnt/inputs/valid.jsonl.gz \
     | gzip -cd \
-    | python3 /src/function-parser/function_parser/parser_cli.py \
+    | python3 /src/function-parser/function_parser/parser_cli.py "${LANG}" \
     | gzip \
   > /mnt/outputs/valid.jsonl.gz
   echo "    + Normalized!"

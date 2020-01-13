@@ -38,6 +38,7 @@ public class ReplaceTrueFalse extends AverlocTransformer {
         );
 
         literal.replace(replacement);
+        this.setChanged(method);
       }
     }
 	}

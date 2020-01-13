@@ -15,7 +15,7 @@ public class RenameLocalVariables extends Renamer<CtLocalVariable> {
 	public void transform(CtExecutable method) {
         // Get setup for renaming
         setDefs(getChildrenOfType(method, CtLocalVariable.class));
-        setSubtokens(AverlocTransformer.TOP_N_TARGET_SUBTOKENS);
+        setSubtokens(topTargetSubtokens);
         
         // Select some percentage of things to rename
         takePercentage(RENAME_PERCENT);

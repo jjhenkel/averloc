@@ -15,7 +15,7 @@ public class RenameParameters extends Renamer<CtParameter> {
 	public void transform(CtExecutable method) {
         // Get setup for renaming
         setDefs(getChildrenOfType(method, CtParameter.class));
-        setSubtokens(AverlocTransformer.TOP_N_TARGET_SUBTOKENS);
+        setSubtokens(topTargetSubtokens);
         
         // Select some percentage of things to rename
         takePercentage(RENAME_PERCENT);

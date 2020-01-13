@@ -195,6 +195,7 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
           }
 
           reference.setSimpleName(renames.get(theDecl));
+          this.setChanged(method);
         }
       }
     }
@@ -217,6 +218,7 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
       }
 
       item.getKey().setSimpleName(item.getValue());
+      this.setChanged(method);
     }
   }
 }
