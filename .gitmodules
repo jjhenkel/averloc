@@ -1,15 +1,9 @@
 [submodule "vendor/code2seq"]
 	path = vendor/code2seq
-	url = https://github.com/tech-srl/code2seq
-[submodule "vendor/code2vec"]
-	path = vendor/code2vec
-	url = https://github.com/tech-srl/code2vec
+	url = https://github.com/jjhenkel/code2seq
 [submodule "vendor/astminer"]
 	path = vendor/astminer
 	url = https://github.com/jjhenkel/astminer
 [submodule "vendor/CodeSearchNet"]
 	path = vendor/CodeSearchNet
 	url = https://github.com/jjhenkel/CodeSearchNet
-[submodule "vendor/cubix"]
-	path = vendor/cubix
-	url = https://github.com/jjhenkel/cubix
