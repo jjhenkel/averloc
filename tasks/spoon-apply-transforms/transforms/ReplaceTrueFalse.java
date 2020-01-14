@@ -9,17 +9,17 @@ import java.lang.Math;
 
 public class ReplaceTrueFalse extends AverlocTransformer {
   // Parameters to this renaming transform
-  final static int MIN_INSERTIONS = 1;
-  final static int MAX_INSERTIONS = 3;
-  final static int LITERAL_MIN_LENGTH = 1;
-  final static int LITERAL_MAX_LENGTH = 5;
-  final static double REPLACMENT_CHANGE = 0.70;
+  protected double REPLACMENT_CHANCE = 1.0;
+
+  public ReplaceTrueFalse(double replacementChance) {
+    this.REPLACMENT_CHANCE = replacementChance;
+  }
 
 	@Override
 	public void transform(CtExecutable method) {
     Random rand = new Random();
 
-    if (rand.nextDouble() >= REPLACMENT_CHANGE) {
+    if (rand.nextDouble() >= REPLACMENT_CHANCE) {
       return;
     }
 

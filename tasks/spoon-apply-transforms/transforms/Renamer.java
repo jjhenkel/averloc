@@ -113,18 +113,26 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
         return null;
       }
 
+      Random rshuf = new Random();
+
       // Keep shuffling till we don't assign any name to itself
-      boolean validShuffle = false;
-      while (!validShuffle) {
-        validShuffle = true;
-        Collections.shuffle(namesOfTargetDefs);
-        for (int i = 0; i < targetDefs.size(); i++) {
-            if (namesOfTargetDefs.get(i).equals(targetDefs.get(i).getSimpleName())) {
-                validShuffle = false;
-                break;
-            }
-        }
+      // This generates a derangement but it's slow (~3x compared to 
+      // just a permutation in this implementation) so maybe let's 
+      // use some tricks to get (non-uniform) random (near) derangements?
+      // boolean validShuffle = false;
+      // while (!validShuffle) {
+        // validShuffle = true;
+      Collections.shuffle(namesOfTargetDefs);
+      for (int i = 0; i < targetDefs.size(); i++) {
+          if (namesOfTargetDefs.get(i).equals(targetDefs.get(i).getSimpleName())) {
+              Collections.swap(
+                namesOfTargetDefs, 
+                i,
+                rshuf.nextInt(namesOfTargetDefs.size() - 1)
+              );
+          }
       }
+      // }
 
       // Setup those renames now that we have a good shuffle
       for (int i = 0; i < targetDefs.size(); i++) {
@@ -140,6 +148,8 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
         do {
           length = rand.nextInt((nameMaxSubtokens - nameMinSubtokens) + 1) + nameMinSubtokens;
           name = camelCased(subtokenBank.subList(0, length));
+          // TODO: maybe make sure we don't use any subtokens in the function's name?
+          // This (maybe) removes the possibility of us accidentally helping the model?
         } while (namesOfDefs.contains(name)); // Make sure we don't clash with pre-existing name
 
         renames.put(target, name);
