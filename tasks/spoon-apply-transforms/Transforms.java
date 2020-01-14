@@ -315,7 +315,7 @@ public class Transforms {
 				));
 			}
 
-			for (ArrayList<VirtualFile> chunk : chopped(inputs, 1500)) {
+			for (ArrayList<VirtualFile> chunk : chopped(inputs, 2000)) {
 				tasks.add(toCallable(new TransformFileTask(split, chunk, topTargetSubtokens)));
 			}
 
@@ -336,9 +336,9 @@ public class Transforms {
 			System.out.println("   - Adding from test split...");
 			allTasks.addAll(Transforms.makeTasks("test"));
 			System.out.println(String.format("     + Now have %s tasks...", allTasks.size()));
-			// System.out.println("   - Adding from train split...");
-			// allTasks.addAll(Transforms.makeTasks("train"));
-			// System.out.println(String.format("     + Now have %s tasks...", allTasks.size()));
+			System.out.println("   - Adding from train split...");
+			allTasks.addAll(Transforms.makeTasks("train"));
+			System.out.println(String.format("     + Now have %s tasks...", allTasks.size()));
 			System.out.println("   - Adding from valid split...");
 			allTasks.addAll(Transforms.makeTasks("valid"));
 			System.out.println(String.format("     + Now have %s tasks...", allTasks.size()));
