@@ -58,12 +58,13 @@ class TransformFileTask implements Runnable {
 		launcher.getEnvironment().setCopyResources(false);
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setShouldCompile(false);
+		launcher.getEnvironment().setLevel("OFF");
 		launcher.getEnvironment().setOutputType(OutputType.NO_OUTPUT);
 
 		launcher.addProcessor(transformer);
 
 		launcher.setSourceOutputDirectory(
-			String.format("/mnt/raw-outputs/%s/%s", split, transformer.getClass().getName())
+			String.format("/mnt/raw-outputs/%s/%s", transformer.getClass().getName(), split)
 		);
 
 		return launcher;
@@ -72,32 +73,54 @@ class TransformFileTask implements Runnable {
 	public void run() {
 		ArrayList<AverlocTransformer> transformers = new ArrayList<AverlocTransformer>();
 
-		InsertPrintStatements insertPrintStatements = new InsertPrintStatements();
-		RenameFields renameFields = new RenameFields();
-		RenameLocalVariables renameLocalVariables = new RenameLocalVariables();
-		RenameParameters renameParameters = new RenameParameters();
-		ReplaceTrueFalse replaceTrueFalse = new ReplaceTrueFalse();
+		transformers.add(new InsertPrintStatements(
+			2,                 // Min insertions
+			6,                 // Max insertions
+			2,                 // Min literal length
+			7,                 // Max literal length
+			topTargetSubtokens // Subtokens to use to build literal
+		));
 
-		insertPrintStatements.setTopTargetSubtokens(
-			(ArrayList<String>)topTargetSubtokens.clone()
-		);
-		renameFields.setTopTargetSubtokens(
-			(ArrayList<String>)topTargetSubtokens.clone()
-		);
-		renameLocalVariables.setTopTargetSubtokens(
-			(ArrayList<String>)topTargetSubtokens.clone()
-		);
-		renameParameters.setTopTargetSubtokens(
-			(ArrayList<String>)topTargetSubtokens.clone()
-		);
+		transformers.add(new RenameFields(
+			1,                 // Name min length
+			5,                 // Name max length
+			1.0,               // Percent to rename
+			topTargetSubtokens // Subtokens to use to build names
+		));
 
-		transformers.add(insertPrintStatements);
-		transformers.add(renameFields);
-		transformers.add(renameLocalVariables);
-		transformers.add(renameParameters);
-		transformers.add(replaceTrueFalse);
-		transformers.add(new Identity());
+		transformers.add(new RenameLocalVariables(
+			1,                 // Name min length
+			5,                 // Name max length
+			0.8,               // Percent to rename
+			topTargetSubtokens // Subtokens to use to build names
+		));
 
+		transformers.add(new RenameParameters(
+			1,                 // Name min length
+			5,                 // Name max length
+			1.0,               // Percent to rename
+			topTargetSubtokens // Subtokens to use to build names
+		));
+		
+		transformers.add(new ReplaceTrueFalse(
+			1.0 // Replacement chance
+		));
+
+		transformers.add(new ShuffleLocalVariables(
+			0.8 // Percentage to shuffle
+		));
+
+		transformers.add(new ShuffleParameters(
+			1.0 // Percentage to shuffle
+		));
+		
+		transformers.add(new Identity(
+			// No params
+		));
+
+		// Track these so we don't fail (N-1) times when an input 
+		// fails on the first transform (due to malformed / spoon internal error / etc.)
+		ArrayList<String> failures = new ArrayList<String>();
 
 		for (AverlocTransformer transformer : transformers) {
 			try{
@@ -123,8 +146,8 @@ class TransformFileTask implements Runnable {
 						Path path = Paths.get(
 							String.format(
 								"/mnt/raw-outputs/%s/%s/%s.java",
-								split,
 								transformer.getClass().getName(),
+								split,
 								outputClass.getSimpleName().replace("WRAPPER_", "")
 							)
 						);
@@ -145,6 +168,11 @@ class TransformFileTask implements Runnable {
 			} catch (Exception ex1) {
 				for (VirtualFile singleInput : inputs) {
 					try {
+						// Skip things that have failed a previous transform
+						if (failures.contains(singleInput.getName())) {
+							continue;
+						}
+
 						Launcher launcher = buildLauncher(transformer);
 						
 						PrettyPrinter printer = launcher.getFactory().getEnvironment().createPrettyPrinter();
@@ -165,8 +193,8 @@ class TransformFileTask implements Runnable {
 								Path path = Paths.get(
 									String.format(
 										"/mnt/raw-outputs/%s/%s/%s.java",
-										split,
 										transformer.getClass().getName(),
+										split,
 										outputClass.getSimpleName().replace("WRAPPER_", "")
 									)
 								);
@@ -185,15 +213,15 @@ class TransformFileTask implements Runnable {
 							}
 						}
 					} catch (Exception ex2) {
-						ex1.printStackTrace(System.out);
-						ex2.printStackTrace(System.out);
+						// ex1.printStackTrace(System.out);
+						// ex2.printStackTrace(System.out);
 						System.out.println(
 							String.format(
 								"        * Failed to build model for: %s",
 								singleInput.getName()
 							)
 						);
-						return;
+						failures.add(singleInput.getName());
 					}
 				}
 			}
@@ -209,10 +237,10 @@ public class Transforms {
 	static ArrayList<String> BANNED_SHAS = new ArrayList<String>(
 		Arrays.asList(
 			// Don't compile under spoon but pass our other validation...
-			"b0b5376a49caa97297fb356899da9b5963f0e9792baf844d0cffa02c0dbc54e1",
-			"c1553011c7f6962f2bd9aba2206d9daec4383f05498a44e0ad4aa5996cbebd20",
-			"355201a2dd1cb50c5aa0acfe2056b8eb0fb7f5859b74ee1d6669e3868d0f78b8",
-			"3f863ba944ce351742b95406d6b1c90f766a66186e13e475ef072e563e32bfbe"
+			// "b0b5376a49caa97297fb356899da9b5963f0e9792baf844d0cffa02c0dbc54e1",
+			// "c1553011c7f6962f2bd9aba2206d9daec4383f05498a44e0ad4aa5996cbebd20",
+			// "355201a2dd1cb50c5aa0acfe2056b8eb0fb7f5859b74ee1d6669e3868d0f78b8",
+			// "3f863ba944ce351742b95406d6b1c90f766a66186e13e475ef072e563e32bfbe"
 		)
 	); 
 	
@@ -287,7 +315,7 @@ public class Transforms {
 				));
 			}
 
-			for (ArrayList<VirtualFile> chunk : chopped(inputs, 1000)) {
+			for (ArrayList<VirtualFile> chunk : chopped(inputs, 1500)) {
 				tasks.add(toCallable(new TransformFileTask(split, chunk, topTargetSubtokens)));
 			}
 
@@ -308,9 +336,9 @@ public class Transforms {
 			System.out.println("   - Adding from test split...");
 			allTasks.addAll(Transforms.makeTasks("test"));
 			System.out.println(String.format("     + Now have %s tasks...", allTasks.size()));
-			System.out.println("   - Adding from train split...");
-			allTasks.addAll(Transforms.makeTasks("train"));
-			System.out.println(String.format("     + Now have %s tasks...", allTasks.size()));
+			// System.out.println("   - Adding from train split...");
+			// allTasks.addAll(Transforms.makeTasks("train"));
+			// System.out.println(String.format("     + Now have %s tasks...", allTasks.size()));
 			System.out.println("   - Adding from valid split...");
 			allTasks.addAll(Transforms.makeTasks("valid"));
 			System.out.println(String.format("     + Now have %s tasks...", allTasks.size()));

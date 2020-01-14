@@ -1,5 +1,6 @@
 package transforms;
 
+import java.util.*;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.*;
@@ -9,10 +10,18 @@ import java.lang.Math;
 
 public class InsertPrintStatements extends AverlocTransformer {
   // Parameters to this renaming transform
-  final static int MIN_INSERTIONS = 1;
-  final static int MAX_INSERTIONS = 3;
-  final static int LITERAL_MIN_LENGTH = 1;
-  final static int LITERAL_MAX_LENGTH = 5;
+  protected int MIN_INSERTIONS = 2;
+  protected int MAX_INSERTIONS = 6;
+  protected int LITERAL_MIN_LENGTH = 2;
+  protected int LITERAL_MAX_LENGTH = 7;
+
+  public InsertPrintStatements(int minInsertions, int maxInsertions, int litearlMinLength, int literalMaxLength, ArrayList<String> topTargetSubtokens) {
+    this.MIN_INSERTIONS = minInsertions;
+    this.MAX_INSERTIONS = maxInsertions;
+    this.LITERAL_MIN_LENGTH = litearlMinLength;
+    this.LITERAL_MAX_LENGTH = literalMaxLength;
+    this.setTopTargetSubtokens((ArrayList<String>)topTargetSubtokens.clone());
+  }
 
 	@Override
 	public void transform(CtExecutable method) {
