@@ -7,6 +7,6 @@ import spoon.reflect.reference.*;
 public class Identity extends AverlocTransformer {
 	@Override
 	public void transform(CtExecutable method) {
-  
+		this.setChanged(method);
 	}
 }

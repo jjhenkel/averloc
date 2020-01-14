@@ -5,6 +5,7 @@ import java.util.stream.*;
 import java.util.zip.GZIPInputStream;
 import java.lang.Thread;
 import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.nio.file.Files;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService; 
@@ -29,6 +30,7 @@ import spoon.support.JavaOutputProcessor;
 import spoon.support.compiler.VirtualFile;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.PrettyPrinter;
 
 class TransformFileTask implements Runnable {	
 	static AtomicInteger counter = new AtomicInteger(0); // a global counter
@@ -41,6 +43,30 @@ class TransformFileTask implements Runnable {
 		this.split = split;
 		this.inputs = inputs;
 		this.topTargetSubtokens = (ArrayList<String>)topTargetSubtokens.clone();
+	}
+
+	private Launcher buildLauncher(AverlocTransformer transformer) {
+		Launcher launcher = new Launcher();
+			
+		// Don't qualify (implicitly qualified) names
+		launcher.getEnvironment().setPrettyPrinterCreator(() -> {
+			DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(launcher.getEnvironment());
+			printer.setIgnoreImplicit(false);
+			return printer;
+		});
+
+		launcher.getEnvironment().setCopyResources(false);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setShouldCompile(false);
+		launcher.getEnvironment().setOutputType(OutputType.NO_OUTPUT);
+
+		launcher.addProcessor(transformer);
+
+		launcher.setSourceOutputDirectory(
+			String.format("/mnt/raw-outputs/%s/%s", split, transformer.getClass().getName())
+		);
+
+		return launcher;
 	}
 
 	public void run() {
@@ -65,55 +91,111 @@ class TransformFileTask implements Runnable {
 			(ArrayList<String>)topTargetSubtokens.clone()
 		);
 
-
 		transformers.add(insertPrintStatements);
 		transformers.add(renameFields);
 		transformers.add(renameLocalVariables);
 		transformers.add(renameParameters);
 		transformers.add(replaceTrueFalse);
-		
-		Identity identity = new Identity();
-		transformers.add(identity);
+		transformers.add(new Identity());
+
 
 		for (AverlocTransformer transformer : transformers) {
 			try{
-				// Spoon program analysis framework driver setup
-				Launcher launcher = new Launcher();
-			
-				// Don't qualify (implicitly qualified) names
-				launcher.getEnvironment().setPrettyPrinterCreator(() -> {
-					DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(launcher.getEnvironment());
-					printer.setIgnoreImplicit(false);
-					return printer;
-				});
+				Launcher launcher = buildLauncher(transformer);
 
-				// Maybe use these?
-				launcher.getEnvironment().setCopyResources(false);
-				launcher.getEnvironment().setNoClasspath(true);
-				launcher.getEnvironment().setShouldCompile(false);
-				launcher.getEnvironment().setOutputType(OutputType.NO_OUTPUT);
+				PrettyPrinter printer = launcher.getFactory().getEnvironment().createPrettyPrinter();
 
 				for (VirtualFile input : inputs) {
 					launcher.addInputResource(input);
 				}
 
-				launcher.addProcessor(transformer);
-
-				launcher.setSourceOutputDirectory(String.format("/mnt/raw-outputs/%s/%s", split, transformer.getClass().getName()));
-
 				CtModel model = launcher.buildModel();
 				model.processWith(transformer);
 
 				for (CtClass outputClass : model.getElements(new TypeFilter<>(CtClass.class))) {
-					JavaOutputProcessor outputProcessor = launcher.createOutputWriter();
-					if (transformer != identity && transformer.changes(outputClass.getSimpleName())) {
-						outputProcessor.createJavaFile(outputClass);
+					if (transformer.changes(outputClass.getSimpleName())) {
+						CompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(outputClass);
+						List<CtType<?>> toBePrinted = new ArrayList<>();
+						toBePrinted.add(outputClass);
+
+						printer.calculate(cu, toBePrinted);
+
+						Path path = Paths.get(
+							String.format(
+								"/mnt/raw-outputs/%s/%s/%s.java",
+								split,
+								transformer.getClass().getName(),
+								outputClass.getSimpleName().replace("WRAPPER_", "")
+							)
+						);
+
+						if (!path.getParent().toFile().exists()) {
+							path.getParent().toFile().mkdirs();
+						}
+
+						File file = path.toFile();
+						file.createNewFile();
+
+						// print type
+						try (PrintStream stream = new PrintStream(file)) {
+							stream.print(printer.getResult());
+						}
 					}
 				}
-			} catch (Exception ex) {
-				System.out.println(String.format("        * Failed to build model"));
-				System.out.println(ex.toString());
-				ex.printStackTrace();
+			} catch (Exception ex1) {
+				for (VirtualFile singleInput : inputs) {
+					try {
+						Launcher launcher = buildLauncher(transformer);
+						
+						PrettyPrinter printer = launcher.getFactory().getEnvironment().createPrettyPrinter();
+
+						launcher.addInputResource(singleInput);
+		
+						CtModel model = launcher.buildModel();
+						model.processWith(transformer);
+		
+						for (CtClass outputClass : model.getElements(new TypeFilter<>(CtClass.class))) {
+							if (transformer.changes(outputClass.getSimpleName())) {
+								CompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(outputClass);
+								List<CtType<?>> toBePrinted = new ArrayList<>();
+								toBePrinted.add(outputClass);
+
+								printer.calculate(cu, toBePrinted);
+
+								Path path = Paths.get(
+									String.format(
+										"/mnt/raw-outputs/%s/%s/%s.java",
+										split,
+										transformer.getClass().getName(),
+										outputClass.getSimpleName().replace("WRAPPER_", "")
+									)
+								);
+
+								if (!path.getParent().toFile().exists()) {
+									path.getParent().toFile().mkdirs();
+								}
+
+								File file = path.toFile();
+								file.createNewFile();
+
+								// print type
+								try (PrintStream stream = new PrintStream(file)) {
+									stream.print(printer.getResult());
+								}
+							}
+						}
+					} catch (Exception ex2) {
+						ex1.printStackTrace(System.out);
+						ex2.printStackTrace(System.out);
+						System.out.println(
+							String.format(
+								"        * Failed to build model for: %s",
+								singleInput.getName()
+							)
+						);
+						return;
+					}
+				}
 			}
 		}
 
@@ -127,7 +209,10 @@ public class Transforms {
 	static ArrayList<String> BANNED_SHAS = new ArrayList<String>(
 		Arrays.asList(
 			// Don't compile under spoon but pass our other validation...
-			"b0b5376a49caa97297fb356899da9b5963f0e9792baf844d0cffa02c0dbc54e1"
+			"b0b5376a49caa97297fb356899da9b5963f0e9792baf844d0cffa02c0dbc54e1",
+			"c1553011c7f6962f2bd9aba2206d9daec4383f05498a44e0ad4aa5996cbebd20",
+			"355201a2dd1cb50c5aa0acfe2056b8eb0fb7f5859b74ee1d6669e3868d0f78b8",
+			"3f863ba944ce351742b95406d6b1c90f766a66186e13e475ef072e563e32bfbe"
 		)
 	); 
 	
@@ -202,7 +287,7 @@ public class Transforms {
 				));
 			}
 
-			for (ArrayList<VirtualFile> chunk : chopped(inputs, 2000)) {
+			for (ArrayList<VirtualFile> chunk : chopped(inputs, 1000)) {
 				tasks.add(toCallable(new TransformFileTask(split, chunk, topTargetSubtokens)));
 			}
 
