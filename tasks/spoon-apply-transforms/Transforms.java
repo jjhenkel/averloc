@@ -106,6 +106,11 @@ class TransformFileTask implements Runnable {
 			1.0 // Replacement chance
 		));
 
+		// Use all the previous in our "All" transformer
+		transformers.add(new All(
+			(ArrayList<AverlocTransformer>)transformers.clone()
+		));
+
 		transformers.add(new ShuffleLocalVariables(
 			0.8 // Percentage to shuffle
 		));
@@ -214,7 +219,7 @@ class TransformFileTask implements Runnable {
 						}
 					} catch (Exception ex2) {
 						// ex1.printStackTrace(System.out);
-						// ex2.printStackTrace(System.out);
+						ex2.printStackTrace(System.out);
 						System.out.println(
 							String.format(
 								"        * Failed to build model for: %s",
@@ -315,7 +320,7 @@ public class Transforms {
 				));
 			}
 
-			for (ArrayList<VirtualFile> chunk : chopped(inputs, 2000)) {
+			for (ArrayList<VirtualFile> chunk : chopped(inputs, 500)) {
 				tasks.add(toCallable(new TransformFileTask(split, chunk, topTargetSubtokens)));
 			}
 
@@ -332,16 +337,23 @@ public class Transforms {
 		try {
 			ArrayList<Callable<Void>> allTasks = new ArrayList<Callable<Void>>();
 
-			System.out.println("Populating tasks...");
-			System.out.println("   - Adding from test split...");
-			allTasks.addAll(Transforms.makeTasks("test"));
-			System.out.println(String.format("     + Now have %s tasks...", allTasks.size()));
-			System.out.println("   - Adding from train split...");
-			allTasks.addAll(Transforms.makeTasks("train"));
-			System.out.println(String.format("     + Now have %s tasks...", allTasks.size()));
-			System.out.println("   - Adding from valid split...");
-			allTasks.addAll(Transforms.makeTasks("valid"));
-			System.out.println(String.format("     + Now have %s tasks...", allTasks.size()));
+			if (System.getenv("AVERLOC_JUST_TEST").equalsIgnoreCase("true")) {
+				System.out.println("Populating tasks...");
+				System.out.println("   - Adding from test split...");
+				allTasks.addAll(Transforms.makeTasks("test"));
+				System.out.println(String.format("     + Now have %s tasks...", allTasks.size()));
+			} else {
+				System.out.println("Populating tasks...");
+				System.out.println("   - Adding from test split...");
+				allTasks.addAll(Transforms.makeTasks("test"));
+				System.out.println(String.format("     + Now have %s tasks...", allTasks.size()));
+				System.out.println("   - Adding from train split...");
+				allTasks.addAll(Transforms.makeTasks("train"));
+				System.out.println(String.format("     + Now have %s tasks...", allTasks.size()));
+				System.out.println("   - Adding from valid split...");
+				allTasks.addAll(Transforms.makeTasks("valid"));
+				System.out.println(String.format("     + Now have %s tasks...", allTasks.size()));
+			}
 
 			System.out.println("   - Running in parallel with 64 threads...");
 			ExecutorService pool = Executors.newFixedThreadPool(64);

@@ -16,6 +16,9 @@ public class ShuffleParameters extends Renamer<CtParameter> {
 
 	@Override
 	public void transform(CtExecutable method) {
+        // Reset prior to next transform
+        reset();
+        
         // Get setup for renaming
         setDefs(getChildrenOfType(method, CtParameter.class));
         setSubtokens(topTargetSubtokens);

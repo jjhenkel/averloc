@@ -27,6 +27,13 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
   protected ArrayList<String> namesOfDefs;
   protected ArrayList<String> namesOfTargetDefs;
 
+  protected void reset() {
+    theDefs = new ArrayList<T>();
+    targetDefs = new ArrayList<T>();
+    namesOfDefs = new ArrayList<String>();
+    namesOfTargetDefs = new ArrayList<String>();
+  }
+
   protected void setDefs(ArrayList<T> defs) {
     theDefs = new ArrayList<T>(defs);
     namesOfDefs = new ArrayList<String>();
@@ -48,7 +55,7 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
   protected void setSubtokens(ArrayList<String> subtokens) {
     subtokenBank = subtokens;
 
-    if (debug) {
+    if (debug && subtokens != null) {
       System.out.println(String.format(
         "[RENAMER] - Recieved a corpus of %s frequent subtokens for random name building.",
         subtokenBank.size()
@@ -179,6 +186,12 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
   }
 
   protected void applyRenaming(CtExecutable method, boolean skipDecls, IdentityHashMap<T, String> renames) {
+    // if (((CtTypeMember)method).getDeclaringType().getSimpleName().equals("WRAPPER_0793faf53642d8a7d6de593630f9eea1137ba84873641ea14ac1c1eee1314971")) {
+    //   debug = true;
+    // } else {
+    //   debug = false;
+    // }
+
     ArrayList<CtVariableAccess> usages = getChildrenOfType(method, CtVariableAccess.class);
 
     if (debug) {

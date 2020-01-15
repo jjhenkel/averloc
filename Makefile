@@ -218,6 +218,108 @@ datasets/preprocessed/ast-paths/c2s/java-small: ## Generate a preprocessed (repr
 		"$${IMAGE_NAME}" java
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
 
+datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.Identity: ## <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/c2s/java-small/transforms.Identity' (using 'ast-paths' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.Identity:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.Identity:/mnt/outputs" \
+		"$${IMAGE_NAME}" java
+	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
+
+datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.RenameLocalVariables: ## <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/c2s/java-small/transforms.RenameLocalVariables' (using 'ast-paths' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.RenameLocalVariables:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.RenameLocalVariables:/mnt/outputs" \
+		"$${IMAGE_NAME}" java
+	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
+
+datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.InsertPrintStatements: ## <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/c2s/java-small/transforms.InsertPrintStatements' (using 'ast-paths' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.InsertPrintStatements:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.InsertPrintStatements:/mnt/outputs" \
+		"$${IMAGE_NAME}" java
+	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
+
+datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.RenameFields: ## <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/c2s/java-small/transforms.RenameFields' (using 'ast-paths' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.RenameFields:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.RenameFields:/mnt/outputs" \
+		"$${IMAGE_NAME}" java
+	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
+
+datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.RenameParameters: ## <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/c2s/java-small/transforms.RenameParameters' (using 'ast-paths' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.RenameParameters:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.RenameParameters:/mnt/outputs" \
+		"$${IMAGE_NAME}" java
+	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
+
+datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.ReplaceTrueFalse: ## <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/c2s/java-small/transforms.ReplaceTrueFalse' (using 'ast-paths' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.ReplaceTrueFalse:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.ReplaceTrueFalse:/mnt/outputs" \
+		"$${IMAGE_NAME}" java
+	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
+
+datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.ShuffleLocalVariables: ## <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/c2s/java-small/transforms.ShuffleLocalVariables' (using 'ast-paths' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.ShuffleLocalVariables:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.ShuffleLocalVariables:/mnt/outputs" \
+		"$${IMAGE_NAME}" java
+	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
+
+datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.ShuffleParameters: ## <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/c2s/java-small/transforms.ShuffleParameters' (using 'ast-paths' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.ShuffleParameters:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.ShuffleParameters:/mnt/outputs" \
+		"$${IMAGE_NAME}" java
+	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
+
+datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.All: ## <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/c2s/java-small/transforms.All' (using 'ast-paths' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.All:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.All:/mnt/outputs" \
+		"$${IMAGE_NAME}" java
+	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
+
+extract-transformed-ast-paths: submodules build-image-preprocess-dataset-c2s | datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.All datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.ShuffleParameters datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.ShuffleLocalVariables datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.ReplaceTrueFalse datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.Identity datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.InsertPrintStatements datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.RenameLocalVariables datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.RenameFields datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.RenameParameters 
+	@$(call echo_info,"AST Paths (code2seq style) preprocessed representations extracted (for transformed datasets)!")
+
 datasets/preprocessed/ast-paths/c2s/java-med: ## Generate a preprocessed (representation: ast-paths) version of code2seq's Java med dataset (step 2/2) <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'preprocessed/ast-paths/c2s/java-med' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
@@ -271,9 +373,12 @@ build-image-spoon-apply-transforms: ## Builds our dockerized version of spoon. <
 test-spoon-transforms: build-image-spoon-apply-transforms ## Test spoon.
 	@IMAGE_NAME="$(shell whoami)/averloc--spoon-apply-transforms:$(shell git rev-parse HEAD)"
 	docker run -it --rm \
+		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
 		-v "${ROOT_DIR}/datasets/normalized/c2s/java-small:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small:/mnt/outputs" \
 	  -v "${ROOT_DIR}/vendor/CodeSearchNet/function_parser/function_parser:/src/function-parser/function_parser" \
+		-v "${ROOT_DIR}/tasks/spoon-apply-transforms/Transforms.java:/app/Transforms.java" \
+		-v "${ROOT_DIR}/tasks/spoon-apply-transforms/transforms:/app/transforms" \
 		--entrypoint bash \
 		"$${IMAGE_NAME}"
 

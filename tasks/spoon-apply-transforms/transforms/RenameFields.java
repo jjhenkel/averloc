@@ -27,6 +27,9 @@ public class RenameFields extends Renamer<CtField> {
 
 	@Override
 	public void transform(CtExecutable method) {
+    // Reset prior to next transform
+    reset();
+
     // Find field references with no declaring type. These should
     // be fields of the enclosing class but, since we just have a method
     // we've lost the enclosing class
@@ -49,23 +52,19 @@ public class RenameFields extends Renamer<CtField> {
       }
     }
 
-    // Next, we'll go ahead and make a fake class to hold
-    // generated field declerations
-    final CtClass<Object> fakedClass = getFactory().Class().create("Faked");
-
     // Then, we'll build the field declarations (virtually)
     // and attach them to our fake class (and save them for our
     // renamer to use later)
     ArrayList<CtField> fieldDecls = new ArrayList<CtField>();
     for (String fieldName : fieldNames) {
-      CtField<String> generatedField = fakedClass.getFactory().Field().create(
+      CtField<String> generatedField = ((CtTypeMember)method).getDeclaringType().getFactory().Field().create(
         null,
         new HashSet<>(),
-        fakedClass.getFactory().Type().STRING,
+        ((CtTypeMember)method).getDeclaringType().getFactory().Type().STRING,
         fieldName
       );
 
-      fakedClass.addField(generatedField);
+      ((CtTypeMember)method).getDeclaringType().addField(generatedField);
       fieldDecls.add(generatedField);
     }
 
@@ -76,7 +75,7 @@ public class RenameFields extends Renamer<CtField> {
       for (CtField<String> fieldDecl : fieldDecls) {
         if (fieldDecl.getSimpleName().equals(fieldRef.getSimpleName())) {
           fieldRef.setDeclaringType(
-            fakedClass.getFactory().Type().createReference(
+            ((CtTypeMember)method).getDeclaringType().getFactory().Type().createReference(
               fieldDecl.getDeclaringType()
             )
           );
@@ -95,5 +94,10 @@ public class RenameFields extends Renamer<CtField> {
     applyRenaming(method, true, generateRenaming(
         SHUFFLE_MODE, NAME_MIN_LENGTH, NAME_MAX_LENGTH
     ));
+
+    // Cleanup: remove fields from WRAPPER class
+    for (CtField<String> generatedField : fieldDecls) {
+      ((CtTypeMember)method).getDeclaringType().removeField(generatedField);
+    }
 	}
 }

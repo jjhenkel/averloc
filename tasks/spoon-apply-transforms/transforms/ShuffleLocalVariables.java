@@ -16,6 +16,9 @@ public class ShuffleLocalVariables extends Renamer<CtLocalVariable> {
 
 	@Override
 	public void transform(CtExecutable method) {
+        // Reset prior to next transform
+        reset();
+        
         // Get setup for renaming
         setDefs(getChildrenOfType(method, CtLocalVariable.class));
         setSubtokens(topTargetSubtokens);
