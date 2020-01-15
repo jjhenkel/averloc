@@ -8,6 +8,6 @@ ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 
 COPY vendor/code2seq /code2seq
-COPY task/entrypoint.sh /entrypoint.sh
+COPY task/ /app/
 
-ENTRYPOINT [ "/entrypoint.sh" ]
+ENTRYPOINT [ "/app/entrypoint.sh" ]
