@@ -2,9 +2,12 @@ from __future__ import print_function, division
 
 import torch
 import torchtext
+from torch.nn.utils.rnn import pad_packed_sequence
 
 import seq2seq
 from seq2seq.loss import NLLLoss
+from seq2seq.evaluator.metrics import calculate_metrics
+
 
 class Evaluator(object):
     """ Class to evaluate models with given datasets.
@@ -44,6 +47,8 @@ class Evaluator(object):
         tgt_vocab = data.fields[seq2seq.tgt_field_name].vocab
         pad = tgt_vocab.stoi[data.fields[seq2seq.tgt_field_name].pad_token]
 
+        output_seqs = []
+
         with torch.no_grad():
             for batch in batch_iterator:
                 input_variables, input_lengths  = getattr(batch, seq2seq.src_field_name)
@@ -62,9 +67,23 @@ class Evaluator(object):
                     match += correct
                     total += non_padding.sum().item()
 
+
+                for i,output_seq_len in enumerate(other['length']):
+                    # print(i,output_seq_len)
+                    tgt_id_seq = [other['sequence'][di][i].data[0] for di in range(output_seq_len)]
+                    tgt_seq = [tgt_vocab.itos[tok] for tok in tgt_id_seq]
+                    # print(tgt_seq)
+                    output_seqs.append(' '.join(tgt_seq[:-1])) # exclude <eos> symbol
+
+        # print(output_seqs)
+        ground_truths = [' '.join(l[1:-1]) for l in data.tgt]
+        # print(ground_truths)
+        other_metrics = calculate_metrics(output_seqs, ground_truths)
+
+
         if total == 0:
             accuracy = float('nan')
         else:
             accuracy = match / total
 
-        return loss.get_loss(), accuracy
+        return loss.get_loss(), accuracy, other_metrics
