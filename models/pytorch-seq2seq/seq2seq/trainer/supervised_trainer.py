@@ -113,9 +113,6 @@ class SupervisedTrainer(object):
 
                 input_variables, input_lengths = getattr(batch, seq2seq.src_field_name)
                 target_variables = getattr(batch, seq2seq.tgt_field_name)
-
-                print(target_variables)
-                exit()
                 
                 loss = self._train_batch(input_variables, input_lengths.tolist(), target_variables, model, teacher_forcing_ratio)
 
@@ -134,8 +131,7 @@ class SupervisedTrainer(object):
                     log.info(log_msg)
 
                     if self.writer:
-                        self.writer.add_scalar('Loss/train_step', print_loss_avg, step)
-
+                        self.writer.add_scalar('Train/loss_step', print_loss_avg, step)
 
                 # Checkpoint
                 if step % self.checkpoint_every == 0 or step == total_steps:
@@ -151,14 +147,21 @@ class SupervisedTrainer(object):
             epoch_loss_avg = epoch_loss_total / min(steps_per_epoch, step - start_step)
             epoch_loss_total = 0
             log_msg = "Finished epoch %d: Train %s: %.4f" % (epoch, self.loss.name, epoch_loss_avg)
-            self.writer.add_scalar('Loss/train_epoch', epoch_loss_avg, epoch)
+            self.writer.add_scalar('Train/loss_epoch', epoch_loss_avg, epoch)
 
             if dev_data is not None:
-                dev_loss, accuracy = self.evaluator.evaluate(model, dev_data)
+                dev_loss, accuracy, other_metrics = self.evaluator.evaluate(model, dev_data)
                 self.optimizer.update(dev_loss, epoch)
                 log_msg += ", Dev %s: %.4f, Accuracy: %.4f" % (self.loss.name, dev_loss, accuracy)
-                self.writer.add_scalar('Loss/val_epoch', dev_loss, epoch)
-                self.writer.add_scalar('Accuracy/val_epoch', accuracy, epoch)
+                self.writer.add_scalar('Val/loss', dev_loss, epoch)
+                self.writer.add_scalar('Val/acc', accuracy, epoch)
+
+                for metric in other_metrics:
+                    log_msg += ", %s: %.4f"%(metric.replace(' ','_').replace('-','_'), other_metrics[metric])
+                    self.writer.add_scalar('Val/%s'%metric, other_metrics[metric], epoch)
+
+                log_msg = log_msg[:-1]
+                
                 model.train(mode=True)
             else:
                 self.optimizer.update(epoch_loss_avg, epoch)
