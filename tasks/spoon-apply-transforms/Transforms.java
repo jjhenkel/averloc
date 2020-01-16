@@ -219,7 +219,7 @@ class TransformFileTask implements Runnable {
 						}
 					} catch (Exception ex2) {
 						// ex1.printStackTrace(System.out);
-						ex2.printStackTrace(System.out);
+						// ex2.printStackTrace(System.out);
 						System.out.println(
 							String.format(
 								"        * Failed to build model for: %s",
@@ -320,7 +320,7 @@ public class Transforms {
 				));
 			}
 
-			for (ArrayList<VirtualFile> chunk : chopped(inputs, 500)) {
+			for (ArrayList<VirtualFile> chunk : chopped(inputs, 2000)) {
 				tasks.add(toCallable(new TransformFileTask(split, chunk, topTargetSubtokens)));
 			}
 

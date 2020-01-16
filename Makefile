@@ -349,7 +349,7 @@ ifndef DATASET_NAME
 	$(error DATASET_NAME is a required parameter for this target.)
 endif
 
-.PHONY: train-model-code2seq
+.PHONY: test-model-code2seq
 test-model-code2seq: check-dataset-name build-image-train-model-code2seq ## (DEBUG) Trains the code2seq model on the Java Small dataset.
 	@IMAGE_NAME="$(shell whoami)/averloc--train-model-code2seq:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
