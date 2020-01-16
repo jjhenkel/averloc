@@ -86,4 +86,4 @@ class Evaluator(object):
         else:
             accuracy = match / total
 
-        return loss.get_loss(), accuracy, other_metrics
+        return loss.get_loss(), accuracy, other_metrics, output_seqs

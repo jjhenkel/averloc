@@ -150,7 +150,7 @@ class SupervisedTrainer(object):
             self.writer.add_scalar('Train/loss_epoch', epoch_loss_avg, epoch)
 
             if dev_data is not None:
-                dev_loss, accuracy, other_metrics = self.evaluator.evaluate(model, dev_data)
+                dev_loss, accuracy, other_metrics, _ = self.evaluator.evaluate(model, dev_data)
                 self.optimizer.update(dev_loss, epoch)
                 log_msg += ", Dev %s: %.4f, Accuracy: %.4f" % (self.loss.name, dev_loss, accuracy)
                 self.writer.add_scalar('Val/loss', dev_loss, epoch)
@@ -208,6 +208,8 @@ class SupervisedTrainer(object):
 
             start_epoch = resume_checkpoint.epoch
             step = resume_checkpoint.step
+
+            self.logger.info("Resuimg training from %d epoch, %d step" % (start_epoch, step))
         else:
             start_epoch = 1
             step = 0

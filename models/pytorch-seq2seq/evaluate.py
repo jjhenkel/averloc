@@ -15,6 +15,7 @@ parser.add_argument('--expt_dir', action='store', dest='expt_dir', default='./ex
 parser.add_argument('--load_checkpoint', action='store', dest='load_checkpoint',
                     help='The name of the checkpoint to load, usually an encoded time string')
 parser.add_argument('--batch_size', action='store', dest='batch_size', default=64)
+parser.add_argument('--output_file', action='store', dest='output_file', default=None)
 
 opt = parser.parse_args()
 
@@ -44,10 +45,18 @@ if torch.cuda.is_available():
 evaluator = Evaluator(loss=loss, batch_size=opt.batch_size)
 
 print('Size of Test Set', sum(1 for _ in dev.src))
-loss, acc, other = evaluator.evaluate(seq2seq, dev)
+loss, acc, other, output_seqs = evaluator.evaluate(seq2seq, dev)
 other.update({'Loss':loss, 'Acc (torch)': acc})
 for m in other:
 	print(m,other[m])
+
+print(len(output_seqs))
+
+if opt.output_file is not None:
+	with open(opt.output_file, 'w') as f:
+		f.writelines([a+'\n' for a in output_seqs])
+	print('Output file written')
+
 
 
 
