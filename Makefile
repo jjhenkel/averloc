@@ -343,6 +343,57 @@ datasets/preprocessed/ast-paths/csn/java: ## Generate a preprocessed (representa
 extract-ast-paths: submodules build-image-preprocess-dataset-c2s | datasets/preprocessed/ast-paths/c2s/java-small datasets/preprocessed/ast-paths/c2s/java-med datasets/preprocessed/ast-paths/csn/java ## (DS-3) Generate preprocessed data in a form usable by code2seq style models. 
 	@$(call echo_info,"AST Paths (code2seq style) preprocessed representations extracted!")
 
+
+.PHONY: build-image-generate-baselines
+build-image-generate-baselines: submodules ## Builds our baseline generator docker image  <!PRIVATE>
+	@"${ROOT_DIR}/scripts/build-image.sh" \
+		generate-baselines
+
+generate-baselines: build-image-generate-baselines ## Generate baselines (projected test sets) for our various transforms
+	@IMAGE_NAME="$(shell whoami)/averloc--generate-baselines:$(shell git rev-parse HEAD)"
+	@$(call echo_debug,"Generating transforms.*/baseline.jsonl.gz files...")
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.Identity:/mnt/identity" \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.All:/mnt/inputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + transforms.All/baseline.jsonl.gz generated [1/8]")
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.Identity:/mnt/identity" \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.InsertPrintStatements:/mnt/inputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + transforms.InsertPrintStatements/baseline.jsonl.gz generated [2/8]")
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.Identity:/mnt/identity" \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.RenameFields:/mnt/inputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + transforms.RenameFields/baseline.jsonl.gz generated [3/8]")
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.Identity:/mnt/identity" \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.RenameLocalVariables:/mnt/inputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + transforms.RenameLocalVariables/baseline.jsonl.gz generated [4/8]")
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.Identity:/mnt/identity" \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.RenameParameters:/mnt/inputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + transforms.RenameParameters/baseline.jsonl.gz generated [5/8]")
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.Identity:/mnt/identity" \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.ReplaceTrueFalse:/mnt/inputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + transforms.ReplaceTrueFalse/baseline.jsonl.gz generated [6/8]")
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.Identity:/mnt/identity" \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.ShuffleLocalVariables:/mnt/inputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + transforms.ShuffleLocalVariables/baseline.jsonl.gz generated [7/8]")
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.Identity:/mnt/identity" \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.ShuffleParameters:/mnt/inputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + transforms.ShuffleParameters/baseline.jsonl.gz generated [8/8]")
+	@$(call echo_debug,"  + Baselines generated!")
+
 .PHONY: check-dataset-name
 check-dataset-name:
 ifndef DATASET_NAME
@@ -379,7 +430,6 @@ test-spoon-transforms: build-image-spoon-apply-transforms ## Test spoon.
 	  -v "${ROOT_DIR}/vendor/CodeSearchNet/function_parser/function_parser:/src/function-parser/function_parser" \
 		-v "${ROOT_DIR}/tasks/spoon-apply-transforms/Transforms.java:/app/Transforms.java" \
 		-v "${ROOT_DIR}/tasks/spoon-apply-transforms/transforms:/app/transforms" \
-		--entrypoint bash \
 		"$${IMAGE_NAME}"
 
 .PHONY: normalize-c2s-transformed

@@ -11,4 +11,10 @@ set -ex
 
 python3 /code2seq/code2seq.py \
   --load /app/models/java-large-model/model_iter52.release \
-  --test /mnt/inputs/data.test.c2s
+  --test /mnt/inputs/data.test.c2s | tail -n3
+
+if [ -f /mnt/inputs/data.baseline.c2s ]; then
+  python3 /code2seq/code2seq.py \
+    --load /app/models/java-large-model/model_iter52.release \
+    --test /mnt/inputs/data.baseline.c2s | tail -n3
+fi

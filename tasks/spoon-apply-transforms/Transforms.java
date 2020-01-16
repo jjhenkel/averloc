@@ -74,30 +74,30 @@ class TransformFileTask implements Runnable {
 		ArrayList<AverlocTransformer> transformers = new ArrayList<AverlocTransformer>();
 
 		transformers.add(new InsertPrintStatements(
-			2,                 // Min insertions
-			6,                 // Max insertions
-			2,                 // Min literal length
-			7,                 // Max literal length
+			3,                 // Min insertions
+			9,                 // Max insertions
+			3,                 // Min literal length
+			10,                 // Max literal length
 			topTargetSubtokens // Subtokens to use to build literal
 		));
 
 		transformers.add(new RenameFields(
-			1,                 // Name min length
-			5,                 // Name max length
+			2,                 // Name min length
+			10,                 // Name max length
 			1.0,               // Percent to rename
 			topTargetSubtokens // Subtokens to use to build names
 		));
 
 		transformers.add(new RenameLocalVariables(
-			1,                 // Name min length
-			5,                 // Name max length
-			0.8,               // Percent to rename
+			2,                 // Name min length
+			10,                 // Name max length
+			1.0,               // Percent to rename
 			topTargetSubtokens // Subtokens to use to build names
 		));
 
 		transformers.add(new RenameParameters(
-			1,                 // Name min length
-			5,                 // Name max length
+			2,                 // Name min length
+			10,                 // Name max length
 			1.0,               // Percent to rename
 			topTargetSubtokens // Subtokens to use to build names
 		));
@@ -112,7 +112,7 @@ class TransformFileTask implements Runnable {
 		));
 
 		transformers.add(new ShuffleLocalVariables(
-			0.8 // Percentage to shuffle
+			1.0 // Percentage to shuffle
 		));
 
 		transformers.add(new ShuffleParameters(
@@ -238,7 +238,7 @@ class TransformFileTask implements Runnable {
 }
 
 public class Transforms {
-	final static int TARGET_SUBTOKENS_LIMIT = 100;
+	final static int TARGET_SUBTOKENS_LIMIT = 500;
 	static ArrayList<String> BANNED_SHAS = new ArrayList<String>(
 		Arrays.asList(
 			// Don't compile under spoon but pass our other validation...
