@@ -203,7 +203,7 @@ normalize-datasets: submodules build-image-normalize-raw-dataset | datasets/norm
 	@$(call echo_info,"Normalized all datasets to './datasets/normalized/' directory.")
 
 .PHONY: build-image-preprocess-dataset-c2s
-build-image-preprocess-dataset-c2s: submodules ## Builds a preprocessor for generating code2seq style data <!PRIVATE>
+build-image-preprocess-dataset-c2s: ## Builds a preprocessor for generating code2seq style data <!PRIVATE>
 	@"${ROOT_DIR}/scripts/build-image.sh" \
 		preprocess-dataset-c2s
 
@@ -317,7 +317,7 @@ datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.All: ## <!
 		"$${IMAGE_NAME}" java
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
 
-extract-transformed-ast-paths: submodules build-image-preprocess-dataset-c2s | datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.All datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.ShuffleParameters datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.ShuffleLocalVariables datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.ReplaceTrueFalse datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.Identity datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.InsertPrintStatements datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.RenameLocalVariables datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.RenameFields datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.RenameParameters 
+extract-transformed-ast-paths: build-image-preprocess-dataset-c2s | datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.All datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.ShuffleParameters datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.ShuffleLocalVariables datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.ReplaceTrueFalse datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.Identity datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.InsertPrintStatements datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.RenameLocalVariables datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.RenameFields datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.RenameParameters 
 	@$(call echo_info,"AST Paths (code2seq style) preprocessed representations extracted (for transformed datasets)!")
 
 datasets/preprocessed/ast-paths/c2s/java-med: ## Generate a preprocessed (representation: ast-paths) version of code2seq's Java med dataset (step 2/2) <!PRIVATE>
@@ -345,7 +345,7 @@ extract-ast-paths: submodules build-image-preprocess-dataset-c2s | datasets/prep
 
 
 .PHONY: build-image-generate-baselines
-build-image-generate-baselines: submodules ## Builds our baseline generator docker image  <!PRIVATE>
+build-image-generate-baselines: ## Builds our baseline generator docker image  <!PRIVATE>
 	@"${ROOT_DIR}/scripts/build-image.sh" \
 		generate-baselines
 
@@ -420,27 +420,26 @@ build-image-spoon-apply-transforms: ## Builds our dockerized version of spoon. <
 	@"${ROOT_DIR}/scripts/build-image.sh" \
 		spoon-apply-transforms
 
-.PHONY: test-spoon-transforms
-test-spoon-transforms: build-image-spoon-apply-transforms ## Test spoon.
+.PHONY: apply-transforms-c2s-java-small
+apply-transforms-c2s-java-small: build-image-spoon-apply-transforms ## Apply our suite of transforms to code2seq's java-small dataset.
 	@IMAGE_NAME="$(shell whoami)/averloc--spoon-apply-transforms:$(shell git rev-parse HEAD)"
 	docker run -it --rm \
 		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
 		-v "${ROOT_DIR}/datasets/normalized/c2s/java-small:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small:/mnt/outputs" \
-	  -v "${ROOT_DIR}/vendor/CodeSearchNet/function_parser/function_parser:/src/function-parser/function_parser" \
+	    -v "${ROOT_DIR}/vendor/CodeSearchNet/function_parser/function_parser:/src/function-parser/function_parser" \
 		-v "${ROOT_DIR}/tasks/spoon-apply-transforms/Transforms.java:/app/Transforms.java" \
 		-v "${ROOT_DIR}/tasks/spoon-apply-transforms/transforms:/app/transforms" \
 		"$${IMAGE_NAME}"
 
-.PHONY: normalize-c2s-transformed
-normalize-c2s-transformed: build-image-normalize-raw-dataset
-	@$(call echo_debug,"Normalizing dataset 'transformed/raw/c2s/java-small'...")
-	@IMAGE_NAME="$(shell whoami)/averloc--normalize-raw-dataset:$(shell git rev-parse HEAD)"
-	for trans in ${ROOT_DIR}/datasets/transformed/raw/c2s/java-small/*; do
-		mkdir -p "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/$$(basename $$trans)"
-		docker run -it --rm \
-			-v "${ROOT_DIR}/datasets/transformed/raw/c2s/java-small/$$(basename $$trans):/mnt/inputs" \
-			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/$$(basename $$trans):/mnt/outputs" \
-			"$${IMAGE_NAME}"
-	done;
-	@$(call echo_debug,"  + Normalization complete!")
+.PHONY: apply-transforms-c2s-java-med
+apply-transforms-c2s-java-med: build-image-spoon-apply-transforms ## Apply our suite of transforms to code2seq's java-med dataset.
+	@IMAGE_NAME="$(shell whoami)/averloc--spoon-apply-transforms:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
+		-v "${ROOT_DIR}/datasets/normalized/c2s/java-med:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-med:/mnt/outputs" \
+	    -v "${ROOT_DIR}/vendor/CodeSearchNet/function_parser/function_parser:/src/function-parser/function_parser" \
+		-v "${ROOT_DIR}/tasks/spoon-apply-transforms/Transforms.java:/app/Transforms.java" \
+		-v "${ROOT_DIR}/tasks/spoon-apply-transforms/transforms:/app/transforms" \
+		"$${IMAGE_NAME}"

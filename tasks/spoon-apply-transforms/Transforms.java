@@ -276,8 +276,8 @@ public class Transforms {
 			ArrayList<Callable<Void>> tasks = new ArrayList<Callable<Void>>();
 			ArrayList<String> topTargetSubtokens = new ArrayList<String>();
 		
-			// Load the top tokens once
-			try (Stream<String> lines = Files.lines(Paths.get(String.format("/mnt/inputs/%s.targets.histo.txt", split)))) {
+			// Load the top tokens once (NOTE: now using targeted/manually crafted wordbank)
+			try (Stream<String> lines = Files.lines(Paths.get("/app/wordbank.txt"))) {
 				topTargetSubtokens = new ArrayList<String>(
 					lines.limit(TARGET_SUBTOKENS_LIMIT).collect(Collectors.toList())
 				);

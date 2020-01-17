@@ -92,7 +92,7 @@ public class RenameFields extends Renamer<CtField> {
 
     // Build new names and apply them (true ==> to skip decls)
     applyRenaming(method, true, generateRenaming(
-        SHUFFLE_MODE, NAME_MIN_LENGTH, NAME_MAX_LENGTH
+        method, SHUFFLE_MODE, NAME_MIN_LENGTH, NAME_MAX_LENGTH
     ));
 
     // Cleanup: remove fields from WRAPPER class

@@ -28,7 +28,7 @@ public class ShuffleParameters extends Renamer<CtParameter> {
 
         // Build new names and apply them
         applyRenaming(method, false, generateRenaming(
-            SHUFFLE_MODE, NAME_MIN_LENGTH, NAME_MAX_LENGTH
+            method, SHUFFLE_MODE, NAME_MIN_LENGTH, NAME_MAX_LENGTH
         ));
 	}
 }

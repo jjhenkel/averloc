@@ -89,9 +89,11 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
     }
   }
 
-  protected IdentityHashMap<T, String> generateRenaming(boolean shuffle, int nameMinSubtokens, int nameMaxSubtokens) {
+  protected IdentityHashMap<T, String> generateRenaming(CtExecutable method, boolean shuffle, int nameMinSubtokens, int nameMaxSubtokens) {
     IdentityHashMap<T, String> renames = new IdentityHashMap<T, String>();
     
+    String methodName = ((CtTypeMember)method).getDeclaringType().getSimpleName().toLowerCase();
+
     if (targetDefs == null || targetDefs.size() <= 0) {
       if (debug) {
         System.out.println("[RENAMER] - No renaming to be done: no targets selected.");
@@ -147,6 +149,8 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
       }
     } else {
       Random rand = new Random();
+      ArrayList<String> newNames = new ArrayList<String>();
+
       for (T target : targetDefs) {
         Collections.shuffle(subtokenBank);
 
@@ -154,11 +158,17 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
         String name = null;
         do {
           length = rand.nextInt((nameMaxSubtokens - nameMinSubtokens) + 1) + nameMinSubtokens;
-          name = camelCased(subtokenBank.subList(0, length));
-          // TODO: maybe make sure we don't use any subtokens in the function's name?
-          // This (maybe) removes the possibility of us accidentally helping the model?
-        } while (namesOfDefs.contains(name)); // Make sure we don't clash with pre-existing name
+          name = camelCased(
+            subtokenBank.stream().filter(
+              // Make sure that we are not getting a subtoken in the method name, or any of the other names
+              subtok -> !methodName.contains(subtok) && namesOfDefs.stream().allMatch(
+                otherName -> !otherName.toLowerCase().contains(subtok)
+              )
+            ).collect(Collectors.toList()).subList(0, length)
+          );
+        } while (namesOfDefs.contains(name) || newNames.contains(name)); // Make sure we don't clash with pre-existing/new name
 
+        newNames.add(name);
         renames.put(target, name);
       }
     }

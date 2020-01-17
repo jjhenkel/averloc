@@ -3,8 +3,8 @@
 ###########################################################
 MAX_DATA_CONTEXTS=1000
 MAX_CONTEXTS=200
-SUBTOKEN_VOCAB_SIZE=186277
-TARGET_VOCAB_SIZE=26347
+SUBTOKEN_VOCAB_SIZE=27567
+TARGET_VOCAB_SIZE=6328
 NUM_THREADS=64
 PYTHON=python3
 ###########################################################
