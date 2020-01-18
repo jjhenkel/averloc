@@ -1,8 +1,13 @@
 import sys, os
 import numpy as np
-from seq2seq.evaluator.bleu import moses_multi_bleu
+import tqdm
+try:
+	from bleu import moses_multi_bleu
+except:
+	from seq2seq.evaluator.bleu import moses_multi_bleu
 
-def calculate_metrics_from_files(pred_file, labels_file):
+
+def calculate_metrics_from_files(pred_file, labels_file, verbose=False):
 	f_pred = open(pred_file, 'r')
 	f_true = open(labels_file, 'r')
 
@@ -12,7 +17,7 @@ def calculate_metrics_from_files(pred_file, labels_file):
 	f_pred.close()
 	f_true.close()
 
-	a = calculate_metrics(hypotheses, references)
+	a = calculate_metrics(hypotheses, references, verbose)
 	for m in a:
 		print('%s: %.3f'%(m,a[m]))
 	print()
@@ -23,7 +28,7 @@ def get_freqs(pred, true):
 	d_true = {x: true.count(x) for x in all_words}
 	return d_pred, d_true
 
-def calculate_metrics(y_pred, y_true):
+def calculate_metrics(y_pred, y_true, verbose=False):
 	''' 
 	Calculate exact match accuracy, precision, recall, F1 score, word-level accuracy
 	y_pred and y_true are lists of strings
@@ -47,7 +52,12 @@ def calculate_metrics(y_pred, y_true):
 	correct_words = 0
 	total_words = 0
 
-	for i in range(N):
+	if verbose:
+		a = tqdm.tqdm(range(N))
+	else:
+		a = range(N)
+
+	for i in a:
 		# print(i)
 		pred = y_pred[i].split()
 		true = y_true[i].split()
@@ -63,28 +73,47 @@ def calculate_metrics(y_pred, y_true):
 			exact_match += 1
 
 		# print(d_pred, d_true)
-		for word in d_pred:
-			tp += min(d_pred[word], d_true[word])
-			fp += max(0, d_pred[word]-d_true[word])
-			fn += max(0, d_true[word]-d_pred[word])
+
+		calc_type = 2
+
+		if calc_type==1:
+			# this is my implementation
+			for word in d_pred: 
+				tp += min(d_pred[word], d_true[word])
+				fp += max(0, d_pred[word]-d_true[word])
+				fn += max(0, d_true[word]-d_pred[word])
+		else:
+			# this is the code2seq implementation
+			for word in d_pred: 
+				if d_pred[word]>0:
+					if d_true[word]>0:
+						tp += 1
+					else:
+						fp += 1
+
+				if d_true[word]>0 and d_pred[word]==0:
+					fn += 1
+
 
 	# print(tp, fp, fn)
-	precision = tp / (tp+fp)
-	recall = tp / (tp+fn)
-	f1 = 2*precision*recall / (precision+recall)
+	precision = tp / (tp+fp+0.0000000001)
+	recall = tp / (tp+fn+0.0000000001)
+	f1 = 2*precision*recall / (precision+recall+0.0000000001)
 	exact_match /= N
 	word_level_accuracy = correct_words / total_words
 
 	bleu = moses_multi_bleu(np.array(y_pred), np.array(y_true))
 
-	return {
-			'precision': precision, 
-			'recall': recall, 
-			'f1': f1, 
-			'exact_match':exact_match, 
-			'word-level accuracy': word_level_accuracy, 
+	d = {
+			'precision': precision*100, 
+			'recall': recall*100, 
+			'f1': f1*100, 
+			'exact_match':exact_match*100, 
+			'word-level accuracy': word_level_accuracy*100, 
 			'BLEU': bleu
 			}
+
+	return d
 
 def parse_args():
 	import argparse
@@ -92,6 +121,8 @@ def parse_args():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--f_true', help='File with ground truth labels', required=True)
 	parser.add_argument('--f_pred', help='File with predicted labels', required=True)
+	parser.add_argument('--verbose', action='store_true', help='verbosity')
+
 
 	args = parser.parse_args()
 	assert os.path.exists(args.f_true), 'Invalid file for ground truth labels'
@@ -101,4 +132,4 @@ def parse_args():
 
 if __name__=="__main__":
 	args = parse_args()
-	calculate_metrics_from_files(args.f_pred, args.f_true)
+	calculate_metrics_from_files(args.f_pred, args.f_true, args.verbose)
