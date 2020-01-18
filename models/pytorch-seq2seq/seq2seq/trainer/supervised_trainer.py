@@ -88,14 +88,21 @@ class SupervisedTrainer(object):
         steps_per_epoch = len(batch_iterator)
         total_steps = steps_per_epoch * n_epochs
 
+        self.print_every = steps_per_epoch // 25
+
         log.info('Steps per epoch: %d'%steps_per_epoch)
         log.info('Total steps: %d'%total_steps)
 
         step = start_step
         step_elapsed = 0
 
-        num_checkpoints = 25
-        self.checkpoint_every = (total_steps+1)//num_checkpoints
+        # num_checkpoints = 25
+        # self.checkpoint_every = (total_steps+1)//num_checkpoints
+
+        # In every run, the best model so far in terms of validation f1 is stored (checked at the end of every epoch)
+
+        best_f1 = 0.0
+        best_acc = 0.0
 
         for epoch in range(start_epoch, n_epochs + 1):
             log.debug("Epoch: %d, Step: %d" % (epoch, step))
@@ -134,15 +141,16 @@ class SupervisedTrainer(object):
                         self.writer.add_scalar('Train/loss_step', print_loss_avg, step)
 
                 # Checkpoint
-                if step % self.checkpoint_every == 0 or step == total_steps:
-                    Checkpoint(model=model,
-                               optimizer=self.optimizer,
-                               epoch=epoch, step=step,
-                               input_vocab=data.fields[seq2seq.src_field_name].vocab,
-                               output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir)
-                    log.info('Checkpoint saved')
+                # if step % self.checkpoint_every == 0 or step == total_steps:
+                #     Checkpoint(model=model,
+                #                optimizer=self.optimizer,
+                #                epoch=epoch, step=step,
+                #                input_vocab=data.fields[seq2seq.src_field_name].vocab,
+                #                output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir)
+                #     log.info('Checkpoint saved')
 
-            if step_elapsed == 0: continue
+            if step_elapsed == 0: 
+                continue
 
             epoch_loss_avg = epoch_loss_total / min(steps_per_epoch, step - start_step)
             epoch_loss_total = 0
@@ -158,21 +166,46 @@ class SupervisedTrainer(object):
 
                 for metric in other_metrics:
                     log_msg += ", %s: %.4f"%(metric.replace(' ','_').replace('-','_'), other_metrics[metric])
-                    self.writer.add_scalar('Val/%s'%metric, other_metrics[metric], epoch)
+                    self.writer.add_scalar('Val/%s'%metric.replace(' ','_').replace('-','_'), other_metrics[metric], epoch)
 
                 log_msg = log_msg[:-1]
-                
+                log.info(log_msg)
+
+                if other_metrics['f1'] > best_f1:
+                    Checkpoint(model=model,
+                                   optimizer=self.optimizer,
+                                   epoch=epoch, step=step,
+                                   input_vocab=data.fields[seq2seq.src_field_name].vocab,
+                                   output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir, name='Best_F1')
+                    log_msg = 'Checkpoint saved, Epoch %d, Prev Val F1: %.4f, New Val F1: %.4f' % (epoch, best_f1, other_metrics['f1'])
+                    log.info(log_msg)
+                    best_f1 = other_metrics['f1']
+
+                if accuracy > best_acc:
+                    Checkpoint(model=model,
+                                   optimizer=self.optimizer,
+                                   epoch=epoch, step=step,
+                                   input_vocab=data.fields[seq2seq.src_field_name].vocab,
+                                   output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir, name='Best_Acc')
+                    log_msg = 'Checkpoint saved, Epoch %d, Prev Val Acc: %.4f, New Val Acc: %.4f' % (epoch, best_acc, accuracy)
+                    log.info(log_msg)
+                    best_acc = accuracy
+
+                Checkpoint(model=model,
+                               optimizer=self.optimizer,
+                               epoch=epoch, step=step,
+                               input_vocab=data.fields[seq2seq.src_field_name].vocab,
+                               output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir, name='Latest')
+                log_msg = 'Latest Checkpoint saved, Epoch %d, %s' % (epoch, str(other_metrics))
+                log.info(log_msg)
+
                 model.train(mode=True)
+
             else:
                 self.optimizer.update(epoch_loss_avg, epoch)
 
             log.info(log_msg)
 
-        Checkpoint(model=model, optimizer=self.optimizer,
-                   epoch=epoch, step=step,
-                   input_vocab=data.fields[seq2seq.src_field_name].vocab,
-                   output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir, name='Final')
-        log.info('Final Checkpoint saved')
 
     def train(self, model, data, num_epochs=5,
               resume=False, dev_data=None,
@@ -209,7 +242,7 @@ class SupervisedTrainer(object):
             start_epoch = resume_checkpoint.epoch
             step = resume_checkpoint.step
 
-            self.logger.info("Resuimg training from %d epoch, %d step" % (start_epoch, step))
+            self.logger.info("Resuming training from %d epoch, %d step" % (start_epoch, step))
         else:
             start_epoch = 1
             step = 0
