@@ -97,6 +97,11 @@ submodules: ## (MISC) Ensures that submodules are setup.
 		git submodule update --init; \
 	fi
 
+.PHONY: build-image-test-model-code2seq
+build-image-test-model-code2seq: ## Build tasks/test-model-code2seq <!PRIVATE>
+	"${ROOT_DIR}/scripts/build-image.sh" \
+		test-model-code2seq
+
 .PHONY: build-image-train-model-code2seq
 build-image-train-model-code2seq: ## Build tasks/train-model-code2seq <!PRIVATE>
 	"${ROOT_DIR}/scripts/build-image.sh" \
@@ -344,6 +349,21 @@ extract-ast-paths: submodules build-image-preprocess-dataset-c2s | datasets/prep
 	@$(call echo_info,"AST Paths (code2seq style) preprocessed representations extracted!")
 
 
+
+.PHONY: build-image-astor-apply-transforms
+build-image-astor-apply-transforms: ## Builds our baseline generator docker image  <!PRIVATE>
+	@"${ROOT_DIR}/scripts/build-image.sh" \
+		astor-apply-transforms
+
+.PHONY: test-astor
+test-astor: ## Tests our astor transformer (for python) <!PRIVATE>
+	@IMAGE_NAME="$(shell whoami)/averloc--astor-apply-transforms:$(shell git rev-parse HEAD)"
+	@$(call echo_debug,"Testing astor on normalized csn/python files...")
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/normalized/csn/python:/mnt/inputs" \
+		-v "${ROOT_DIR}/tasks/astor-apply-transforms:/app" \
+		"$${IMAGE_NAME}"
+
 .PHONY: build-image-generate-baselines
 build-image-generate-baselines: ## Builds our baseline generator docker image  <!PRIVATE>
 	@"${ROOT_DIR}/scripts/build-image.sh" \
@@ -401,10 +421,18 @@ ifndef DATASET_NAME
 endif
 
 .PHONY: test-model-code2seq
-test-model-code2seq: check-dataset-name build-image-train-model-code2seq ## (DEBUG) Trains the code2seq model on the Java Small dataset.
-	@IMAGE_NAME="$(shell whoami)/averloc--train-model-code2seq:$(shell git rev-parse HEAD)"
+test-model-code2seq: check-dataset-name build-image-test-model-code2seq ## (DEBUG) Trains the code2seq model on the Java Small dataset.
+	@IMAGE_NAME="$(shell whoami)/averloc--test-model-code2seq:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		-v "${ROOT_DIR}/models:/models" \
+		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs" \
+		"$${IMAGE_NAME}"
+
+.PHONY: train-model-code2seq
+train-model-code2seq: check-dataset-name build-image-train-model-code2seq ## (DEBUG) Trains the code2seq model on the Java Small dataset.
+	@IMAGE_NAME="$(shell whoami)/averloc--train-model-code2seq:$(shell git rev-parse HEAD)"
+	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		-v "${ROOT_DIR}/tasks/train-model-code2seq/models:/mnt/outputs/models" \
 		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs" \
 		"$${IMAGE_NAME}"
 
