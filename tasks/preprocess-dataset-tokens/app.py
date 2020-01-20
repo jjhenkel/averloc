@@ -42,18 +42,22 @@ def normalize_subtoken(subtoken):
     )
   )
 
-  return normalized
+  return normalized.strip()
 
 
 def process(item):
+  src = list(filter(None, [
+    normalize_subtoken(subtok) for subtok in subtokens(item[1])
+  ]))
+  tgt = list(filter(None, [
+    normalize_subtoken(subtok) for subtok in clean_name(item[2])
+  ]))
+
   return (
+    len(src) > 0 and len(tgt) > 0,
     item[0],
-    ' '.join([ 
-      normalize_subtoken(subtok) for subtok in subtokens(item[1])
-    ]),
-    ' '.join([
-      normalize_subtoken(subtok) for subtok in clean_name(item[2])
-    ])
+    ' '.join(src),
+    ' '.join(tgt)
   )
 
 
@@ -86,7 +90,9 @@ if __name__ == "__main__":
     desc="    - Tokenizing",
     total=len(tasks)
   )
-  for split, src, tgt in iterator:
+  for good, split, src, tgt in iterator:
+    if not good: # Don't let length == 0 stuff slip through
+      continue
     out_map[split].write(
       '{}\t{}\n'.format(src, tgt)
     )

@@ -107,6 +107,11 @@ build-image-train-model-code2seq: ## Build tasks/train-model-code2seq <!PRIVATE>
 	"${ROOT_DIR}/scripts/build-image.sh" \
 		train-model-code2seq
 
+.PHONY: build-image-train-model-seq2seq
+build-image-train-model-seq2seq: ## Build tasks/train-model-seq2seq <!PRIVATE>
+	"${ROOT_DIR}/scripts/build-model-image.sh" \
+		train-model-seq2seq
+
 .PHONY: build-image-download-c2s-dataset
 build-image-download-c2s-dataset: ## Builds tasks/download-c2s-dataset <!PRIVATE>
 	"${ROOT_DIR}/scripts/build-image.sh" \
@@ -353,6 +358,26 @@ build-image-preprocess-dataset-tokens: ## Builds our tokens dataset preprocessor
 	@"${ROOT_DIR}/scripts/build-image.sh" \
 		preprocess-dataset-tokens
 
+datasets/preprocessed/tokens/c2s/java-small: ## Generate a preprocessed (representation: tokens) version of code2seq's java-small dataset <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'preprocessed/tokens/c2s/java-small' (using 'tokens' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/normalized/c2s/java-small:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/preprocessed/tokens/c2s/java-small:/mnt/outputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
+
+datasets/preprocessed/tokens/c2s/java-med: ## Generate a preprocessed (representation: tokens) version of code2seq's java-med dataset <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'preprocessed/tokens/c2s/java-med' (using 'tokens' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/normalized/c2s/java-med:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/preprocessed/tokens/c2s/java-med:/mnt/outputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
+
 datasets/preprocessed/tokens/csn/python: ## Generate a preprocessed (representation: tokens) version of CodeSearchNet's Python dataset <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'preprocessed/tokens/csn/python' (using 'tokens' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
@@ -360,6 +385,16 @@ datasets/preprocessed/tokens/csn/python: ## Generate a preprocessed (representat
 	docker run -it --rm \
 		-v "${ROOT_DIR}/datasets/normalized/csn/python:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/preprocessed/tokens/csn/python:/mnt/outputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
+
+datasets/preprocessed/tokens/csn/java: ## Generate a preprocessed (representation: tokens) version of CodeSearchNet's Java dataset <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'preprocessed/tokens/csn/java' (using 'tokens' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/normalized/csn/java:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/preprocessed/tokens/csn/java:/mnt/outputs" \
 		"$${IMAGE_NAME}"
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
 
@@ -434,7 +469,7 @@ ifndef DATASET_NAME
 endif
 
 .PHONY: test-model-code2seq
-test-model-code2seq: check-dataset-name build-image-test-model-code2seq ## (DEBUG) Trains the code2seq model on the Java Small dataset.
+test-model-code2seq: check-dataset-name build-image-test-model-code2seq ## (DEBUG) Trains the code2seq model on a selected dataset.
 	@IMAGE_NAME="$(shell whoami)/averloc--test-model-code2seq:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		-v "${ROOT_DIR}/models:/models" \
@@ -442,10 +477,18 @@ test-model-code2seq: check-dataset-name build-image-test-model-code2seq ## (DEBU
 		"$${IMAGE_NAME}"
 
 .PHONY: train-model-code2seq
-train-model-code2seq: check-dataset-name build-image-train-model-code2seq ## (DEBUG) Trains the code2seq model on the Java Small dataset.
+train-model-code2seq: check-dataset-name build-image-train-model-code2seq ## (DEBUG) Trains the code2seq model on a selected dataset.
 	@IMAGE_NAME="$(shell whoami)/averloc--train-model-code2seq:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		-v "${ROOT_DIR}/tasks/train-model-code2seq/models:/mnt/outputs/models" \
+		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs" \
+		"$${IMAGE_NAME}"
+
+.PHONY: train-model-seq2seq
+train-model-seq2seq: check-dataset-name build-image-train-model-seq2seq  ## Trains the seq2seq model on a selected dataset.
+	@IMAGE_NAME="$(shell whoami)/averloc--train-model-seq2seq:$(shell git rev-parse HEAD)"
+	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		-v "${ROOT_DIR}/tasks/train-model-seq2seq/models:/mnt/outputs" \
 		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs" \
 		"$${IMAGE_NAME}"
 
