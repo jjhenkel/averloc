@@ -212,7 +212,7 @@ build-image-preprocess-dataset-c2s: ## Builds a preprocessor for generating code
 	@"${ROOT_DIR}/scripts/build-image.sh" \
 		preprocess-dataset-c2s
 
-datasets/preprocessed/ast-paths/c2s/java-small: ## Generate a preprocessed (representation: ast-paths) version of code2seq's Java small dataset (step 2/2) <!PRIVATE>
+datasets/preprocessed/ast-paths/c2s/java-small: ## Generate a preprocessed (representation: ast-paths) version of code2seq's Java small dataset <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'preprocessed/ast-paths/c2s/java-small' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
@@ -325,7 +325,7 @@ datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.All: ## <!
 extract-transformed-ast-paths: build-image-preprocess-dataset-c2s | datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.All datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.ShuffleParameters datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.ShuffleLocalVariables datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.ReplaceTrueFalse datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.Identity datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.InsertPrintStatements datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.RenameLocalVariables datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.RenameFields datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.RenameParameters 
 	@$(call echo_info,"AST Paths (code2seq style) preprocessed representations extracted (for transformed datasets)!")
 
-datasets/preprocessed/ast-paths/c2s/java-med: ## Generate a preprocessed (representation: ast-paths) version of code2seq's Java med dataset (step 2/2) <!PRIVATE>
+datasets/preprocessed/ast-paths/c2s/java-med: ## Generate a preprocessed (representation: ast-paths) version of code2seq's Java med dataset <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'preprocessed/ast-paths/c2s/java-med' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
@@ -335,7 +335,7 @@ datasets/preprocessed/ast-paths/c2s/java-med: ## Generate a preprocessed (repres
 		"$${IMAGE_NAME}" java
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
 
-datasets/preprocessed/ast-paths/csn/java: ## Generate a preprocessed (representation: ast-paths) version of CodeSearchNet's Java dataset (step 2/2) <!PRIVATE>
+datasets/preprocessed/ast-paths/csn/java: ## Generate a preprocessed (representation: ast-paths) version of CodeSearchNet's Java dataset <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'preprocessed/ast-paths/csn/java' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
@@ -348,7 +348,20 @@ datasets/preprocessed/ast-paths/csn/java: ## Generate a preprocessed (representa
 extract-ast-paths: submodules build-image-preprocess-dataset-c2s | datasets/preprocessed/ast-paths/c2s/java-small datasets/preprocessed/ast-paths/c2s/java-med datasets/preprocessed/ast-paths/csn/java ## (DS-3) Generate preprocessed data in a form usable by code2seq style models. 
 	@$(call echo_info,"AST Paths (code2seq style) preprocessed representations extracted!")
 
+.PHONY: build-image-preprocess-dataset-tokens
+build-image-preprocess-dataset-tokens: ## Builds our tokens dataset preprocessor (for seq2seq model)  <!PRIVATE>
+	@"${ROOT_DIR}/scripts/build-image.sh" \
+		preprocess-dataset-tokens
 
+datasets/preprocessed/tokens/csn/python: ## Generate a preprocessed (representation: tokens) version of CodeSearchNet's Python dataset <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'preprocessed/tokens/csn/python' (using 'tokens' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/normalized/csn/python:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/preprocessed/tokens/csn/python:/mnt/outputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
 
 .PHONY: build-image-astor-apply-transforms
 build-image-astor-apply-transforms: ## Builds our baseline generator docker image  <!PRIVATE>
