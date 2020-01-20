@@ -9,6 +9,7 @@ from seq2seq.loss import NLLLoss
 from seq2seq.evaluator.metrics import calculate_metrics
 
 import tqdm
+import time
 
 class Evaluator(object):
     """ Class to evaluate models with given datasets.
@@ -22,7 +23,7 @@ class Evaluator(object):
         self.loss = loss
         self.batch_size = batch_size
 
-    def evaluate(self, model, data, verbose=False):
+    def evaluate(self, model, data, verbose=False, src_field_name=seq2seq.src_field_name):
         """ Evaluate a model on given dataset and return performance.
 
         Args:
@@ -39,11 +40,12 @@ class Evaluator(object):
         match = 0
         total = 0
 
+
         # device = None if torch.cuda.is_available() else -1
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         batch_iterator = torchtext.data.BucketIterator(
             dataset=data, batch_size=self.batch_size,
-            sort=True, sort_key=lambda x: len(x.src),
+            sort=True, sort_key=lambda x: len(getattr(x,src_field_name)),
             device=device, train=False)
         tgt_vocab = data.fields[seq2seq.tgt_field_name].vocab
         pad = tgt_vocab.stoi[data.fields[seq2seq.tgt_field_name].pad_token]
@@ -52,17 +54,24 @@ class Evaluator(object):
         output_seqs = []
         ground_truths = []
 
+        cnt = 0
         with torch.no_grad():
 
             if verbose:
                 batch_iterator = tqdm.tqdm(batch_iterator)
 
             for batch in batch_iterator:
-                input_variables, input_lengths  = getattr(batch, seq2seq.src_field_name)
+                cnt += 1
+                # a = time.time()
+
+                # print(src_field_name)
+                input_variables, input_lengths  = getattr(batch, src_field_name)
                 target_variables = getattr(batch, seq2seq.tgt_field_name)
+                # b = time.time()
 
                 decoder_outputs, decoder_hidden, other = model(input_variables, input_lengths.tolist(), target_variables)
 
+                # c = time.time()
                 # decoder_outputs, decoder_hidden, other = model(input_variables, input_lengths.tolist())
 
                 # print(target_variables, target_variables.size())
@@ -83,16 +92,26 @@ class Evaluator(object):
                     match += correct
                     total += mask.sum().item()
 
+                # d = time.time()
+
                 # print(other['length'])
                 # print(other['sequence'])
+
                 for i,output_seq_len in enumerate(other['length']):
                     # print(i,output_seq_len)
                     tgt_id_seq = [other['sequence'][di][i].data[0] for di in range(output_seq_len)]
                     tgt_seq = [tgt_vocab.itos[tok] for tok in tgt_id_seq]
                     # print(tgt_seq)
-                    output_seqs.append(' '.join([x for x in tgt_seq if x not in ['<sos>','<eos>','<pad>']])) # exclude <eos> symbol
+                    output_seqs.append(' '.join([x for x in tgt_seq if x not in ['<sos>','<eos>','<pad>']]))
                     gt = [tgt_vocab.itos[tok] for tok in target_variables[i]]
                     ground_truths.append(' '.join([x for x in gt if x not in ['<sos>','<eos>','<pad>']]))
+
+                e = time.time()
+
+                # print(cnt, b-a, c-b, d-c, e-d)
+                torch.cuda.empty_cache()
+
+                model.encoder.embedded[0].detach()
 
         # print(output_seqs)
         # print(ground_truths)

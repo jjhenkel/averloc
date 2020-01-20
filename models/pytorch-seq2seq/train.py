@@ -2,6 +2,7 @@ import os
 import argparse
 import logging
 import time
+import csv
 
 import torch
 from torch.optim.lr_scheduler import StepLR
@@ -24,7 +25,7 @@ parser.add_argument('--dev_path', action='store', dest='dev_path',
 parser.add_argument('--expt_dir', action='store', dest='expt_dir', default='./experiment',
                     help='Path to experiment directory. If load_checkpoint is True, then path to checkpoint directory has to be provided')
 parser.add_argument('--load_checkpoint', action='store', dest='load_checkpoint',
-                    help='The name of the checkpoint to load, usually an encoded time string')
+                    help='The name of the checkpoint to load, usually an encoded time string', default=None)
 parser.add_argument('--resume', action='store_true', dest='resume',
                     default=False,
                     help='Indicates if training has to be resumed from the latest checkpoint')
@@ -66,10 +67,10 @@ params = {
             'hidden_size': 512, 
             'src_vocab_size': 50000, 
             'tgt_vocab_size': 50000, 
-            'max_len': 256, 
+            'max_len': 128, 
             'rnn_cell':'lstm',
             'batch_size': 128, 
-            'num_epochs': 30
+            'num_epochs': 15
         }
 
 logging.info(params)
@@ -84,11 +85,13 @@ def len_filter(example):
 train = torchtext.data.TabularDataset(
     path=opt.train_path, format='tsv',
     fields=[('src', src), ('tgt', tgt)],
-    filter_pred=len_filter
+    filter_pred=len_filter, 
+    csv_reader_params={'quoting': csv.QUOTE_NONE}
 )
 dev = torchtext.data.TabularDataset(
     path=opt.dev_path, format='tsv',
-    fields=[('src', src), ('tgt', tgt)]
+    fields=[('src', src), ('tgt', tgt)], 
+    csv_reader_params={'quoting': csv.QUOTE_NONE}
 )
 
 logging.info(('Size of train: %d, Size of validation: %d' %(len(train), len(dev))))
@@ -101,15 +104,15 @@ if opt.resume:
         checkpoint_path = os.path.join(opt.expt_dir, Checkpoint.CHECKPOINT_DIR_NAME, opt.load_checkpoint)
         checkpoint = Checkpoint.load(checkpoint_path)
         seq2seq = checkpoint.model
-        input_vocab = checkpoint.input_vocab
-        output_vocab = checkpoint.output_vocab
+        # input_vocab = checkpoint.input_vocab
+        # output_vocab = checkpoint.output_vocab
         src.vocab = checkpoint.input_vocab
         tgt.vocab = checkpoint.output_vocab
 else:
     src.build_vocab(train, max_size=params['src_vocab_size'])
     tgt.build_vocab(train, max_size=params['tgt_vocab_size'])
-    input_vocab = src.vocab
-    output_vocab = tgt.vocab    
+    # input_vocab = src.vocab
+    # output_vocab = tgt.vocab    
 
 # Prepare loss
 weight = torch.ones(len(tgt.vocab))
@@ -156,4 +159,5 @@ seq2seq = t.train(seq2seq, train,
                   num_epochs=params['num_epochs'], dev_data=dev,
                   optimizer=optimizer,
                   teacher_forcing_ratio=0.5,
-                  resume=opt.resume)
+                  resume=opt.resume,
+                  load_checkpoint=opt.load_checkpoint)

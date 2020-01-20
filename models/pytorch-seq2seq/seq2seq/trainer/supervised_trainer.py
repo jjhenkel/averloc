@@ -99,10 +99,13 @@ class SupervisedTrainer(object):
         # num_checkpoints = 25
         # self.checkpoint_every = (total_steps+1)//num_checkpoints
 
-        # In every run, the best model so far in terms of validation f1 is stored (checked at the end of every epoch)
-
-        best_f1 = 0.0
-        best_acc = 0.0
+        if start_step>0 and dev_data is not None:
+            dev_loss, accuracy, other_metrics, _ = self.evaluator.evaluate(model, dev_data)
+            best_f1 = other_metrics['f1']
+            best_acc = accuracy
+        else:
+            best_f1 = 0.0
+            best_acc = 0.0
 
         for epoch in range(start_epoch, n_epochs + 1):
             log.debug("Epoch: %d, Step: %d" % (epoch, step))
@@ -157,6 +160,7 @@ class SupervisedTrainer(object):
             log_msg = "Finished epoch %d: Train %s: %.4f" % (epoch, self.loss.name, epoch_loss_avg)
             self.writer.add_scalar('Train/loss_epoch', epoch_loss_avg, epoch)
 
+            other_metrics = {}
             if dev_data is not None:
                 dev_loss, accuracy, other_metrics, _ = self.evaluator.evaluate(model, dev_data)
                 self.optimizer.update(dev_loss, epoch)
@@ -191,25 +195,23 @@ class SupervisedTrainer(object):
                     log.info(log_msg)
                     best_acc = accuracy
 
-                Checkpoint(model=model,
-                               optimizer=self.optimizer,
-                               epoch=epoch, step=step,
-                               input_vocab=data.fields[seq2seq.src_field_name].vocab,
-                               output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir, name='Latest')
-                log_msg = 'Latest Checkpoint saved, Epoch %d, %s' % (epoch, str(other_metrics))
-                log.info(log_msg)
-
                 model.train(mode=True)
 
             else:
                 self.optimizer.update(epoch_loss_avg, epoch)
 
+            Checkpoint(model=model,
+                               optimizer=self.optimizer,
+                               epoch=epoch, step=step,
+                               input_vocab=data.fields[seq2seq.src_field_name].vocab,
+                               output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir, name='Latest')
+            log_msg = 'Latest Checkpoint saved, Epoch %d, %s' % (epoch, str(other_metrics))
             log.info(log_msg)
 
 
     def train(self, model, data, num_epochs=5,
               resume=False, dev_data=None,
-              optimizer=None, teacher_forcing_ratio=0):
+              optimizer=None, teacher_forcing_ratio=0, load_checkpoint=None):
         """ Run training for a given model.
 
         Args:
@@ -227,8 +229,9 @@ class SupervisedTrainer(object):
         """
         # If training is set to resume
         if resume:
-            latest_checkpoint_path = Checkpoint.get_latest_checkpoint(self.expt_dir)
-            resume_checkpoint = Checkpoint.load(latest_checkpoint_path)
+            if load_checkpoint is None:
+                load_checkpoint = Checkpoint.get_latest_checkpoint(self.expt_dir)
+            resume_checkpoint = Checkpoint.load(load_checkpoint)
             model = resume_checkpoint.model
             self.optimizer = resume_checkpoint.optimizer
 

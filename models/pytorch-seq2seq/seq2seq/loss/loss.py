@@ -132,7 +132,7 @@ class Perplexity(NLLLoss):
     _MAX_EXP = 100
 
     def __init__(self, weight=None, mask=None):
-        super(Perplexity, self).__init__(weight=weight, mask=mask, size_average=False)
+        super(Perplexity, self).__init__(weight=weight, mask=mask, size_average=True)
 
     def eval_batch(self, outputs, target):
         self.acc_loss += self.criterion(outputs, target)
