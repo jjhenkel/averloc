@@ -1,3 +1,2 @@
-# adversarial-ml-on-code-stuff
+# averloc
 Repository for the Adversarial ML on Code things
-

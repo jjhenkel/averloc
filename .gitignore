@@ -1,5 +1,4 @@
 *.tsv
-!data-prep/python/example-data.tsv
 datasets/backups
 
 # Byte-compiled / optimized / DLL files
@@ -106,3 +105,14 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# data files
+*multi30k*
+*.tsv
+*.data
+*.labels
+
+# torch checkpoints
+*.pt
+*.chkpt
+
