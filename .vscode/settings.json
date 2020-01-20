@@ -1,0 +1,5 @@
+{
+  "files.watcherExclude": {
+    "datasets/**": true
+  }
+}

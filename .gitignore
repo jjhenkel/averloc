@@ -1,4 +1,5 @@
 *.tsv
+datasets/backups
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -114,3 +115,4 @@ venv.bak/
 # torch checkpoints
 *.pt
 *.chkpt
+
