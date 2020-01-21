@@ -5,8 +5,10 @@ import ast
 import json
 import gzip
 import copy
+import tqdm
 import astor
 import random
+import multiprocessing
 
 
 PY_2_BUILTINS = [
@@ -157,21 +159,6 @@ PY_2_BUILTINS = [
 ]
 
 
-WORDBANK = [
-  'foo',
-  'bar',
-  'baz',
-  'brent',
-  'zoo',
-  'snow',
-  'winter',
-  'tree',
-  'fall',
-  'plant',
-  'each',
-  'everything'
-]
-
 def derange(defs):
   def swap(lst, s1, s2):
     tmp = lst[s1]
@@ -188,20 +175,19 @@ def derange(defs):
   for i in range(0, len(just_names)):
     renames[just_names[i]] = og_names[i]
   
-  print(renames)
   return renames
 
-def generate_renaming(defs, min_name_len, max_name_len):
+def generate_renaming(wordbank, defs, min_name_len, max_name_len):
   renames = {}
   for the_def in defs.keys():
     subtokens_len = random.randint(min_name_len, max_name_len)
     renames[the_def] = '_'.join(
-      random.sample(WORDBANK, subtokens_len)
+      random.sample(wordbank, subtokens_len)
     )
   return renames
 
 
-def t_rename_fields(the_ast, select_percantage=1.0, min_name_len=1, max_name_len=5):
+def t_rename_fields(the_ast, wordbank, select_percantage=1.0, min_name_len=1, max_name_len=5):
   changed = False
 
   # Going to need parent info
@@ -226,7 +212,7 @@ def t_rename_fields(the_ast, select_percantage=1.0, min_name_len=1, max_name_len
   for selected in selections:
     field_references[selected.attr] = selected
 
-  renames = generate_renaming(field_references, min_name_len, max_name_len)
+  renames = generate_renaming(wordbank, field_references, min_name_len, max_name_len)
 
   to_rename = []
   for node in ast.walk(the_ast):
@@ -243,7 +229,7 @@ def t_rename_fields(the_ast, select_percantage=1.0, min_name_len=1, max_name_len
   return changed, the_ast
 
 
-def t_rename_parameters(the_ast, shuffle, select_percantage=1.0, min_name_len=1, max_name_len=5):
+def t_rename_parameters(the_ast, wordbank, shuffle=False, select_percantage=1.0, min_name_len=1, max_name_len=5):
   changed = False
   candidates = []
   for node in ast.walk(the_ast):
@@ -264,7 +250,7 @@ def t_rename_parameters(the_ast, shuffle, select_percantage=1.0, min_name_len=1,
     return False, the_ast
 
   renames = generate_renaming(
-    parameter_defs, min_name_len, max_name_len
+    wordbank, parameter_defs, min_name_len, max_name_len
   ) if not shuffle else derange(parameter_defs)
 
   to_rename = []
@@ -284,7 +270,7 @@ def t_rename_parameters(the_ast, shuffle, select_percantage=1.0, min_name_len=1,
   return changed, the_ast
 
 
-def t_rename_local_variables(the_ast, shuffle, select_percantage=0.8, min_name_len=1, max_name_len=5):
+def t_rename_local_variables(the_ast, wordbank, shuffle=False, select_percantage=0.8, min_name_len=1, max_name_len=5):
   changed = False
   candidates = []
   for node in ast.walk(the_ast):
@@ -305,7 +291,7 @@ def t_rename_local_variables(the_ast, shuffle, select_percantage=0.8, min_name_l
     return False, the_ast
 
   renames = generate_renaming(
-    local_var_defs, min_name_len, max_name_len
+    wordbank, local_var_defs, min_name_len, max_name_len
   ) if not shuffle else derange(local_var_defs)
 
   to_rename = []
@@ -320,15 +306,15 @@ def t_rename_local_variables(the_ast, shuffle, select_percantage=0.8, min_name_l
   return changed, the_ast
 
 
-def t_shuffle_parameters(the_ast):
-  return t_rename_parameters(the_ast, True)
+def t_shuffle_parameters(the_ast, wordbank):
+  return t_rename_parameters(the_ast, wordbank, True)
 
 
-def t_shuffle_local_variables(the_ast):
-  return t_rename_local_variables(the_ast, True)
+def t_shuffle_local_variables(the_ast, wordbank):
+  return t_rename_local_variables(the_ast, wordbank, True)
 
 
-def t_insert_print_statements(the_ast, min_insertions=2, max_insertions=6, literal_min_len=2, literal_max_len=7):
+def t_insert_print_statements(the_ast, wordbank, min_insertions=2, max_insertions=6, literal_min_len=2, literal_max_len=7):
   
   if len(the_ast.body) == 0 or not isinstance(the_ast.body[0], ast.FunctionDef):
     return False, the_ast
@@ -337,7 +323,7 @@ def t_insert_print_statements(the_ast, min_insertions=2, max_insertions=6, liter
   while num_done < random.randint(min_insertions, max_insertions):
     subtokens_len = random.randint(literal_min_len, literal_max_len)
     literal = '_'.join(
-      random.sample(WORDBANK, subtokens_len)
+      random.sample(wordbank, subtokens_len)
     )
   
     if bool(random.getrandbits(1)):
@@ -367,7 +353,7 @@ def t_insert_print_statements(the_ast, min_insertions=2, max_insertions=6, liter
   return True, the_ast
 
 
-def t_replace_true_false(the_ast):
+def t_replace_true_false(the_ast, wordbank):
   class ReplaceTrueFalse(ast.NodeTransformer):
     def visit_NameConstant(self, node):
       if node.value != True and node.value != False:
@@ -390,38 +376,104 @@ def t_replace_true_false(the_ast):
   return changed, ReplaceTrueFalse().visit(the_ast)
 
 
-def t_all(the_ast):
-  changed1, s1 = t_rename_local_variables(the_ast, False)
-  changed2, s2 = t_rename_parameters(s1, False)
-  changed3, s3 = t_rename_fields(s2)
-  changed4, s4 = t_replace_true_false(s3)
-  changed5, s5 = t_insert_print_statements(s4)
+def t_all(the_ast, wordbank):
+  changed1, s1 = t_rename_local_variables(the_ast, wordbank, False)
+  changed2, s2 = t_rename_parameters(s1, wordbank, False)
+  changed3, s3 = t_rename_fields(s2, wordbank)
+  changed4, s4 = t_replace_true_false(s3, wordbank)
+  changed5, s5 = t_insert_print_statements(s4, wordbank)
 
   changed = changed1 or changed2 or changed3 or changed4 or changed5
 
   return changed, s5
 
 
-def t_identity(the_ast):
+def t_identity(the_ast, wordbank):
   return True, the_ast
 
 
+def process(item):
+  (split, t_name, the_hash, og_code, transformer, wordbank) = item
+
+  try:
+    changed, result = transformer(
+      ast.parse(og_code), wordbank
+    )
+    return changed, split, t_name, the_hash, astor.to_source(result) 
+  except Exception as ex:
+    # import traceback
+    # traceback.print_exc()
+    return False, split, t_name, the_hash, og_code
+
+
 if __name__ == "__main__":
+  print("Starting transform:")
+  pool = multiprocessing.Pool()
+
+  WORDBANK = []
+  with open('/app/wordbank.txt') as wordf:
+    WORDBANK = list(filter(None, [ x.strip() for x in wordf.readlines() ]))
+
+  tasks = []
+
+  transforms = [
+    (
+      'transforms.Identity',
+      t_identity
+    ),
+    (
+      'transforms.All',
+      t_all
+    ),
+    (
+      'transforms.ReplaceTrueFalse',
+      t_replace_true_false
+    ),
+    (
+      'transforms.InsertPrintStatements',
+      t_insert_print_statements
+    ),
+    (
+      'transforms.RenameLocalVariables',
+      t_rename_local_variables
+    ),
+    (
+      'transforms.RenameFields',
+      t_rename_fields
+    ),
+    (
+      'transforms.RenameParameters',
+      t_rename_parameters
+    ),
+    (
+      'transforms.ShuffleParameters',
+      t_shuffle_parameters
+    ),
+    (
+      'transforms.ShuffleLocalVariables',
+      t_shuffle_local_variables
+    )
+  ]
+
+  print("  + Will apply {} transforms".format(len(transforms)))
+
+  print("  + Loading tasks...")
   for split in ['test']:
-    counter = 0
     for line in gzip.open('/mnt/inputs/{}.jsonl.gz'.format(split)):
       as_json = json.loads(line)
-      # Working with normalized *.jsonl.gz's so source_code exists
       the_code = as_json['source_code']
-      try:
-        # print(the_code)
-        the_ast = ast.parse(the_code)
-        # print(astor.dump_tree(the_ast))
-        changed, result = t_all(copy.deepcopy(the_ast))
-        if changed:
-          counter += 1
-         
-      except Exception as ex:
-        print(str(ex))
+      for t_name, t_func in transforms:
+        os.makedirs('/mnt/raw-outputs/{}/{}'.format(t_name, split), exist_ok=True)
+        tasks.append((split, t_name, as_json['sha256_hash'], the_code, t_func, WORDBANK))
+  print("    + Loaded {} transform tasks".format(len(tasks)))
 
+  results = pool.imap_unordered(process, tasks, 5000)
 
+  print("  + Transforming in parallel...")
+  for changed, split, t_name, the_hash, code in tqdm.tqdm(results, desc="    + Progress", total=len(tasks)):
+    if not changed:
+      continue
+    with open('/mnt/raw-outputs/{}/{}/{}.java'.format(t_name, split, the_hash), 'w') as fout:
+      fout.write('{}\n'.format(code))
+
+  print("  + Transforms complete!")

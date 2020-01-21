@@ -410,6 +410,7 @@ test-astor: ## Tests our astor transformer (for python) <!PRIVATE>
 	docker run -it --rm \
 		-v "${ROOT_DIR}/datasets/normalized/csn/python:/mnt/inputs" \
 		-v "${ROOT_DIR}/tasks/astor-apply-transforms:/app" \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python:/mnt/outputs" \
 		"$${IMAGE_NAME}"
 
 .PHONY: build-image-generate-baselines
