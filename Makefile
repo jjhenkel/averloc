@@ -75,7 +75,7 @@ help: ## (MISC) This help.
 		| grep -v '<!PRIVATE>' \
 		| sort -t'(' -k2 \
 		| awk 'BEGIN {FS = ":.*?## "}; \
-		       {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+		       {printf "\033[36m%-34s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: docker-cleanup
 .SILENT: docker-cleanup
@@ -398,6 +398,100 @@ datasets/preprocessed/tokens/csn/java: ## Generate a preprocessed (representatio
 		"$${IMAGE_NAME}"
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
 
+datasets/transformed/preprocessed/tokens/csn/python/transforms.Identity: ## Generate a preprocessed (representation: tokens) version of csn's python dataset (under: transforms.Identity) <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/csn/python/transforms.Identity' (using 'tokens' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python/transforms.Identity:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/python/transforms.Identity:/mnt/outputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
+
+datasets/transformed/preprocessed/tokens/csn/python/transforms.InsertPrintStatements: ## Generate a preprocessed (representation: tokens) version of csn's python dataset (under: transforms.InsertPrintStatements) <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/csn/python/transforms.InsertPrintStatements' (using 'tokens' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python/transforms.InsertPrintStatements:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/python/transforms.InsertPrintStatements:/mnt/outputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
+
+datasets/transformed/preprocessed/tokens/csn/python/transforms.All: ## Generate a preprocessed (representation: tokens) version of csn's python dataset (under: transforms.All) <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/csn/python/transforms.All' (using 'tokens' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python/transforms.All:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/python/transforms.All:/mnt/outputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
+
+datasets/transformed/preprocessed/tokens/csn/python/transforms.ReplaceTrueFalse: ## Generate a preprocessed (representation: tokens) version of csn's python dataset (under: transforms.ReplaceTrueFalse) <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/csn/python/transforms.ReplaceTrueFalse' (using 'tokens' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python/transforms.ReplaceTrueFalse:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/python/transforms.ReplaceTrueFalse:/mnt/outputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
+
+datasets/transformed/preprocessed/tokens/csn/python/transforms.RenameFields: ## Generate a preprocessed (representation: tokens) version of csn's python dataset (under: transforms.RenameFields) <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/csn/python/transforms.RenameFields' (using 'tokens' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python/transforms.RenameFields:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/python/transforms.RenameFields:/mnt/outputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
+
+datasets/transformed/preprocessed/tokens/csn/python/transforms.RenameParameters: ## Generate a preprocessed (representation: tokens) version of csn's python dataset (under: transforms.RenameParameters) <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/csn/python/transforms.RenameParameters' (using 'tokens' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python/transforms.RenameParameters:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/python/transforms.RenameParameters:/mnt/outputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
+
+datasets/transformed/preprocessed/tokens/csn/python/transforms.RenameLocalVariables: ## Generate a preprocessed (representation: tokens) version of csn's python dataset (under: transforms.RenameLocalVariables) <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/csn/python/transforms.RenameLocalVariables' (using 'tokens' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python/transforms.RenameLocalVariables:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/python/transforms.RenameLocalVariables:/mnt/outputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
+
+datasets/transformed/preprocessed/tokens/csn/python/transforms.ShuffleLocalVariables: ## Generate a preprocessed (representation: tokens) version of csn's python dataset (under: transforms.ShuffleLocalVariables) <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/csn/python/transforms.ShuffleLocalVariables' (using 'tokens' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python/transforms.ShuffleLocalVariables:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/python/transforms.ShuffleLocalVariables:/mnt/outputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
+
+datasets/transformed/preprocessed/tokens/csn/python/transforms.ShuffleParameters: ## Generate a preprocessed (representation: tokens) version of csn's python dataset (under: transforms.ShuffleParameters) <!PRIVATE>
+	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/csn/python/transforms.ShuffleParameters' (using 'tokens' representation)...")
+	@$(call mkdir_cleanup_on_error,$@)
+	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python/transforms.ShuffleParameters:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/python/transforms.ShuffleParameters:/mnt/outputs" \
+		"$${IMAGE_NAME}"
+	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
+
+.PHONY: extract-transformed-tokens-csn-python
+extract-transformed-tokens-csn-python: build-image-preprocess-dataset-tokens | datasets/transformed/preprocessed/tokens/csn/python/transforms.All datasets/transformed/preprocessed/tokens/csn/python/transforms.ShuffleParameters datasets/transformed/preprocessed/tokens/csn/python/transforms.ShuffleLocalVariables datasets/transformed/preprocessed/tokens/csn/python/transforms.ReplaceTrueFalse datasets/transformed/preprocessed/tokens/csn/python/transforms.Identity datasets/transformed/preprocessed/tokens/csn/python/transforms.InsertPrintStatements datasets/transformed/preprocessed/tokens/csn/python/transforms.RenameLocalVariables datasets/transformed/preprocessed/tokens/csn/python/transforms.RenameFields datasets/transformed/preprocessed/tokens/csn/python/transforms.RenameParameters 
+	@$(call echo_info,"Tokens preprocessed representations extracted (for transformed datasets)!")
+
 .PHONY: build-image-astor-apply-transforms
 build-image-astor-apply-transforms: ## Builds our baseline generator docker image  <!PRIVATE>
 	@"${ROOT_DIR}/scripts/build-image.sh" \
@@ -418,7 +512,7 @@ build-image-generate-baselines: ## Builds our baseline generator docker image  <
 	@"${ROOT_DIR}/scripts/build-image.sh" \
 		generate-baselines
 
-generate-baselines: build-image-generate-baselines ## Generate baselines (projected test sets) for our various transforms
+generate-baselines: build-image-generate-baselines ## (DS-5) Generate baselines (projected test sets) for our various transforms
 	@IMAGE_NAME="$(shell whoami)/averloc--generate-baselines:$(shell git rev-parse HEAD)"
 	@$(call echo_debug,"Generating transforms.*/baseline.jsonl.gz files...")
 	docker run -it --rm \
@@ -470,7 +564,7 @@ ifndef DATASET_NAME
 endif
 
 .PHONY: test-model-code2seq
-test-model-code2seq: check-dataset-name build-image-test-model-code2seq ## (DEBUG) Trains the code2seq model on a selected dataset.
+test-model-code2seq: check-dataset-name build-image-test-model-code2seq ## (TEST) Tests the code2seq model on a selected dataset.
 	@IMAGE_NAME="$(shell whoami)/averloc--test-model-code2seq:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		-v "${ROOT_DIR}/models:/models" \
@@ -478,7 +572,7 @@ test-model-code2seq: check-dataset-name build-image-test-model-code2seq ## (DEBU
 		"$${IMAGE_NAME}"
 
 .PHONY: train-model-code2seq
-train-model-code2seq: check-dataset-name build-image-train-model-code2seq ## (DEBUG) Trains the code2seq model on a selected dataset.
+train-model-code2seq: check-dataset-name build-image-train-model-code2seq ## (TRAIN) Trains the code2seq model on a selected dataset.
 	@IMAGE_NAME="$(shell whoami)/averloc--train-model-code2seq:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		-v "${ROOT_DIR}/tasks/train-model-code2seq/models:/mnt/outputs/models" \
@@ -486,7 +580,7 @@ train-model-code2seq: check-dataset-name build-image-train-model-code2seq ## (DE
 		"$${IMAGE_NAME}"
 
 .PHONY: train-model-seq2seq
-train-model-seq2seq: check-dataset-name build-image-train-model-seq2seq  ## Trains the seq2seq model on a selected dataset.
+train-model-seq2seq: check-dataset-name build-image-train-model-seq2seq  ## (TRAIN) Trains the seq2seq model on a selected dataset.
 	@IMAGE_NAME="$(shell whoami)/averloc--train-model-seq2seq:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		-v "${ROOT_DIR}/tasks/train-model-seq2seq/models:/mnt/outputs" \
@@ -500,31 +594,74 @@ danger-clear-ast-paths-java-small: ## Clears out the datasets/preprocessed/ast-p
 		debian:9 \
 			rm -rf /mnt/_staging/c2s/java-small /mnt/c2s/java-small
 
+
+.PHONY: build-image-extract-adv-dataset-tokens
+build-image-extract-adv-dataset-tokens: ## Builds our adversarial dataset extractor (representation: tokens). <!PRIVATE>
+	@"${ROOT_DIR}/scripts/build-image.sh" \
+		extract-adv-dataset-tokens
+
+.PHONY: extract-adv-dataset-tokens-csn-python
+extract-adv-dataset-tokens-csn-python: build-image-extract-adv-dataset-tokens
+	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-tokens:$(shell git rev-parse HEAD)"
+	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/python:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/adversarial/tokens/csn/python:/mnt/outputs" \
+		"$${IMAGE_NAME}" \
+			transforms.RenameParameters \
+			transforms.RenameFields \
+			transforms.RenameLocalVariables \
+			transforms.ShuffleParameters \
+			transforms.ShuffleLocalVariables \
+			transforms.ReplaceTrueFalse \
+			transforms.InsertPrintStatements
+
 .PHONY: build-image-spoon-apply-transforms
 build-image-spoon-apply-transforms: ## Builds our dockerized version of spoon. <!PRIVATE>
 	@"${ROOT_DIR}/scripts/build-image.sh" \
 		spoon-apply-transforms
 
 .PHONY: apply-transforms-c2s-java-small
-apply-transforms-c2s-java-small: build-image-spoon-apply-transforms ## Apply our suite of transforms to code2seq's java-small dataset.
+apply-transforms-c2s-java-small: build-image-spoon-apply-transforms ## (DS-4) Apply our suite of transforms to code2seq's java-small dataset.
 	@IMAGE_NAME="$(shell whoami)/averloc--spoon-apply-transforms:$(shell git rev-parse HEAD)"
 	docker run -it --rm \
 		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
 		-v "${ROOT_DIR}/datasets/normalized/c2s/java-small:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small:/mnt/outputs" \
-	    -v "${ROOT_DIR}/vendor/CodeSearchNet/function_parser/function_parser:/src/function-parser/function_parser" \
+	  -v "${ROOT_DIR}/vendor/CodeSearchNet/function_parser/function_parser:/src/function-parser/function_parser" \
 		-v "${ROOT_DIR}/tasks/spoon-apply-transforms/Transforms.java:/app/Transforms.java" \
 		-v "${ROOT_DIR}/tasks/spoon-apply-transforms/transforms:/app/transforms" \
 		"$${IMAGE_NAME}"
 
 .PHONY: apply-transforms-c2s-java-med
-apply-transforms-c2s-java-med: build-image-spoon-apply-transforms ## Apply our suite of transforms to code2seq's java-med dataset.
+apply-transforms-c2s-java-med: build-image-spoon-apply-transforms ## (DS-4) Apply our suite of transforms to code2seq's java-med dataset.
 	@IMAGE_NAME="$(shell whoami)/averloc--spoon-apply-transforms:$(shell git rev-parse HEAD)"
 	docker run -it --rm \
 		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
 		-v "${ROOT_DIR}/datasets/normalized/c2s/java-med:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-med:/mnt/outputs" \
-	    -v "${ROOT_DIR}/vendor/CodeSearchNet/function_parser/function_parser:/src/function-parser/function_parser" \
+	  -v "${ROOT_DIR}/vendor/CodeSearchNet/function_parser/function_parser:/src/function-parser/function_parser" \
 		-v "${ROOT_DIR}/tasks/spoon-apply-transforms/Transforms.java:/app/Transforms.java" \
 		-v "${ROOT_DIR}/tasks/spoon-apply-transforms/transforms:/app/transforms" \
+		"$${IMAGE_NAME}"
+
+.PHONY: apply-transforms-csn-java
+apply-transforms-csn-java: build-image-spoon-apply-transforms ## (DS-4) Apply our suite of transforms to CodeSearchNet's java dataset.
+	@IMAGE_NAME="$(shell whoami)/averloc--spoon-apply-transforms:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
+		-v "${ROOT_DIR}/datasets/normalized/csn/java:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/csn/java:/mnt/outputs" \
+	  -v "${ROOT_DIR}/vendor/CodeSearchNet/function_parser/function_parser:/src/function-parser/function_parser" \
+		-v "${ROOT_DIR}/tasks/spoon-apply-transforms/Transforms.java:/app/Transforms.java" \
+		-v "${ROOT_DIR}/tasks/spoon-apply-transforms/transforms:/app/transforms" \
+		"$${IMAGE_NAME}"
+
+.PHONY: apply-transforms-csn-python
+apply-transforms-csn-python: build-image-astor-apply-transforms ## (DS-4) Apply our suite of transforms to CodeSearchNet's python dataset.
+	@IMAGE_NAME="$(shell whoami)/averloc--astor-apply-transforms:$(shell git rev-parse HEAD)"
+	@$(call echo_debug,"Testing astor on normalized csn/python files...")
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/normalized/csn/python:/mnt/inputs" \
+		-v "${ROOT_DIR}/tasks/astor-apply-transforms:/app" \
+		-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python:/mnt/outputs" \
 		"$${IMAGE_NAME}"

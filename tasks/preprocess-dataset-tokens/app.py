@@ -47,15 +47,16 @@ def normalize_subtoken(subtoken):
 
 def process(item):
   src = list(filter(None, [
-    normalize_subtoken(subtok) for subtok in subtokens(item[1])
+    normalize_subtoken(subtok) for subtok in subtokens(item[2])
   ]))
   tgt = list(filter(None, [
-    normalize_subtoken(subtok) for subtok in clean_name(item[2])
+    normalize_subtoken(subtok) for subtok in clean_name(item[3])
   ]))
 
   return (
     len(src) > 0 and len(tgt) > 0,
     item[0],
+    item[1],
     ' '.join(src),
     ' '.join(tgt)
   )
@@ -68,7 +69,8 @@ if __name__ == "__main__":
   for split in ["test", "train", "valid"]:
     for line in gzip.open('/mnt/inputs/{}.jsonl.gz'.format(split)):
       as_json = json.loads(line)
-      tasks.append((split, as_json['source_tokens'], as_json['target_tokens']))
+      from_file = as_json['from_file'] if 'from_file' in as_json else '{}.java'.format(as_json['sha256_hash'])
+      tasks.append((split, from_file, as_json['source_tokens'], as_json['target_tokens']))
   
   pool = multiprocessing.Pool()
   print("  + Inputs loaded")
@@ -80,9 +82,9 @@ if __name__ == "__main__":
   }
   print("  + Output files opened")
 
-  out_map['train'].write('src\ttgt\n')
-  out_map['test'].write('src\ttgt\n')
-  out_map['valid'].write('src\ttgt\n')
+  out_map['train'].write('from_file\tsrc\ttgt\n')
+  out_map['test'].write('from_file\tsrc\ttgt\n')
+  out_map['valid'].write('from_file\tsrc\ttgt\n')
 
   print("  - Processing in parallel...")
   iterator =  tqdm.tqdm(
@@ -90,11 +92,11 @@ if __name__ == "__main__":
     desc="    - Tokenizing",
     total=len(tasks)
   )
-  for good, split, src, tgt in iterator:
+  for good, split, from_file, src, tgt in iterator:
     if not good: # Don't let length == 0 stuff slip through
       continue
     out_map[split].write(
-      '{}\t{}\n'.format(src, tgt)
+      '{}\t{}\t{}\n'.format(from_file, src, tgt)
     )
   print("    + Tokenizing complete")
   print("  + Done extracting tokens")

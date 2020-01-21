@@ -458,7 +458,7 @@ if __name__ == "__main__":
   print("  + Will apply {} transforms".format(len(transforms)))
 
   print("  + Loading tasks...")
-  for split in ['test']:
+  for split in ['test', 'train', 'valid']:
     for line in gzip.open('/mnt/inputs/{}.jsonl.gz'.format(split)):
       as_json = json.loads(line)
       the_code = as_json['source_code']
