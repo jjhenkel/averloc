@@ -3,6 +3,7 @@ from seq2seq.util.checkpoint import Checkpoint
 from seq2seq.dataset import SourceField, TargetField
 from seq2seq.evaluator import Evaluator
 import os
+import csv
 import torchtext
 import torch
 import argparse
