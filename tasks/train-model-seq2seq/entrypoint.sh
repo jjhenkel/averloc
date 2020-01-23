@@ -4,7 +4,7 @@ set -ex
 
 mkdir -p /mnt/outputs
 
-if [ "${1}" == "--regular_training" ]; then
+if [ "${1}" = "--regular_training" ]; then
 
 python /model/train.py \
   --train_path /mnt/inputs/train.tsv \
