@@ -664,9 +664,8 @@ train-model-seq2seq: check-dataset-name check-gpu check-models-out build-image-t
 	@IMAGE_NAME="$(shell whoami)/averloc--train-model-seq2seq:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		--gpus "device=$${GPU}" \
-		-v "${ROOT_DIR}/tasks/train-model-seq2seq/models:/mnt/outputs" \
+		-v "${ROOT_DIR}/$${MODELS_OUT}:/mnt/outputs" \
 		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs" \
-		-v "${ROOT_DIR}/$${MODELS_OUT:/mnt/models_out" \
 		"$${IMAGE_NAME}" $${ARGS}
 
 #######################################################################################################################
