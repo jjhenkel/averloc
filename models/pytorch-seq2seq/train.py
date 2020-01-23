@@ -70,7 +70,7 @@ params = {
             'max_len': 128, 
             'rnn_cell':'lstm',
             'batch_size': 128, 
-            'num_epochs': 15
+            'num_epochs': 10
         }
 
 logging.info(params)
