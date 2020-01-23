@@ -6,4 +6,4 @@ docker run -it --rm \
   -v "${DIR}/../datasets/transformed/preprocessed/ast-paths:/mnt" \
   --entrypoint bash \
   debian:9 \
-    -c 'rm -rf /mnt/c2s/* /mnt/csn/*'
+    -c 'rm -rf /mnt/c2s/* /mnt/csn/* /mnt/sri/*'

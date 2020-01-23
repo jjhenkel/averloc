@@ -12,6 +12,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.logging.log4j.*;
+import org.apache.logging.log4j.core.config.Configurator;
+
 import transforms.*;
 
 import com.google.gson.*;
@@ -222,7 +225,7 @@ class TransformFileTask implements Runnable {
 						// ex2.printStackTrace(System.out);
 						System.out.println(
 							String.format(
-								"        * Failed to build model for: %s",
+								"     * Failed to build model for: %s",
 								singleInput.getName()
 							)
 						);
@@ -233,7 +236,7 @@ class TransformFileTask implements Runnable {
 		}
 
 		int finished = counter.incrementAndGet();
-		System.out.println(String.format("        + Tasks finished: %s", finished));
+		System.out.println(String.format("     + Tasks finished: %s", finished));
 	}
 }
 
@@ -335,6 +338,9 @@ public class Transforms {
 
 	public static void main(String[] args) {
 		try {
+
+			Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.OFF);
+
 			ArrayList<Callable<Void>> allTasks = new ArrayList<Callable<Void>>();
 
 			if (System.getenv("AVERLOC_JUST_TEST").equalsIgnoreCase("true")) {

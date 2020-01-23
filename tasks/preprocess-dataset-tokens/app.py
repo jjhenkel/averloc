@@ -1,7 +1,9 @@
 import re
+import os
 import gzip
 import json
 import tqdm
+import os.path
 import multiprocessing
 
 
@@ -65,8 +67,14 @@ def process(item):
 if __name__ == "__main__":
   print("Loading inputs...")
 
+  has_baselines = False
+
   tasks = []
-  for split in ["test", "train", "valid"]:
+  for split in ["test", "train", "valid", "baseline"]:
+    if not os.path.isfile('/mnt/inputs/{}.jsonl.gz'.format(split)):
+      continue
+    if split == 'baseline':
+      has_baselines = True
     for line in gzip.open('/mnt/inputs/{}.jsonl.gz'.format(split)):
       as_json = json.loads(line)
       from_file = as_json['from_file'] if 'from_file' in as_json else '{}.java'.format(as_json['sha256_hash'])
@@ -80,6 +88,12 @@ if __name__ == "__main__":
     'test': open('/mnt/outputs/test.tsv', 'w'),
     'valid': open('/mnt/outputs/valid.tsv', 'w'),
   }
+
+  if has_baselines:
+    print("  + Has baselines file")
+    out_map['baseline'] = open('/mnt/outputs/baseline.tsv', 'w')
+    out_map['baseline'].write('from_file\tsrc\ttgt\n')
+  
   print("  + Output files opened")
 
   out_map['train'].write('from_file\tsrc\ttgt\n')

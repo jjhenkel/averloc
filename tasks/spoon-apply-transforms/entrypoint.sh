@@ -2,7 +2,7 @@
 
 trap "echo Exited!; exit 1;" SIGINT SIGTERM
 
-java -XX:-UsePerfData -Xmx128g -d64 -cp /app/spoon.jar:/app/gson.jar:/app Transforms
+java -XX:-UsePerfData -Xmx128g -d64 -cp /app/spoon.jar:/app/gson.jar:/app/log4j-core.jar:/app/log4j-api.jar:/app Transforms
 
 echo "Starting normalizer:"
 find /mnt/raw-outputs/ -mindepth 2 -maxdepth 2 -type d | \

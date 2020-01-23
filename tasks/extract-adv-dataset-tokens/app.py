@@ -5,6 +5,8 @@ import tqdm
 
 
 if __name__ == "__main__":
+  csv.field_size_limit(sys.maxsize)
+
   ID_MAP = {}
 
   print("Loading identity transform...")

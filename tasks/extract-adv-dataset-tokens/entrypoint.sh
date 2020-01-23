@@ -2,5 +2,5 @@
 
 python3 /app/app.py $@
 
-cp /mnt/inputs/transforms.Identity/valid.tsv /mnt/outputs/valid.tsv
-cp /mnt/inputs/transforms.Identity/test.tsv /mnt/outputs/test.tsv
+cat /mnt/inputs/transforms.Identity/valid.tsv | awk -F'\t' '{ print $2 "\t" $3 }' > /mnt/outputs/valid.tsv
+cat /mnt/inputs/transforms.Identity/test.tsv | awk -F'\t' '{ print $2 "\t" $3 }' > /mnt/outputs/test.tsv
