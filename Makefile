@@ -631,6 +631,18 @@ ifndef DATASET_NAME
 	$(error DATASET_NAME is a required parameter for this target.)
 endif
 
+.PHONY: check-models-out
+check-models-out:
+ifndef MODELS_OUT
+	$(error MODELS_OUT is a required parameter for this target.)
+endif
+
+.PHONY: check-gpu
+check-gpu:
+ifndef GPU
+	$(error GPU is a required parameter for this target.)
+endif
+
 .PHONY: test-model-code2seq
 test-model-code2seq: check-dataset-name build-image-test-model-code2seq ## (TEST) Tests the code2seq model on a selected dataset.
 	@IMAGE_NAME="$(shell whoami)/averloc--test-model-code2seq:$(shell git rev-parse HEAD)"
@@ -648,12 +660,14 @@ train-model-code2seq: check-dataset-name build-image-train-model-code2seq ## (TR
 		"$${IMAGE_NAME}"
 
 .PHONY: train-model-seq2seq
-train-model-seq2seq: check-dataset-name build-image-train-model-seq2seq  ## (TRAIN) Trains the seq2seq model on a selected dataset.
+train-model-seq2seq: check-dataset-name check-gpu check-models-out build-image-train-model-seq2seq  ## (TRAIN) Trains the seq2seq model on a selected dataset.
 	@IMAGE_NAME="$(shell whoami)/averloc--train-model-seq2seq:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		--gpus "device=$${GPU}" \
 		-v "${ROOT_DIR}/tasks/train-model-seq2seq/models:/mnt/outputs" \
 		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs" \
-		"$${IMAGE_NAME}"
+		-v "${ROOT_DIR}/$${MODELS_OUT:/mnt/models_out" \
+		"$${IMAGE_NAME}" ${ARGS}
 
 #######################################################################################################################
 #######################################################################################################################
