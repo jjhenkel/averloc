@@ -153,7 +153,7 @@ class SupervisedAdversarialTrainer(object):
 
                 chosen_src_field_name, max_loss, d  = self._get_best_attack(batch, model, attacks)
 
-                chosen_attack_counts[chosen_src_field_name] += 1
+                # chosen_attack_counts[chosen_src_field_name] += 1
 
                 # print(chosen_src_field_name, max_loss, d)
                 # exit()
