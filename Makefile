@@ -460,7 +460,7 @@ datasets/transformed/preprocessed/ast-paths/sri/py150: build-image-preprocess-da
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
 
 ETAP_DEPS := datasets/transformed/preprocessed/ast-paths/c2s/java-small
-ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/c2s/java-med
+# ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/c2s/java-med
 ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/csn/java
 ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/csn/python
 ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/sri/py150
@@ -667,7 +667,7 @@ train-model-seq2seq: check-dataset-name check-gpu check-models-out build-image-t
 		-v "${ROOT_DIR}/tasks/train-model-seq2seq/models:/mnt/outputs" \
 		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs" \
 		-v "${ROOT_DIR}/$${MODELS_OUT:/mnt/models_out" \
-		"$${IMAGE_NAME}" ${ARGS}
+		"$${IMAGE_NAME}" $${ARGS}
 
 #######################################################################################################################
 #######################################################################################################################
