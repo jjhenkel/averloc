@@ -12,7 +12,7 @@ TESTS_SOURCE="datasets/transformed/preprocessed/tokens"
 
 for the_set in ${SETS}; do
   for the_model in ${MODELS}; do
-    for the_test in $(find ${TESTS_SOURCE}/${the_set} -type d); do
+    for the_test in $(find ${TESTS_SOURCE}/${the_set} -mindepth 1 -maxdepth 1 -type d); do
       results_dir="${OUTPUT_DIR}/${the_set}/${the_model}/$(basename ${the_test})"
       mkdir -p "${results_dir}"
 
