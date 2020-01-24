@@ -19,7 +19,7 @@ for the_set in ${SETS}; do
       mkdir -p "${RESULTS_OUT}"
       DATASET_NAME="${the_test}"
       MODELS_IN="trained-models/${the_set}/${the_model}"
-      time make test-model-seq2seq $@
+      time ARGS="$@" make test-model-seq2seq 
     done
   done
 done
