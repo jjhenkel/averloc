@@ -667,7 +667,7 @@ test-model-code2seq: check-dataset-name check-gpu check-models-in build-image-te
 		--gpus "device=$${GPU}" \
 		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
 		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs" \
-		"$${IMAGE_NAME}"
+		"$${IMAGE_NAME}" $${ARGS}
 
 .PHONY: train-model-code2seq
 train-model-code2seq: check-dataset-name check-gpu build-image-train-model-code2seq ## (TRAIN) Trains the code2seq model on a selected dataset.
@@ -676,7 +676,7 @@ train-model-code2seq: check-dataset-name check-gpu build-image-train-model-code2
 		--gpus "device=$${GPU}" \
 		-v "${ROOT_DIR}/tasks/train-model-code2seq/models:/mnt/outputs/models" \
 		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs" \
-		"$${IMAGE_NAME}"
+		"$${IMAGE_NAME}" $${ARGS}
 
 .PHONY: test-model-seq2seq
 test-model-seq2seq: check-dataset-name check-results-out check-gpu check-models-in build-image-test-model-seq2seq ## (TEST) Tests the seq2seq model on a selected dataset.
@@ -686,7 +686,7 @@ test-model-seq2seq: check-dataset-name check-results-out check-gpu check-models-
 		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
 		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs" \
 		-v "${ROOT_DIR}/$${RESULTS_OUT}:/mnt/outputs" \
-		"$${IMAGE_NAME}"
+		"$${IMAGE_NAME}" $${ARGS}
 
 .PHONY: train-model-seq2seq
 train-model-seq2seq: check-dataset-name check-gpu check-models-out build-image-train-model-seq2seq  ## (TRAIN) Trains the seq2seq model on a selected dataset.
