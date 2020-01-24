@@ -23,7 +23,7 @@ for the_set in ${SETS}; do
       MODELS_IN="trained-models/${the_set}/${the_model}" \
       DATASET_NAME="${the_test}" \
       ARGS="$@" \
-        echo time  make test-model-seq2seq 
+        time  make test-model-seq2seq 
       set +x
 
     done
