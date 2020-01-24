@@ -10,6 +10,8 @@ MODELS="adversarial adversarial-all normal"
 
 TESTS_SOURCE="datasets/transformed/preprocessed/tokens"
 
+trap "echo 'CTRL-C Pressed. Quiting...'; exit;" SIGINT SIGTERM
+
 for the_set in ${SETS}; do
   for the_model in ${MODELS}; do
     for the_test in $(find ${TESTS_SOURCE}/${the_set} -mindepth 1 -maxdepth 1 -type d); do
@@ -21,7 +23,7 @@ for the_set in ${SETS}; do
       MODELS_IN="trained-models/${the_set}/${the_model}" \
       DATASET_NAME="${the_test}" \
       ARGS="$@" \
-        time  make test-model-seq2seq 
+        echo time  make test-model-seq2seq 
       set +x
 
     done
