@@ -158,6 +158,11 @@ build-image-train-model-code2seq: submodules ## Build tasks/train-model-code2seq
 	@"${ROOT_DIR}/scripts/build-image.sh" \
 		train-model-code2seq
 
+.PHONY: build-image-test-model-seq2seq
+build-image-test-model-seq2seq: submodules ## Build tasks/test-model-seq2seq <!PRIVATE>
+	@"${ROOT_DIR}/scripts/build-model-image.sh" \
+		test-model-seq2seq
+
 .PHONY: build-image-train-model-seq2seq
 build-image-train-model-seq2seq: submodules ## Build tasks/train-model-seq2seq <!PRIVATE>
 	@"${ROOT_DIR}/scripts/build-model-image.sh" \
@@ -637,6 +642,18 @@ ifndef MODELS_OUT
 	$(error MODELS_OUT is a required parameter for this target.)
 endif
 
+.PHONY: check-results-out
+check-results-out:
+ifndef RESULTS_OUT
+	$(error RESULTS_OUT is a required parameter for this target.)
+endif
+
+.PHONY: check-models-in
+check-models-in:
+ifndef MODELS_IN
+	$(error MODELS_IN is a required parameter for this target.)
+endif
+
 .PHONY: check-gpu
 check-gpu:
 ifndef GPU
@@ -644,19 +661,31 @@ ifndef GPU
 endif
 
 .PHONY: test-model-code2seq
-test-model-code2seq: check-dataset-name build-image-test-model-code2seq ## (TEST) Tests the code2seq model on a selected dataset.
+test-model-code2seq: check-dataset-name check-gpu check-models-in build-image-test-model-code2seq ## (TEST) Tests the code2seq model on a selected dataset.
 	@IMAGE_NAME="$(shell whoami)/averloc--test-model-code2seq:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
-		-v "${ROOT_DIR}/models:/models" \
+		--gpus "device=$${GPU}" \
+		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
 		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs" \
 		"$${IMAGE_NAME}"
 
 .PHONY: train-model-code2seq
-train-model-code2seq: check-dataset-name build-image-train-model-code2seq ## (TRAIN) Trains the code2seq model on a selected dataset.
+train-model-code2seq: check-dataset-name check-gpu build-image-train-model-code2seq ## (TRAIN) Trains the code2seq model on a selected dataset.
 	@IMAGE_NAME="$(shell whoami)/averloc--train-model-code2seq:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		--gpus "device=$${GPU}" \
 		-v "${ROOT_DIR}/tasks/train-model-code2seq/models:/mnt/outputs/models" \
 		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs" \
+		"$${IMAGE_NAME}"
+
+.PHONY: test-model-seq2seq
+test-model-seq2seq: check-dataset-name check-results-out check-gpu check-models-in build-image-test-model-seq2seq ## (TEST) Tests the seq2seq model on a selected dataset.
+	@IMAGE_NAME="$(shell whoami)/averloc--test-model-seq2seq:$(shell git rev-parse HEAD)"
+	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		--gpus "device=$${GPU}" \
+		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
+		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs" \
+		-v "${ROOT_DIR}/$${RESULTS_OUT}:/mnt/outputs" \
 		"$${IMAGE_NAME}"
 
 .PHONY: train-model-seq2seq
