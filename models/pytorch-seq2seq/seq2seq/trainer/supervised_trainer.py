@@ -185,28 +185,28 @@ class SupervisedTrainer(object):
                     log.info(log_msg)
                     best_f1 = other_metrics['f1']
 
-                if accuracy > best_acc:
-                    Checkpoint(model=model,
-                                   optimizer=self.optimizer,
-                                   epoch=epoch, step=step,
-                                   input_vocab=data.fields[seq2seq.src_field_name].vocab,
-                                   output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir, name='Best_Acc')
-                    log_msg = 'Checkpoint saved, Epoch %d, Prev Val Acc: %.4f, New Val Acc: %.4f' % (epoch, best_acc, accuracy)
-                    log.info(log_msg)
-                    best_acc = accuracy
+                # if accuracy > best_acc:
+                #     Checkpoint(model=model,
+                #                    optimizer=self.optimizer,
+                #                    epoch=epoch, step=step,
+                #                    input_vocab=data.fields[seq2seq.src_field_name].vocab,
+                #                    output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir, name='Best_Acc')
+                #     log_msg = 'Checkpoint saved, Epoch %d, Prev Val Acc: %.4f, New Val Acc: %.4f' % (epoch, best_acc, accuracy)
+                #     log.info(log_msg)
+                #     best_acc = accuracy
 
                 model.train(mode=True)
 
             else:
                 self.optimizer.update(epoch_loss_avg, epoch)
 
-            Checkpoint(model=model,
-                               optimizer=self.optimizer,
-                               epoch=epoch, step=step,
-                               input_vocab=data.fields[seq2seq.src_field_name].vocab,
-                               output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir, name='Latest')
-            log_msg = 'Latest Checkpoint saved, Epoch %d, %s' % (epoch, str(other_metrics))
-            log.info(log_msg)
+            # Checkpoint(model=model,
+            #                    optimizer=self.optimizer,
+            #                    epoch=epoch, step=step,
+            #                    input_vocab=data.fields[seq2seq.src_field_name].vocab,
+            #                    output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir, name='Latest')
+            # log_msg = 'Latest Checkpoint saved, Epoch %d, %s' % (epoch, str(other_metrics))
+            # log.info(log_msg)
 
 
     def train(self, model, data, num_epochs=5,

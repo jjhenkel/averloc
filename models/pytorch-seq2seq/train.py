@@ -33,7 +33,7 @@ parser.add_argument('--log-level', dest='log_level',
                     default='info',
                     help='Logging level.')
 parser.add_argument('--expt_name', action='store', dest='expt_name',default=None)
-
+parser.add_argument('--batch_size', action='store', dest='batch_size', default=128, type=int)
 
 opt = parser.parse_args()
 
@@ -69,7 +69,7 @@ params = {
             'tgt_vocab_size': 50000, 
             'max_len': 128, 
             'rnn_cell':'lstm',
-            'batch_size': 128, 
+            'batch_size': opt.batch_size, 
             'num_epochs': 10
         }
 

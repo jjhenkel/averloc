@@ -72,7 +72,7 @@ class SupervisedAdversarialTrainer(object):
 
     def _get_best_attack(self, batch, model, attacks):
         if attacks is None or len(attacks)==0:
-            return seq2seq.tgt_field_name, -1, {}
+            return seq2seq.src_field_name, -1, {}
         else:
             model.eval()
             loss = self.batch_adv_loss
@@ -153,7 +153,8 @@ class SupervisedAdversarialTrainer(object):
 
                 chosen_src_field_name, max_loss, d  = self._get_best_attack(batch, model, attacks)
 
-                # chosen_attack_counts[chosen_src_field_name] += 1
+                if attacks is not None and len(attacks) > 0:
+                    chosen_attack_counts[chosen_src_field_name] += 1
 
                 # print(chosen_src_field_name, max_loss, d)
                 # exit()
@@ -211,15 +212,15 @@ class SupervisedAdversarialTrainer(object):
                     log.info(log_msg)
                     best_f1 = other_metrics['f1']
 
-                if accuracy > best_acc:
-                    Checkpoint(model=model,
-                                   optimizer=self.optimizer,
-                                   epoch=epoch, step=step,
-                                   input_vocab=data.fields[seq2seq.src_field_name].vocab,
-                                   output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir, name='Best_Acc')
-                    log_msg = 'Checkpoint saved, Epoch %d, Prev Val Acc: %.4f, New Val Acc: %.4f' % (epoch, best_acc, accuracy)
-                    log.info(log_msg)
-                    best_acc = accuracy
+                # if accuracy > best_acc:
+                #     Checkpoint(model=model,
+                #                    optimizer=self.optimizer,
+                #                    epoch=epoch, step=step,
+                #                    input_vocab=data.fields[seq2seq.src_field_name].vocab,
+                #                    output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir, name='Best_Acc')
+                #     log_msg = 'Checkpoint saved, Epoch %d, Prev Val Acc: %.4f, New Val Acc: %.4f' % (epoch, best_acc, accuracy)
+                #     log.info(log_msg)
+                #     best_acc = accuracy
 
                 model.train(mode=True)
 
@@ -227,13 +228,13 @@ class SupervisedAdversarialTrainer(object):
                 self.optimizer.update(epoch_loss_avg, epoch)
                 log.info(log_msg)
 
-            Checkpoint(model=model,
-                               optimizer=self.optimizer,
-                               epoch=epoch, step=step,
-                               input_vocab=data.fields[seq2seq.src_field_name].vocab,
-                               output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir, name='Latest')
-            log_msg = 'Latest Checkpoint saved, Epoch %d, %s' % (epoch, str(other_metrics))
-            log.info(log_msg)
+            # Checkpoint(model=model,
+            #                    optimizer=self.optimizer,
+            #                    epoch=epoch, step=step,
+            #                    input_vocab=data.fields[seq2seq.src_field_name].vocab,
+            #                    output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir, name='Latest')
+            # log_msg = 'Latest Checkpoint saved, Epoch %d, %s' % (epoch, str(other_metrics))
+            # log.info(log_msg)
             log.info(str(chosen_attack_counts))
 
 

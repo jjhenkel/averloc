@@ -6,11 +6,12 @@ mkdir -p /mnt/outputs
 
 if [ "${1}" = "--regular_training" ]; then
 
+shift
 python /model/train.py \
   --train_path /mnt/inputs/train.tsv \
   --dev_path /mnt/inputs/valid.tsv \
   --expt_name lstm \
-  --expt_dir /mnt/outputs
+  --expt_dir /mnt/outputs $@
 
 else
 
@@ -18,7 +19,7 @@ python /model/train_adv.py \
   --train_path /mnt/inputs/train.tsv \
   --dev_path /mnt/inputs/valid.tsv \
   --expt_name lstm \
-  --expt_dir /mnt/outputs
+  --expt_dir /mnt/outputs $@
 
 fi
 

@@ -73,11 +73,11 @@ def evaluate_model(evaluator, seq2seq, data, save=False, output_dir=None, output
             f.writelines([a+'\n' for a in ground_truths])
         with open(os.path.join(output_dir,'%s_stats.txt'%output_fname), 'w') as f:
             try:
-                f.write(json.dumps(vars(opt)))
+                f.write(json.dumps(vars(opt)) + '\n')
             except:
                 pass
             for m in other:
-                f.write('%s: %.3f'%(m,other[m]))
+                f.write('%s: %.3f\n'%(m,other[m]))
         print('Output files written')
 
 

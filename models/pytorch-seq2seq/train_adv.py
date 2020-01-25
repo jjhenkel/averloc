@@ -35,6 +35,7 @@ def parse_args():
                         help='Logging level.')
     parser.add_argument('--expt_name', action='store', dest='expt_name',default=None)
     parser.add_argument('--regular_training', action='store_true', default=False)
+    parser.add_argument('--batch_size', action='store', dest='batch_size', default=128, type=int)
 
     opt = parser.parse_args()
     return opt
@@ -45,7 +46,8 @@ def load_data(data_path, fields=(SourceField(), SourceField(), TargetField()), f
 
     fields_inp = []
     with open(data_path, 'r') as f:
-        cols = f.readline()[:-1].split('\t')
+        first_line = f.readline()
+        cols = first_line[:-1].split('\t')
         for col in cols:
             if col=='src':
                 fields_inp.append(('src', src))
@@ -89,7 +91,7 @@ params = {
             'tgt_vocab_size': 50000, 
             'max_len': 128, 
             'rnn_cell':'lstm',
-            'batch_size': 128, 
+            'batch_size': opt.batch_size, 
             'num_epochs': 10
         }
 
@@ -100,7 +102,7 @@ def len_filter(example):
     return len(example.src) <= max_len and len(example.tgt) <= max_len
 
 train, fields, src, src_adv, tgt = load_data(opt.train_path, filter_func=len_filter)
-dev, fields, src, src_adv, tgt = load_data(opt.dev_path, fields=(src, src_adv, tgt), filter_func=len_filter)
+dev, val_fields, src, src_adv, tgt = load_data(opt.dev_path, fields=(src, src_adv, tgt), filter_func=len_filter)
 
 attacks = [field[0] for field in fields if field[0] not in ['tgt']]
 if opt.regular_training:
