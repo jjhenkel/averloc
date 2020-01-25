@@ -75,17 +75,22 @@ def get_attention_attributions(src_seq, model, src_vocab, tgt_vocab):
     model object returned by load_model
     src_seq is a list of words
     '''
+    if src_seq[-1]!='<eos>':
+        src_seq.append('<eos>')
     softmax_list, decoder_features, output_id_seq, output_seq = get_model_output(src_seq, model, src_vocab, tgt_vocab)
     attention_scores = torch.cat(decoder_features['attention_score']).cpu().detach().numpy().squeeze()
     attention_scores = attention_scores[:len(output_seq),:]
     return output_seq, attention_scores
 
 
-def get_IG_attributions(src_seq, model, src_vocab, tgt_vocab, opt=None):
+def get_IG_attributions(src_seq, model, src_vocab, tgt_vocab, opt=None, verify_IG=True):
     '''
     model object returned by load_model
     src_seq is a list of words
     '''
+
+    if src_seq[-1]!='<eos>':
+        src_seq.append('<eos>')
     
     verbose = opt.verbose if opt is not None else False
     
@@ -110,7 +115,6 @@ def get_IG_attributions(src_seq, model, src_vocab, tgt_vocab, opt=None):
         l.append(baseline + (i/NUM_STEPS)*(np_embed-baseline))
 
     IG_inputs = torch.tensor(np.array(l),dtype=torch.float32,device=device)
-    print(IG_inputs.size(), np_embed.shape, N)
     lengths = [np_embed.shape[0]]*N
     
     # To ensure correct IG, need to do teacher forcing when getting output from decoder
@@ -147,7 +151,7 @@ def get_IG_attributions(src_seq, model, src_vocab, tgt_vocab, opt=None):
     IG_diff = IG_inputs[-1] - IG_inputs[0]
 
     l = []
-    ones = torch.ones(softmax_list[0][:,0].size(), device='cuda')
+    ones = torch.ones(softmax_list[0][:,0].size(), device=device)
     for i in range(output_len):
         model.zero_grad()
         t = softmax_list[i] # N x V+1
@@ -175,20 +179,21 @@ def get_IG_attributions(src_seq, model, src_vocab, tgt_vocab, opt=None):
     # Verifying the completeness axiom
     attr_sums = attr.sum(axis=1)
     
-    if verbose:
-        separator()
-        print('Verifying IG attributions using completeness axiom...')
-        print("Word             Actual difference     Predicted difference")
-    for i in range(output_len):
-        base = softmax_list[i][0][final_output_id_seq[i]]
-        full = softmax_list[i][-1][final_output_id_seq[i]]
-        actual_diff = full-base
-        predicted_diff = attr_sums[i]
-        assert abs(actual_diff-predicted_diff)<0.1, "Diverging from completeness axiom, consider increasing number of steps in IG"
-        
+    if verify_IG:
         if verbose:
-            word = output_seq[i] + " "*(15-len(output_seq[i]))
-            print(word,"\t",(full-base).cpu().detach().numpy(), "\t", attr_sums[i])
+            separator()
+            print('Verifying IG attributions using completeness axiom...')
+            print("Word             Actual difference     Predicted difference")
+        for i in range(output_len):
+            base = softmax_list[i][0][final_output_id_seq[i]]
+            full = softmax_list[i][-1][final_output_id_seq[i]]
+            actual_diff = full-base
+            predicted_diff = attr_sums[i]
+            assert abs(actual_diff-predicted_diff)<0.1, "Diverging from completeness axiom, consider increasing number of steps in IG"
+            
+            if verbose:
+                word = output_seq[i] + " "*(15-len(output_seq[i]))
+                print(word,"\t",(full-base).cpu().detach().numpy(), "\t", attr_sums[i])
     
     
     return output_seq, attr
@@ -238,12 +243,15 @@ def main(opt):
     if opt.verbose:
         separator()
         print('Attribution matrix')
-        with np.printoptions(precision=3, suppress=True):
+        try:
+            with np.printoptions(precision=3, suppress=True):
+                print(scores)
+        except:
             print(scores)
         print()
     
     separator()
-    print('Output:',' '.join(output_seq[:-1]))
+    print('Output:',' '.join(output_seq[:]))
     
     plot_attributions(opt, scores, src_seq, output_seq)
     
