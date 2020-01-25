@@ -1,1 +1,0 @@
-{"data_path": "/test-fixed.tsv", "expt_dir": "/models/lstm", "load_checkpoint": "Best_F1", "batch_size": 64, "output_dir": "/mnt/outputs", "output_fname": "results-test", "src_field_name": "src", "save": true}precision: 35.142recall: 12.922f1: 18.896exact_match: 3.243word-level accuracy: 12.271BLEU: 6.260Loss: 1.176Acc (torch): 12.324

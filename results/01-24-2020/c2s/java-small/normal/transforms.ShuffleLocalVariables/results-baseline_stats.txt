@@ -1,1 +1,0 @@
-{"data_path": "/baseline-fixed.tsv", "expt_dir": "/models/lstm", "load_checkpoint": "Best_F1", "batch_size": 64, "output_dir": "/mnt/outputs", "output_fname": "results-baseline", "src_field_name": "src", "save": true}precision: 45.576recall: 22.271f1: 29.921exact_match: 4.172word-level accuracy: 19.871BLEU: 4.190Loss: 1.172Acc (torch): 19.986
