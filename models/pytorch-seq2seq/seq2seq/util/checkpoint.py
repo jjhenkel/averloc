@@ -96,7 +96,6 @@ class Checkpoint(object):
             resume_checkpoint = torch.load(os.path.join(path, cls.TRAINER_STATE_NAME))
             model = torch.load(os.path.join(path, cls.MODEL_NAME))
         else:
-            print('Loaded in CPU')
             resume_checkpoint = torch.load(os.path.join(path, cls.TRAINER_STATE_NAME), map_location=lambda storage, loc: storage)
             model = torch.load(os.path.join(path, cls.MODEL_NAME), map_location=lambda storage, loc: storage)
 
