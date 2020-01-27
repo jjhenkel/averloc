@@ -4,7 +4,7 @@ class Config:
         config = Config(args)
         config.NUM_EPOCHS = 3000
         config.SAVE_EVERY_EPOCHS = 1
-        config.PATIENCE = 20
+        config.PATIENCE = 10
         config.BATCH_SIZE = 256
         config.TEST_BATCH_SIZE = 256
         config.READER_NUM_PARALLEL_BATCHES = 1
@@ -48,6 +48,11 @@ class Config:
         self.CSV_BUFFER_SIZE = None
         self.TRAIN_PATH = args.data_path
         self.TEST_PATH = args.test_path if args.test_path is not None else ''
+        ###New config used for adv-training/evaluation###
+        self.FUNCS = args.funcs
+        self.TRANSFS = args.transformations
+        self.TRAIN_DIR = args.train_dir
+        ###################################################
         self.DATA_NUM_CONTEXTS = 0
         self.MAX_CONTEXTS = 0
         self.SUBTOKENS_VOCAB_MAX_SIZE = 0

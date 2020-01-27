@@ -6,14 +6,21 @@ import numpy as np
 import shutil
 import tensorflow as tf
 
+import sys
+
 import reader
 from common import Common
+
+
+def append_file(source, dest):
+    with open(dest, 'a+') as f:
+        f.write(open(source).read())
 
 
 class Model:
     topk = 10
     num_batches_to_log = 100
-    os.environ['CUDA_VISIBLE_DEVICES'] = '3'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
     def __init__(self, config):
         self.config = config
@@ -23,8 +30,8 @@ class Model:
         self.predict_queue = None
         
         ####new vars####
-        self.eval_train_queues = []
-        self.count = 9
+        #self.eval_train_queues = []
+        #self.count = 8
 
         self.eval_placeholder = None
         self.predict_placeholder = None
@@ -32,9 +39,6 @@ class Model:
         self.predict_top_indices_op, self.predict_top_scores_op, self.predict_target_strings_op = None, None, None
         self.subtoken_to_index = None
         
-        self.eval_predicted_indices_ops = [] 
-        self.eval_topk_values_s = []
-        self.eval_true_target_strings_ops = []
 
         if config.LOAD_PATH:
             self.load_model(sess=None)
@@ -80,18 +84,20 @@ class Model:
         best_f1_recall = 0
         epochs_no_improve = 0
 
-        self.queue_threads = []
         self.eval_queues = []
-        for i in range(self.count):
-            self.queue_threads.append(reader.Reader(subtoken_to_index=self.subtoken_to_index,
-                                          node_to_index=self.node_to_index,
-                                          target_to_index=self.target_to_index,
-                                          index=i,
-                                          config=self.config))
-            self.eval_queues.append(None)
-            self.eval_predicted_indices_ops.append(None) 
-            self.eval_topk_values_s.append(None)
-            self.eval_true_target_strings_ops.append(None)
+        self.eval_losses = []
+        
+        
+        
+        for i in range(self.config.FUNCS):
+            e_q = []
+            e_l = []
+            for j in range(self.config.TRANSFS):
+                e_l.append(None)
+                e_q.append(None)
+            self.eval_queues.append(e_q)
+            self.eval_losses.append(e_l) 
+
         
     #####build a training graph inside, not calling the function####
         target_index = tf.placeholder(tf.int32, [None, None])
@@ -163,6 +169,14 @@ class Model:
   
         ##########################end building training graph#################################
 
+        self.queue_thread = reader.Reader(subtoken_to_index=self.subtoken_to_index,
+                                          node_to_index=self.node_to_index,
+                                          target_to_index=self.target_to_index,
+                                          config=self.config, adv_training = True,
+                                          epoch = 0)
+            
+        input_tensors_data = self.queue_thread.get_output()
+        
         self.print_hyperparams()
         print('Number of trainable params:',
               np.sum([np.prod(v.get_shape().as_list()) for v in tf.trainable_variables()]))
@@ -175,16 +189,9 @@ class Model:
         print('Started reader...')
 
         multi_batch_start_time = time.time()
-        worst_index = 0
-        for iteration in range(1, (self.config.NUM_EPOCHS // self.config.SAVE_EVERY_EPOCHS) + 1):
-           
-            input_tensors_data = self.queue_threads[worst_index].get_output()
-            self.queue_threads[worst_index].reset(self.sess)
-            #self.queue_thread.reset(self.sess)
-            with open("adv_training.log", 'a+') as h:
-                h.write("Epoch %d training with worst training data %d\n"%(iteration, worst_index))
-            
-            
+        
+        for iteration in range(1, (self.config.NUM_EPOCHS // self.config.SAVE_EVERY_EPOCHS) + 1):            
+            self.queue_thread.reset(self.sess)
             try:
                 while True:
                     batch_num += 1
@@ -200,15 +207,22 @@ class Model:
             except tf.errors.OutOfRangeError:
                 self.epochs_trained += self.config.SAVE_EVERY_EPOCHS
                 print('Finished %d epochs' % self.config.SAVE_EVERY_EPOCHS)
-                worst_f1 = 1.0
-                for i in range(self.count):
-                    f1 = self.evaluate_training(i)
-                    with open("adv_training.log", 'a+') as h:
-                        if f1 < worst_f1:
-                            worst_f1 = f1
-                            worst_index = i
-                        h.write("%d training data has f1 score %.5f\n"%(i, f1))
-                    print("%d training data has f1 score %.5f"%(i, f1))
+                open(self.config.TRAIN_PATH+str(iteration)+".train.c2s",'w').close()
+                
+                print("start evaluation")         
+                with open("eval_training.log",'a+') as fo:
+                    fo.write("New Epoch\n")
+                #for i in range(self.config.FUNCS):
+                for i in range(1,2):
+                    worst_transf = 0
+                    worst_loss = 0.0
+                    for j in range(self.config.TRANSFS):        
+                        eval_loss = self.evaluate_training(func=i, transf=j)
+                        if eval_loss > worst_loss:
+                            worst_loss = eval_loss
+                            worst_transf = j
+                    print("finish eval "+str(i)+"th function")
+                    append_file(self.config.TRAIN_DIR+"/"+str(worst_transf)+"/"+str(i)+".train.c2s", self.config.TRAIN_PATH+str(iteration)+".train.c2s")
                
                 results, precision, recall, f1 = self.evaluate()
                 if self.config.BEAM_WIDTH == 0:
@@ -231,6 +245,13 @@ class Model:
                         print('Best scores - epoch %d: ' % best_epoch)
                         print('Precision: %.5f, recall: %.5f, F1: %.5f' % (best_f1_precision, best_f1_recall, best_f1))
                         return
+                self.queue_thread = reader.Reader(subtoken_to_index=self.subtoken_to_index,
+                                          node_to_index=self.node_to_index,
+                                          target_to_index=self.target_to_index,
+                                          config=self.config, adv_training = True,
+                                          epoch = iteration)
+            
+                input_tensors_data = self.queue_thread.get_output()
 
         if self.config.SAVE_PATH:
             self.save_model(self.sess, self.config.SAVE_PATH + '.final')
@@ -247,63 +268,95 @@ class Model:
                                                                                   multi_batch_elapsed if multi_batch_elapsed > 0 else 1)))
 
     
-    def evaluate_training(self, i):
-        eval_start_time = time.time()
-        if self.eval_queues[i] is None:
-            self.eval_queues[i] = reader.Reader(subtoken_to_index=self.subtoken_to_index,
+    ####IG should load a trained model, a target input and a baseline input####
+    def IG(self, tensor1, tensor2):
+    ###################build the model first######################
+        
+    
+    #################end of build model###########################
+        if self.config.LOAD_PATH and not self.config.TRAIN_PATH:
+            self.initialize_session_variables(self.sess)
+            self.load_model(self.sess)
+        return
+    
+    
+    
+    def build_eval_graph(self, input_tensors):
+        target_index = input_tensors[reader.TARGET_INDEX_KEY]
+        target_lengths = input_tensors[reader.TARGET_LENGTH_KEY]
+        path_source_indices = input_tensors[reader.PATH_SOURCE_INDICES_KEY]
+        node_indices = input_tensors[reader.NODE_INDICES_KEY]
+        path_target_indices = input_tensors[reader.PATH_TARGET_INDICES_KEY]
+        valid_context_mask = input_tensors[reader.VALID_CONTEXT_MASK_KEY]
+        path_source_lengths = input_tensors[reader.PATH_SOURCE_LENGTHS_KEY]
+        path_lengths = input_tensors[reader.PATH_LENGTHS_KEY]
+        path_target_lengths = input_tensors[reader.PATH_TARGET_LENGTHS_KEY]
+
+        with tf.variable_scope('model', reuse=self.get_should_reuse_variables()):
+            subtoken_vocab = tf.get_variable('SUBTOKENS_VOCAB',
+                                             shape=(self.subtoken_vocab_size, self.config.EMBEDDINGS_SIZE),
+                                             dtype=tf.float32, trainable=False)
+            target_words_vocab = tf.get_variable('TARGET_WORDS_VOCAB',
+                                                 shape=(self.target_vocab_size, self.config.EMBEDDINGS_SIZE),
+                                                 dtype=tf.float32, trainable=False)
+            nodes_vocab = tf.get_variable('NODES_VOCAB',
+                                          shape=(self.nodes_vocab_size, self.config.EMBEDDINGS_SIZE),
+                                          dtype=tf.float32, trainable=False)
+
+            batched_contexts = self.compute_contexts(subtoken_vocab=subtoken_vocab, nodes_vocab=nodes_vocab,
+                                                     source_input=path_source_indices, nodes_input=node_indices,
+                                                     target_input=path_target_indices,
+                                                     valid_mask=valid_context_mask,
+                                                     path_source_lengths=path_source_lengths,
+                                                     path_lengths=path_lengths, path_target_lengths=path_target_lengths, is_evaluating=True)
+
+            batch_size = tf.shape(target_index)[0]
+            outputs, final_states = self.decode_outputs(target_words_vocab=target_words_vocab,
+                                                        target_input=target_index, batch_size=batch_size,
+                                                        batched_contexts=batched_contexts,
+                                                        valid_mask=valid_context_mask, is_evaluating=True)
+
+            logits = outputs.rnn_output  # (batch, max_output_length, dim * 2 + rnn_size)
+            #print(logits)
+            #print(target_index)
+            crossent = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target_index, logits=logits)
+            target_words_nonzero = tf.sequence_mask(target_lengths + 1,
+                                                    maxlen=self.config.MAX_TARGET_PARTS + 1, dtype=tf.float32)
+            loss = tf.reduce_sum(crossent * target_words_nonzero) / tf.to_float(batch_size)
+            
+            p_op1 = tf.print(target_index, output_stream="file://eval_training.log", summarize=-1)
+            p_op2 = tf.print(logits, output_stream="file://eval_training.log", summarize=-1)
+
+            
+        return loss, p_op1, p_op2
+    
+    def evaluate_training(self, func, transf):
+        sum_loss = 0.0
+        p1_op = None
+        p2_op = None
+        if not os.path.exists(self.config.TRAIN_DIR+"/"+str(transf)+"/"+str(func)+".train.c2s"):
+            return 0.0
+        if self.eval_queues[func][transf] is None:
+            self.eval_queues[func][transf] = reader.Reader(subtoken_to_index=self.subtoken_to_index,
                                             node_to_index=self.node_to_index,
                                             target_to_index=self.target_to_index,
-                                            config=self.config, index = i+self.count, is_evaluating=False)
-            reader_output = self.eval_queues[i].get_output()
-            self.eval_predicted_indices_ops[i], self.eval_topk_values_s[i], _, _ = \
-                self.build_test_graph(reader_output)
-            self.eval_true_target_strings_ops[i] = reader_output[reader.TARGET_STRING_KEY]
+                                            config=self.config, adv_training = True, is_evaluating=False, adv_transf = transf, func = func)
+            reader_output = self.eval_queues[func][transf].get_output()
+            self.eval_losses[func][transf], p1_op, p2_op  = self.build_eval_graph(reader_output)
             self.saver = tf.train.Saver(max_to_keep=10)
-
-        
-        
-        num_correct_predictions = 0 if self.config.BEAM_WIDTH == 0 \
-            else np.zeros([self.config.BEAM_WIDTH], dtype=np.int32)
-        total_predictions = 0
-        total_prediction_batches = 0
-        true_positive, false_positive, false_negative = 0, 0, 0
-        self.eval_queues[i].reset(self.sess)
-        start_time = time.time()
-
+        self.eval_queues[func][transf].reset(self.sess)
         try:
             while True:
-                predicted_indices, true_target_strings, top_values = self.sess.run(
-                    [self.eval_predicted_indices_ops[i], self.eval_true_target_strings_ops[i], self.eval_topk_values_s[i]],
-                )
-                true_target_strings = Common.binary_to_string_list(true_target_strings)
-                if self.config.BEAM_WIDTH > 0:
-                        # predicted indices: (batch, time, beam_width)
-                    predicted_strings = [[[self.index_to_target[i] for i in timestep] for timestep in example] for
-                                         example in predicted_indices]
-                    predicted_strings = [list(map(list, zip(*example))) for example in
-                                         predicted_strings]  # (batch, top-k, target_length)
-                else:
-                    predicted_strings = [[self.index_to_target[i] for i in example]
-                                             for example in predicted_indices]
-                  
-
-                true_positive, false_positive, false_negative = self.update_per_subtoken_statistics(
-                        zip(true_target_strings, predicted_strings),
-                        true_positive, false_positive, false_negative)
-
-                total_predictions += len(true_target_strings)
-                total_prediction_batches += 1
+                batch_loss, _, _ = self.sess.run([self.eval_losses[func][transf], p1_op, p2_op])
+                sum_loss += batch_loss
 
         except tf.errors.OutOfRangeError:
             pass
 
-        print('Done testing, epoch reached')
+        print(sum_loss)
             # Common.compute_bleu(ref_file_name, predicted_file_name)
 
-        elapsed = int(time.time() - eval_start_time)
-        precision, recall, f1 = self.calculate_results(true_positive, false_positive, false_negative)
-        print("Evaluation time: %sh%sm%ss" % ((elapsed // 60 // 60), (elapsed // 60) % 60, elapsed % 60))
-        return f1
+        return sum_loss
     
     
     
@@ -313,7 +366,7 @@ class Model:
             self.eval_queue = reader.Reader(subtoken_to_index=self.subtoken_to_index,
                                             node_to_index=self.node_to_index,
                                             target_to_index=self.target_to_index,
-                                            config=self.config, index = 0, is_evaluating=True)
+                                            config=self.config, is_evaluating=True)
             reader_output = self.eval_queue.get_output()
             self.eval_predicted_indices_op, self.eval_topk_values, _, _ = \
                 self.build_test_graph(reader_output)

@@ -23,15 +23,19 @@ class Reader:
     class_subtoken_table = None
     class_target_table = None
     class_node_table = None
-    os.environ['CUDA_VISIBLE_DEVICES'] = '3'
 
-    def __init__(self, subtoken_to_index, target_to_index, node_to_index, config, index, is_evaluating=False):
+    def __init__(self, subtoken_to_index, target_to_index, node_to_index, config, is_evaluating=False, adv_training = False, adv_transf = 0, func = 0, epoch = 0):
         self.config = config
-        self.index = index
-        self.file_path = config.TEST_PATH if is_evaluating else (config.TRAIN_PATH + str(index) + '.train.c2s')
+        if adv_training:
+            if is_evaluating:
+                self.file_path = config.TRAIN_DIR+"/"+str(adv_transf)+"/"+str(func)+".train.c2s"
+            else:
+                self.file_path = config.TRAIN_PATH + str(epoch) +".train.c2s"
+        else:
+            self.file_path = config.TEST_PATH if is_evaluating else (config.TRAIN_PATH + '.train.c2s')
         if self.file_path is not None and not os.path.exists(self.file_path):
-            print(
-                '%s cannot find file: %s' % ('Evaluation reader' if is_evaluating else 'Train reader', self.file_path))
+                print(
+                    '%s cannot find file: %s' % ('Evaluation reader' if is_evaluating else 'Train reader', self.file_path))
         self.batch_size = config.TEST_BATCH_SIZE if is_evaluating else config.BATCH_SIZE
         self.is_evaluating = is_evaluating
 
@@ -180,6 +184,7 @@ class Reader:
     def compute_output(self):
         dataset = tf.data.experimental.CsvDataset(self.file_path, record_defaults=self.record_defaults, field_delim=' ',
                                                   use_quote_delim=False, buffer_size=self.config.CSV_BUFFER_SIZE)
+
         if not self.is_evaluating:
             if self.config.SAVE_EVERY_EPOCHS > 1:
                 dataset = dataset.repeat(self.config.SAVE_EVERY_EPOCHS)
@@ -270,4 +275,3 @@ if __name__ == '__main__':
 
     except tf.errors.OutOfRangeError:
         print('Done training, epoch reached')
-
