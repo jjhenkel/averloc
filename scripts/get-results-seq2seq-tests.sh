@@ -4,7 +4,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 OUTPUT_DIR="results/01-25-2020"
 
-SETS="c2s/java-small csn/java csn/python"
+SETS="c2s/java-small csn/java csn/python sri/py150"
 
 MODELS="adversarial-one-step adversarial-all normal"
 
