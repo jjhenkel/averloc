@@ -57,6 +57,36 @@ define run_dataset_ast_paths_preprocessing
 	$(call echo_debug,"    + Done!")
 endef
 
+define adversarial_mode_setup
+	if [ "$${ADVERSARIAL_MODE}" = "all" ]; then
+		export TRANSFORMS="
+			transforms.RenameParameters \
+			transforms.RenameFields \
+			transforms.RenameLocalVariables \
+			transforms.ShuffleParameters \
+			transforms.ShuffleLocalVariables \
+			transforms.ReplaceTrueFalse \
+			transforms.InsertPrintStatements \
+			transforms.All
+		"
+		export DIR_PART="all-attacks"
+	elif [ "$${ADVERSARIAL_MODE}" = "one-step" ]; then
+		export TRANSFORMS="
+			transforms.RenameParameters \
+			transforms.RenameFields \
+			transforms.RenameLocalVariables \
+			transforms.ShuffleParameters \
+			transforms.ShuffleLocalVariables \
+			transforms.ReplaceTrueFalse \
+			transforms.InsertPrintStatements
+		"
+		export DIR_PART="just-one-step-attacks"
+	else
+		echo -e "\033[0;31m[ERR]:\033[0m Adversarial mode := $${ADVERSARIAL_MODE} is unsupported"
+		exit 1
+	fi
+endef
+
 export echo_debug
 export echo_info
 export echo_warn
@@ -64,6 +94,7 @@ export echo_error
 
 export mkdir_cleanup_on_error
 export run_dataset_ast_paths_preprocessing
+export adversarial_mode_setup
 
 .DEFAULT_GOAL := help
 
@@ -171,28 +202,28 @@ build-image-train-model-seq2seq: submodules ## Build tasks/train-model-seq2seq <
 #######################################################################################################################
 #######################################################################################################################
 
-datasets/raw/c2s/java-small: build-image-download-c2s-dataset ## Download code2seq's Java small dataset (non-preprocessed sources) <!PRIVATE>
+datasets/raw/c2s/java-small: ## Download code2seq's Java small dataset (non-preprocessed sources) <!PRIVATE>
 	@IMAGE_NAME="$(shell whoami)/averloc--download-c2s-dataset:$(shell git rev-parse HEAD)"
 	docker run -it --rm \
 		-v "${ROOT_DIR}/datasets/raw/c2s/java-small:/mnt" \
 		-e DATASET_URL=https://s3.amazonaws.com/code2seq/datasets/java-small.tar.gz \
 		"$${IMAGE_NAME}"
 
-datasets/raw/c2s/java-med: build-image-download-c2s-dataset ## Downloads code2seq's Java medium dataset (non-preprocessed sources) <!PRIVATE>
+datasets/raw/c2s/java-med: ## Downloads code2seq's Java medium dataset (non-preprocessed sources) <!PRIVATE>
 	@IMAGE_NAME="$(shell whoami)/averloc--download-c2s-dataset:$(shell git rev-parse HEAD)"
 	docker run -it --rm \
 		-v "${ROOT_DIR}/datasets/raw/c2s/java-med:/mnt" \
 		-e DATASET_URL=https://s3.amazonaws.com/code2seq/datasets/java-med.tar.gz \
 		"$${IMAGE_NAME}"
 
-datasets/raw/csn/java: build-image-download-csn-dataset ## Downloads CodeSearchNet's Java data (GitHub's code search dataset) <!PRIVATE>
+datasets/raw/csn/java: ## Downloads CodeSearchNet's Java data (GitHub's code search dataset) <!PRIVATE>
 	@IMAGE_NAME="$(shell whoami)/averloc--download-csn-dataset:$(shell git rev-parse HEAD)"
 	docker run -it --rm \
 		-v "${ROOT_DIR}/datasets/raw/csn/java:/mnt" \
 		-e DATASET_URL=https://s3.amazonaws.com/code-search-net/CodeSearchNet/v2/java.zip \
 		"$${IMAGE_NAME}"
 
-datasets/raw/csn/python: build-image-download-csn-dataset ## Downloads CodeSearchNet's Python data (GitHub's code search dataset) <!PRIVATE>
+datasets/raw/csn/python: ## Downloads CodeSearchNet's Python data (GitHub's code search dataset) <!PRIVATE>
 	@IMAGE_NAME="$(shell whoami)/averloc--download-csn-dataset:$(shell git rev-parse HEAD)"
 	docker run -it --rm \
 		-v "${ROOT_DIR}/datasets/raw/csn/python:/mnt" \
@@ -205,13 +236,13 @@ DD_DEPS += datasets/raw/csn/java
 DD_DEPS += datasets/raw/csn/python
 
 .PHONY: download-datasets
-download-datasets: $(DD_DEPS) ## (DS-1) Downloads all prerequisite datasets
+download-datasets: build-image-download-csn-dataset build-image-download-c2s-dataset | $(DD_DEPS) ## (DS-1) Downloads all prerequisite datasets
 	@$(call echo_info,"Downloaded all datasets to './datasets/raw/' directory.")
 
 #######################################################################################################################
 #######################################################################################################################
 
-datasets/normalized/c2s/java-small: build-image-normalize-raw-dataset ## Generate a normalized version of code2seq's Java small dataset <!PRIVATE>
+datasets/normalized/c2s/java-small: ## Generate a normalized version of code2seq's Java small dataset <!PRIVATE>
 	@$(call echo_debug,"Normalizing dataset 'raw/c2s/java-small'...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--normalize-raw-dataset:$(shell git rev-parse HEAD)"
@@ -221,7 +252,7 @@ datasets/normalized/c2s/java-small: build-image-normalize-raw-dataset ## Generat
 		"$${IMAGE_NAME}" java gz
 	@$(call echo_debug,"  + Normalization complete!")
 
-datasets/normalized/c2s/java-med: build-image-normalize-raw-dataset ## Generate a normalized version of code2seq's Java med dataset <!PRIVATE>
+datasets/normalized/c2s/java-med: ## Generate a normalized version of code2seq's Java med dataset <!PRIVATE>
 	@$(call echo_debug,"Normalizing dataset 'raw/c2s/java-med'...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--normalize-raw-dataset:$(shell git rev-parse HEAD)"
@@ -231,7 +262,7 @@ datasets/normalized/c2s/java-med: build-image-normalize-raw-dataset ## Generate 
 		"$${IMAGE_NAME}" java gz
 	@$(call echo_debug,"  + Normalization complete!")
 
-datasets/normalized/csn/java: build-image-normalize-raw-dataset ## Generates a normalized version of CodeSearchNet's Java dataset <!PRIVATE>
+datasets/normalized/csn/java: ## Generates a normalized version of CodeSearchNet's Java dataset <!PRIVATE>
 	@$(call echo_debug,"Normalizing dataset 'raw/csn/java'...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--normalize-raw-dataset:$(shell git rev-parse HEAD)"
@@ -241,7 +272,7 @@ datasets/normalized/csn/java: build-image-normalize-raw-dataset ## Generates a n
 		"$${IMAGE_NAME}" java gz
 	@$(call echo_debug,"  + Normalization complete!")
 
-datasets/normalized/csn/python: build-image-normalize-raw-dataset ## Generates a normalized version of CodeSearchNet's Python dataset <!PRIVATE>
+datasets/normalized/csn/python: ## Generates a normalized version of CodeSearchNet's Python dataset <!PRIVATE>
 	@$(call echo_debug,"Normalizing dataset 'raw/csn/python'...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--normalize-raw-dataset:$(shell git rev-parse HEAD)"
@@ -251,7 +282,7 @@ datasets/normalized/csn/python: build-image-normalize-raw-dataset ## Generates a
 		"$${IMAGE_NAME}" python gz
 	@$(call echo_debug,"  + Normalization complete!")
 
-datasets/normalized/sri/py150: build-image-normalize-raw-dataset ## Generates a normalized version of SRI Lab's py150k dataset <!PRIVATE>
+datasets/normalized/sri/py150: ## Generates a normalized version of SRI Lab's py150k dataset <!PRIVATE>
 	@$(call echo_debug,"Normalizing dataset 'raw/sri/py150'...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--normalize-raw-dataset:$(shell git rev-parse HEAD)"
@@ -268,13 +299,13 @@ ND_DEPS += datasets/normalized/csn/python
 ND_DEPS += datasets/normalized/sri/py150
 
 .PHONY: normalize-datasets
-normalize-datasets: $(ND_DEPS) ## (DS-2) Normalizes all downloaded datasets
+normalize-datasets: build-image-normalize-raw-dataset | $(ND_DEPS) ## (DS-2) Normalizes all downloaded datasets
 	@$(call echo_info,"Normalized all datasets to './datasets/normalized/' directory.")
 
 #######################################################################################################################
 #######################################################################################################################
 
-datasets/preprocessed/ast-paths/c2s/java-small: build-image-preprocess-dataset-c2s ## Generate a preprocessed (representation: ast-paths) version of code2seq's Java small dataset <!PRIVATE>
+datasets/preprocessed/ast-paths/c2s/java-small: ## Generate a preprocessed (representation: ast-paths) version of code2seq's Java small dataset <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'preprocessed/ast-paths/c2s/java-small' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
@@ -285,7 +316,7 @@ datasets/preprocessed/ast-paths/c2s/java-small: build-image-preprocess-dataset-c
 		"$${IMAGE_NAME}" java
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
 
-datasets/preprocessed/ast-paths/c2s/java-med: build-image-preprocess-dataset-c2s ## Generate a preprocessed (representation: ast-paths) version of code2seq's Java med dataset <!PRIVATE>
+datasets/preprocessed/ast-paths/c2s/java-med: ## Generate a preprocessed (representation: ast-paths) version of code2seq's Java med dataset <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'preprocessed/ast-paths/c2s/java-med' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
@@ -295,7 +326,7 @@ datasets/preprocessed/ast-paths/c2s/java-med: build-image-preprocess-dataset-c2s
 		"$${IMAGE_NAME}" java
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
 
-datasets/preprocessed/ast-paths/csn/java: build-image-preprocess-dataset-c2s ## Generate a preprocessed (representation: ast-paths) version of CodeSearchNet's Java dataset <!PRIVATE>
+datasets/preprocessed/ast-paths/csn/java: ## Generate a preprocessed (representation: ast-paths) version of CodeSearchNet's Java dataset <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'preprocessed/ast-paths/csn/java' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
@@ -305,7 +336,7 @@ datasets/preprocessed/ast-paths/csn/java: build-image-preprocess-dataset-c2s ## 
 		"$${IMAGE_NAME}" java
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
 
-datasets/preprocessed/ast-paths/csn/python: build-image-preprocess-dataset-c2s ## Generate a preprocessed (representation: ast-paths) version of CodeSearchNet's Python dataset <!PRIVATE>
+datasets/preprocessed/ast-paths/csn/python: ## Generate a preprocessed (representation: ast-paths) version of CodeSearchNet's Python dataset <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'preprocessed/ast-paths/csn/python' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
@@ -315,7 +346,7 @@ datasets/preprocessed/ast-paths/csn/python: build-image-preprocess-dataset-c2s #
 		"$${IMAGE_NAME}" python
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
 
-datasets/preprocessed/ast-paths/sri/py150: build-image-preprocess-dataset-c2s ## Generate a preprocessed (representation: ast-paths) version of SRI Lab's py150k dataset <!PRIVATE>
+datasets/preprocessed/ast-paths/sri/py150: ## Generate a preprocessed (representation: ast-paths) version of SRI Lab's py150k dataset <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'preprocessed/ast-paths/sri/py150' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
@@ -331,7 +362,7 @@ EAP_DEPS += datasets/preprocessed/ast-paths/csn/java
 EAP_DEPS += datasets/preprocessed/ast-paths/csn/python
 EAP_DEPS += datasets/preprocessed/ast-paths/sri/py150
 
-extract-ast-paths: $(EAP_DEPS) ## (DS-3) Generate preprocessed data in a form usable by code2seq style models. 
+extract-ast-paths: build-image-preprocess-dataset-c2s | $(EAP_DEPS) ## (DS-3) Generate preprocessed data in a form usable by code2seq style models. 
 	@$(call echo_info,"AST Paths (code2seq style) preprocessed representations extracted!")
 
 #######################################################################################################################
@@ -393,13 +424,13 @@ ETOK_DEPS += datasets/preprocessed/tokens/csn/java
 ETOK_DEPS += datasets/preprocessed/tokens/csn/python
 ETOK_DEPS += datasets/preprocessed/tokens/sri/py150
 
-extract-tokens: $(ETOK_DEPS) ## (DS-3) Generate preprocessed data in a form usable by seq2seq style models. 
+extract-tokens: build-image-preprocess-dataset-tokens | $(ETOK_DEPS) ## (DS-3) Generate preprocessed data in a form usable by seq2seq style models. 
 	@$(call echo_info,"Tokens (seq2seq style) preprocessed representations extracted!")
 
 #######################################################################################################################
 #######################################################################################################################
 
-datasets/transformed/preprocessed/ast-paths/c2s/java-small: build-image-preprocess-dataset-c2s ## <!PRIVATE>
+datasets/transformed/preprocessed/ast-paths/c2s/java-small: ## <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/c2s/java-small/transforms.Identity' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
@@ -412,7 +443,7 @@ datasets/transformed/preprocessed/ast-paths/c2s/java-small: build-image-preproce
 	done
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
 
-datasets/transformed/preprocessed/ast-paths/c2s/java-med: build-image-preprocess-dataset-c2s ## <!PRIVATE>
+datasets/transformed/preprocessed/ast-paths/c2s/java-med: ## <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/c2s/java-med/transforms.Identity' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
@@ -425,7 +456,7 @@ datasets/transformed/preprocessed/ast-paths/c2s/java-med: build-image-preprocess
 	done
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
 
-datasets/transformed/preprocessed/ast-paths/csn/java: build-image-preprocess-dataset-c2s ## <!PRIVATE>
+datasets/transformed/preprocessed/ast-paths/csn/java: ## <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/csn/java/transforms.Identity' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
@@ -438,7 +469,7 @@ datasets/transformed/preprocessed/ast-paths/csn/java: build-image-preprocess-dat
 	done
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
 
-datasets/transformed/preprocessed/ast-paths/csn/python: build-image-preprocess-dataset-c2s ## <!PRIVATE>
+datasets/transformed/preprocessed/ast-paths/csn/python: ## <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/csn/python/transforms.Identity' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
@@ -451,7 +482,7 @@ datasets/transformed/preprocessed/ast-paths/csn/python: build-image-preprocess-d
 	done
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
 
-datasets/transformed/preprocessed/ast-paths/sri/py150: build-image-preprocess-dataset-c2s ## <!PRIVATE>
+datasets/transformed/preprocessed/ast-paths/sri/py150: ## <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/sri/py150/transforms.Identity' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
@@ -465,18 +496,18 @@ datasets/transformed/preprocessed/ast-paths/sri/py150: build-image-preprocess-da
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
 
 ETAP_DEPS := datasets/transformed/preprocessed/ast-paths/c2s/java-small
-# ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/c2s/java-med
+ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/c2s/java-med
 ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/csn/java
 ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/csn/python
 ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/sri/py150
 
-extract-transformed-ast-paths: $(ETAP_DEPS) ## (DS-6) Extract preprocessed representations (ast-paths) from our transfromed (normalized) datasets 
+extract-transformed-ast-paths: build-image-preprocess-dataset-c2s | $(ETAP_DEPS) ## (DS-6) Extract preprocessed representations (ast-paths) from our transfromed (normalized) datasets 
 	@$(call echo_info,"AST Paths (code2seq style) preprocessed representations extracted (for transformed datasets)!")
 
 #######################################################################################################################
 #######################################################################################################################
 
-datasets/transformed/preprocessed/tokens/c2s/java-small: build-image-preprocess-dataset-tokens  ## Generate a preprocessed (representation: tokens) version of code2seq's java-small dataset  <!PRIVATE>
+datasets/transformed/preprocessed/tokens/c2s/java-small: ## Generate a preprocessed (representation: tokens) version of code2seq's java-small dataset  <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/c2s/java-small' (using 'tokens' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
@@ -488,7 +519,7 @@ datasets/transformed/preprocessed/tokens/c2s/java-small: build-image-preprocess-
 	done
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
 
-datasets/transformed/preprocessed/tokens/c2s/java-med: build-image-preprocess-dataset-tokens  ## Generate a preprocessed (representation: tokens) version of code2seq's java-med dataset  <!PRIVATE>
+datasets/transformed/preprocessed/tokens/c2s/java-med: ## Generate a preprocessed (representation: tokens) version of code2seq's java-med dataset  <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/c2s/java-med' (using 'tokens' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
@@ -500,7 +531,7 @@ datasets/transformed/preprocessed/tokens/c2s/java-med: build-image-preprocess-da
 	done
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
 
-datasets/transformed/preprocessed/tokens/csn/java: build-image-preprocess-dataset-tokens  ## Generate a preprocessed (representation: tokens) version of csn's java dataset  <!PRIVATE>
+datasets/transformed/preprocessed/tokens/csn/java: ## Generate a preprocessed (representation: tokens) version of csn's java dataset  <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/csn/java' (using 'tokens' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
@@ -512,7 +543,7 @@ datasets/transformed/preprocessed/tokens/csn/java: build-image-preprocess-datase
 	done
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
 
-datasets/transformed/preprocessed/tokens/csn/python: build-image-preprocess-dataset-tokens  ## Generate a preprocessed (representation: tokens) version of csn's python dataset  <!PRIVATE>
+datasets/transformed/preprocessed/tokens/csn/python: ## Generate a preprocessed (representation: tokens) version of csn's python dataset  <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/csn/python' (using 'tokens' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
@@ -524,7 +555,7 @@ datasets/transformed/preprocessed/tokens/csn/python: build-image-preprocess-data
 	done
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
 
-datasets/transformed/preprocessed/tokens/sri/py150: build-image-preprocess-dataset-tokens  ## Generate a preprocessed (representation: tokens) version of SRI Lab's py150k dataset  <!PRIVATE>
+datasets/transformed/preprocessed/tokens/sri/py150: ## Generate a preprocessed (representation: tokens) version of SRI Lab's py150k dataset  <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/sri/py150' (using 'tokens' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
@@ -537,27 +568,15 @@ datasets/transformed/preprocessed/tokens/sri/py150: build-image-preprocess-datas
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
 
 ETT_DEPS := datasets/transformed/preprocessed/tokens/c2s/java-small
-# ETT_DEPS += datasets/transformed/preprocessed/tokens/c2s/java-med
+ETT_DEPS += datasets/transformed/preprocessed/tokens/c2s/java-med
 ETT_DEPS += datasets/transformed/preprocessed/tokens/csn/java
 ETT_DEPS += datasets/transformed/preprocessed/tokens/csn/python
 ETT_DEPS += datasets/transformed/preprocessed/tokens/sri/py150
 
 .PHONY: extract-transformed-tokens
-extract-transformed-tokens: $(ETT_DEPS) ## (DS-6) Extract preprocessed representations (tokens) from our transfromed (normalized) datasets 
+extract-transformed-tokens: build-image-preprocess-dataset-tokens | $(ETT_DEPS) ## (DS-6) Extract preprocessed representations (tokens) from our transfromed (normalized) datasets 
 	@$(call echo_info,"Tokens preprocessed representations extracted (for transformed datasets)!")
 
-#######################################################################################################################
-#######################################################################################################################
-
-.PHONY: test-astor
-test-astor: ## Tests our astor transformer (for python) <!PRIVATE>
-	@IMAGE_NAME="$(shell whoami)/averloc--astor-apply-transforms:$(shell git rev-parse HEAD)"
-	@$(call echo_debug,"Testing astor on normalized csn/python files...")
-	docker run -it --rm \
-		-v "${ROOT_DIR}/datasets/normalized/csn/python:/mnt/inputs" \
-		-v "${ROOT_DIR}/tasks/astor-apply-transforms:/app" \
-		-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python:/mnt/outputs" \
-		"$${IMAGE_NAME}"
 
 #######################################################################################################################
 #######################################################################################################################
@@ -700,80 +719,61 @@ train-model-seq2seq: check-dataset-name check-gpu check-models-out build-image-t
 #######################################################################################################################
 #######################################################################################################################
 
-.PHONY: extract-adv-dataset-tokens-c2s-java-small
-extract-adv-dataset-tokens-c2s-java-small: build-image-extract-adv-dataset-tokens
+.PHONY: check-adversarial-mode
+check-adversarial-mode:
+ifndef ADVERSARIAL_MODE
+	$(error ADVERSARIAL_MODE is a required parameter for this target.)
+endif
+
+.PHONY: extract-adv-dataset-tokens-c2s-java-small 
+extract-adv-dataset-tokens-c2s-java-small: | check-adversarial-mode build-image-extract-adv-dataset-tokens
+	@$(call adversarial_mode_setup)
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-tokens:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
 		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/c2s/java-small:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/adversarial/just-one-step-attacks/tokens/c2s/java-small:/mnt/outputs" \
-		"$${IMAGE_NAME}" \
-			transforms.RenameParameters \
-			transforms.RenameFields \
-			transforms.RenameLocalVariables \
-			transforms.ShuffleParameters \
-			transforms.ShuffleLocalVariables \
-			transforms.ReplaceTrueFalse \
-			transforms.InsertPrintStatements
+		-v "${ROOT_DIR}/datasets/adversarial/$${DIR_PART}/tokens/c2s/java-small:/mnt/outputs" \
+		"$${IMAGE_NAME}" $${TRANSFORMS}
 
 .PHONY: extract-adv-dataset-tokens-c2s-java-med
-extract-adv-dataset-tokens-c2s-java-med: build-image-extract-adv-dataset-tokens
+extract-adv-dataset-tokens-c2s-java-med: | check-adversarial-mode build-image-extract-adv-dataset-tokens
+	@$(call adversarial_mode_setup)
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-tokens:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
 		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/c2s/java-med:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/adversarial/just-one-step-attacks/tokens/c2s/java-med:/mnt/outputs" \
-		"$${IMAGE_NAME}" \
-			transforms.RenameParameters \
-			transforms.RenameFields \
-			transforms.RenameLocalVariables \
-			transforms.ShuffleParameters \
-			transforms.ShuffleLocalVariables \
-			transforms.ReplaceTrueFalse \
-			transforms.InsertPrintStatements
+		-v "${ROOT_DIR}/datasets/adversarial/$${DIR_PART}/tokens/c2s/java-med:/mnt/outputs" \
+		"$${IMAGE_NAME}" $${TRANSFORMS}
 
 .PHONY: extract-adv-dataset-tokens-csn-java
-extract-adv-dataset-tokens-csn-java: build-image-extract-adv-dataset-tokens
+extract-adv-dataset-tokens-csn-java: | check-adversarial-mode build-image-extract-adv-dataset-tokens
+	@$(call adversarial_mode_setup)
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-tokens:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
 		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/java:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/adversarial/just-one-step-attacks/tokens/csn/java:/mnt/outputs" \
-		"$${IMAGE_NAME}" \
-			transforms.RenameParameters \
-			transforms.RenameFields \
-			transforms.RenameLocalVariables \
-			transforms.ShuffleParameters \
-			transforms.ShuffleLocalVariables \
-			transforms.ReplaceTrueFalse \
-			transforms.InsertPrintStatements
+		-v "${ROOT_DIR}/datasets/adversarial/$${DIR_PART}/tokens/csn/java:/mnt/outputs" \
+		"$${IMAGE_NAME}" $${TRANSFORMS}
 
 .PHONY: extract-adv-dataset-tokens-csn-python
-extract-adv-dataset-tokens-csn-python: build-image-extract-adv-dataset-tokens
+extract-adv-dataset-tokens-csn-python: | check-adversarial-mode build-image-extract-adv-dataset-tokens
+	@$(call adversarial_mode_setup)
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-tokens:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
 		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/python:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/adversarial/just-one-step-attacks/tokens/csn/python:/mnt/outputs" \
-		"$${IMAGE_NAME}" \
-			transforms.RenameParameters \
-			transforms.RenameFields \
-			transforms.RenameLocalVariables \
-			transforms.ShuffleParameters \
-			transforms.ShuffleLocalVariables \
-			transforms.ReplaceTrueFalse \
-			transforms.InsertPrintStatements
+		-v "${ROOT_DIR}/datasets/adversarial/$${DIR_PART}/tokens/csn/python:/mnt/outputs" \
+		"$${IMAGE_NAME}" $${TRANSFORMS}
 
 .PHONY: extract-adv-dataset-tokens-sri-py150
-extract-adv-dataset-tokens-sri-py150: build-image-extract-adv-dataset-tokens
+extract-adv-dataset-tokens-sri-py150: | check-adversarial-mode build-image-extract-adv-dataset-tokens
+	@$(call adversarial_mode_setup)
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-tokens:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
 		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/sri/py150:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/adversarial/just-one-step-attacks/tokens/sri/py150:/mnt/outputs" \
-		"$${IMAGE_NAME}" \
-			transforms.RenameParameters \
-			transforms.RenameFields \
-			transforms.RenameLocalVariables \
-			transforms.ShuffleParameters \
-			transforms.ShuffleLocalVariables \
-			transforms.ReplaceTrueFalse \
-			transforms.InsertPrintStatements
+		-v "${ROOT_DIR}/datasets/adversarial/$${DIR_PART}/tokens/sri/py150:/mnt/outputs" \
+		"$${IMAGE_NAME}" $${TRANSFORMS}
 
 EADT_DEPS := extract-adv-dataset-tokens-c2s-java-small
 # EADT_DEPS += extract-adv-dataset-tokens-c2s-java-med
