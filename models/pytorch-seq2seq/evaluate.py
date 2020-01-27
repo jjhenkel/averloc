@@ -19,7 +19,7 @@ from seq2seq.attributions import get_IG_attributions
 def myfmt(r):
     return "%.3f" % (r,)
 
-vecfmt = np.vectorize(lambda x: "%.3f"%(x))
+vecfmt = np.vectorize(lambda x: "%.5f"%(x))
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -31,7 +31,6 @@ def parse_args():
                         help='The name of the checkpoint to load, usually an encoded time string')
     parser.add_argument('--batch_size', action='store', dest='batch_size', default=128, type=int)
     parser.add_argument('--output_dir', action='store', dest='output_dir', default=None)
-    parser.add_argument('--output_fname', action='store', dest='output_fname', default='exp')
     parser.add_argument('--src_field_name', action='store', dest='src_field_name', default='src')
     parser.add_argument('--save', action='store_true', default=False)
     parser.add_argument('--attributions', action='store_true', default=False)
@@ -70,7 +69,7 @@ def load_model_data_evaluator(expt_dir, model_name, data_path, batch_size=128):
     return model, dev, evaluator
 
 
-def calc_attributions(model, data):
+def calc_attributions(model, data, output_fname):
     print('Calculating attributions')
     model.train()
 
@@ -79,11 +78,12 @@ def calc_attributions(model, data):
 
     info = []
 
-    for d in tqdm.tqdm(data.examples):
-        out, IG, attn = get_IG_attributions(d.src, model, src_vocab, tgt_vocab, verify_IG=True, return_attn=True)
-        info.append({'input_seq': d.src, 'pred_seq': out, 'target_seq':d.tgt, 'IG_attrs': vecfmt(IG).tolist(), 'attn_attrs': vecfmt(attn).tolist()})
+    with open(os.path.join(opt.output_dir,'%s_%s_attributions.txt'%(output_fname, opt.data_path)), 'w') as f:
+        for d in tqdm.tqdm(data.examples):
+            out, IG, attn = get_IG_attributions(d.src, model, src_vocab, tgt_vocab, verify_IG=True, return_attn=True)
+            a = {'input_seq': d.src, 'pred_seq': out, 'target_seq':d.tgt[1:-1], 'IG_attrs': vecfmt(IG).tolist(), 'attn_attrs': vecfmt(attn).tolist()}
+            f.write(json.dumps(a)+'\n')
 
-    return info
 
 
 def evaluate_model(evaluator, model, data, save=False, output_dir=None, output_fname=None, src_field_name='src', get_attributions=False):
@@ -93,17 +93,17 @@ def evaluate_model(evaluator, model, data, save=False, output_dir=None, output_f
     # print(d)
 
     if get_attributions:
-        info = calc_attributions(model, data) 
+        calc_attributions(model, data, output_fname) 
 
     for m in d['metrics']:
         print('%s: %.3f'%(m,d['metrics'][m]))
 
     if save:
-        with open(os.path.join(output_dir,'%s_preds.txt'%output_fname), 'w') as f:
+        with open(os.path.join(output_dir,'%s_%s_preds.txt'%(output_fname, opt.data_path)), 'w') as f:
            f.writelines([a+'\n' for a in d['output_seqs']])
-        with open(os.path.join(output_dir,'%s_true.txt'%output_fname), 'w') as f:
+        with open(os.path.join(output_dir,'%s_%s_true.txt'%(output_fname, opt.data_path)), 'w') as f:
             f.writelines([a+'\n' for a in d['ground_truths']])
-        with open(os.path.join(output_dir,'%s_stats.txt'%output_fname), 'w') as f:
+        with open(os.path.join(output_dir,'%s_%s_stats.txt'%(output_fname, opt.data_path)), 'w') as f:
             try:
                 f.write(json.dumps(vars(opt))+'\n')
             except:
@@ -111,9 +111,7 @@ def evaluate_model(evaluator, model, data, save=False, output_dir=None, output_f
             for m in d['metrics']:
                 f.write('%s: %.3f\n'%(m,d['metrics'][m]))
 
-        if get_attributions:
-            with open(os.path.join(output_dir,'%s_attributions.txt'%output_fname), 'w') as f:
-                f.writelines([json.dumps(a)+'\n' for a in info])
+        
 
         print('Output files written')
 
@@ -129,10 +127,7 @@ if __name__=="__main__":
 
     for model_name in models:
         print(opt.expt_dir, model_name)
-        if opt.load_checkpoint == 'all':
-            output_fname = model_name.lower()
-        else:
-            output_fname = opt.output_fname
+        output_fname = model_name.lower()
 
         if opt.output_dir is None:
             opt.output_dir = opt.expt_dir
