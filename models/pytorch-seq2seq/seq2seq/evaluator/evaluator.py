@@ -7,6 +7,7 @@ from torch.nn.utils.rnn import pad_packed_sequence
 import seq2seq
 from seq2seq.loss import NLLLoss
 from seq2seq.evaluator.metrics import calculate_metrics
+from seq2seq.attributions import get_IG_attributions
 
 import tqdm
 import time
@@ -47,6 +48,7 @@ class Evaluator(object):
             dataset=data, batch_size=self.batch_size,
             sort=True, sort_key=lambda x: len(getattr(x,src_field_name)),
             device=device, train=False)
+        src_vocab = data.fields[seq2seq.src_field_name].vocab
         tgt_vocab = data.fields[seq2seq.tgt_field_name].vocab
         pad = tgt_vocab.stoi[data.fields[seq2seq.tgt_field_name].pad_token]
         eos = tgt_vocab.stoi[data.fields[seq2seq.tgt_field_name].SYM_EOS]
@@ -106,12 +108,16 @@ class Evaluator(object):
                     gt = [tgt_vocab.itos[tok] for tok in target_variables[i]]
                     ground_truths.append(' '.join([x for x in gt if x not in ['<sos>','<eos>','<pad>']]))
 
-                e = time.time()
+                    # if get_attributions:
+                    #     a
+                    #     exit() 
+
+                # e = time.time()
 
                 # print(cnt, b-a, c-b, d-c, e-d)
                 torch.cuda.empty_cache()
 
-                model.encoder.embedded[0].detach()
+                # model.encoder.embedded[0].detach()
 
         # print(output_seqs)
         # print(ground_truths)
@@ -127,4 +133,11 @@ class Evaluator(object):
         else:
             accuracy = match / total
 
-        return loss.get_loss(), accuracy, other_metrics, (output_seqs, ground_truths)
+        other_metrics.update({'Loss':loss.get_loss(), 'accuracy (torch)': accuracy*100})
+        d = {
+                'metrics': other_metrics,
+                'output_seqs': output_seqs,
+                'ground_truths': ground_truths
+            }
+
+        return d
