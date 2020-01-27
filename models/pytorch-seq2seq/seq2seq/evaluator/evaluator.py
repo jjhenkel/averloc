@@ -7,7 +7,6 @@ from torch.nn.utils.rnn import pad_packed_sequence
 import seq2seq
 from seq2seq.loss import NLLLoss
 from seq2seq.evaluator.metrics import calculate_metrics
-from seq2seq.attributions import get_IG_attributions
 
 import tqdm
 import time
