@@ -28,7 +28,7 @@ def get_freqs(pred, true):
 	d_true = {x: true.count(x) for x in all_words}
 	return d_pred, d_true
 
-def calculate_metrics(y_pred, y_true, verbose=False):
+def calculate_metrics(y_pred, y_true, verbose=False, bleu=False):
 	''' 
 	Calculate exact match accuracy, precision, recall, F1 score, word-level accuracy
 	y_pred and y_true are lists of strings
@@ -102,16 +102,17 @@ def calculate_metrics(y_pred, y_true, verbose=False):
 	exact_match /= N
 	word_level_accuracy = correct_words / total_words
 
-	bleu = moses_multi_bleu(np.array(y_pred), np.array(y_true))
-
 	d = {
 			'precision': precision*100, 
 			'recall': recall*100, 
 			'f1': f1*100, 
 			'exact_match':exact_match*100, 
 			'word-level accuracy': word_level_accuracy*100, 
-			'BLEU': bleu
 			}
+
+	if bleu:
+		bleu_score = moses_multi_bleu(np.array(y_pred), np.array(y_true))
+		d['BLEU'] = bleu_score
 
 	return d
 
