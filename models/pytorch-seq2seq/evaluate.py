@@ -78,7 +78,7 @@ def calc_attributions(model, data, output_fname):
 
     info = []
 
-    with open(os.path.join(opt.output_dir,'%s_%s_attributions.txt'%(output_fname, opt.data_path)), 'w') as f:
+    with open(os.path.join(opt.output_dir,'%s_%s_attributions.txt'%(output_fname, opt.data_path[:-4])), 'w') as f:
         for d in tqdm.tqdm(data.examples):
             out, IG, attn = get_IG_attributions(d.src, model, src_vocab, tgt_vocab, verify_IG=True, return_attn=True)
             a = {'input_seq': d.src, 'pred_seq': out, 'target_seq':d.tgt[1:-1], 'IG_attrs': vecfmt(IG).tolist(), 'attn_attrs': vecfmt(attn).tolist()}
@@ -99,11 +99,11 @@ def evaluate_model(evaluator, model, data, save=False, output_dir=None, output_f
         print('%s: %.3f'%(m,d['metrics'][m]))
 
     if save:
-        with open(os.path.join(output_dir,'%s_%s_preds.txt'%(output_fname, opt.data_path)), 'w') as f:
+        with open(os.path.join(output_dir,'%s_%s_preds.txt'%(output_fname, opt.data_path[:-4])), 'w') as f:
            f.writelines([a+'\n' for a in d['output_seqs']])
-        with open(os.path.join(output_dir,'%s_%s_true.txt'%(output_fname, opt.data_path)), 'w') as f:
+        with open(os.path.join(output_dir,'%s_%s_true.txt'%(output_fname, opt.data_path[:-4])), 'w') as f:
             f.writelines([a+'\n' for a in d['ground_truths']])
-        with open(os.path.join(output_dir,'%s_%s_stats.txt'%(output_fname, opt.data_path)), 'w') as f:
+        with open(os.path.join(output_dir,'%s_%s_stats.txt'%(output_fname, opt.data_path[:-4])), 'w') as f:
             try:
                 f.write(json.dumps(vars(opt))+'\n')
             except:
