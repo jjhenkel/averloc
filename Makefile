@@ -159,6 +159,11 @@ build-image-generate-baselines: submodules ## Builds our baseline generator dock
 	@"${ROOT_DIR}/scripts/build-image.sh" \
 		generate-baselines
 
+.PHONY: build-image-integrated-gradients-seq2seq
+build-image-integrated-gradients-seq2seq: submodules ## Builds our IG for seq2seq docker image  <!PRIVATE>
+	@"${ROOT_DIR}/scripts/build-model-image.sh" \
+		integrated-gradients-seq2seq
+
 .PHONY: build-image-normalize-raw-dataset
 build-image-normalize-raw-dataset: submodules ## Builds our dataset normalizer docker image  <!PRIVATE>
 	@"${ROOT_DIR}/scripts/build-image.sh" \
@@ -846,3 +851,13 @@ apply-transforms-sri-py150: build-image-astor-apply-transforms ## (DS-4) Apply o
 
 #######################################################################################################################
 #######################################################################################################################
+
+.PHONY: do-integrated-gradients-seq2seq
+do-integrated-gradients-seq2seq: check-dataset-name check-results-out check-gpu check-models-in build-image-integrated-gradients-seq2seq ## (IG) Do IG for our seq2seq model
+	@IMAGE_NAME="$(shell whoami)/averloc--integrated-gradients-seq2seq:$(shell git rev-parse HEAD)"
+	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		--gpus "device=$${GPU}" \
+		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
+		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs.tsv" \
+		-v "${ROOT_DIR}/$${RESULTS_OUT}:/mnt/outputs" \
+		"$${IMAGE_NAME}" $${ARGS}
