@@ -99,7 +99,7 @@ def attack_model(model, data, attacks, src_vocab, tgt_vocab):
     outputs = []
     gts = []
 
-    with open(os.path.join(opt.output_dir,'%s_%s_attacked.txt'%(opt.load_checkpoint, opt.data_path.replace('/','_')[:-4])), 'w') as f:
+    with open(os.path.join(opt.output_dir,'attacked.txt'), 'w') as f:
         for batch in tqdm.tqdm(batch_generator):
             d  = get_best_attack(batch, model, attacks, src_vocab, tgt_vocab)
             outputs.append(d['output_seq'])
@@ -108,14 +108,14 @@ def attack_model(model, data, attacks, src_vocab, tgt_vocab):
 
     metrics = calculate_metrics(outputs, gts)
 
-    print('Details written to', os.path.join(opt.output_dir,'%s_%s_attacked.txt'%(opt.load_checkpoint, opt.data_path.replace('/','_')[:-4])))
+    print('Details written to', os.path.join(opt.output_dir,'attacked.txt'))
 
     print(metrics)
 
-    with open(os.path.join(opt.output_dir,'%s_%s_attacked_metrics.txt'%(opt.load_checkpoint, opt.data_path.replace('/','_')[:-4])), 'w') as f:
+    with open(os.path.join(opt.output_dir,'attacked_metrics.txt'), 'w') as f:
         f.write(json.dumps(metrics)+'\n')
 
-    print('Metrics written to', os.path.join(opt.output_dir,'%s_%s_attacked_metrics.txt'%(opt.load_checkpoint, opt.data_path.replace('/','_')[:-4])))
+    print('Metrics written to', os.path.join(opt.output_dir,'attacked_metrics.txt'))
 
 
 if __name__=="__main__":
