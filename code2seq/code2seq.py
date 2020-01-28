@@ -21,7 +21,7 @@ if __name__ == '__main__':
     parser.add_argument('--predict', action='store_true')
     parser.add_argument('--debug', action='store_true')
     ###Additional Args for adv-train####
-    parser.add_argument("-f", dest="funcs", type=int, help="number of functions in the dataset", required=False)
+    parser.add_argument("-b", dest="batches", type=int, help="number of batches in the dataset", required=False)
     parser.add_argument("-t", dest="transformations", type=int, help="number of transformations in the dataset", required=False)
     parser.add_argument("-td", dest="train_dir", help="directory for adv-training", required=False)
     args = parser.parse_args()

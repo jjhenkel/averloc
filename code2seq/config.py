@@ -49,7 +49,7 @@ class Config:
         self.TRAIN_PATH = args.data_path
         self.TEST_PATH = args.test_path if args.test_path is not None else ''
         ###New config used for adv-training/evaluation###
-        self.FUNCS = args.funcs
+        self.BATCHES = args.batches
         self.TRANSFS = args.transformations
         self.TRAIN_DIR = args.train_dir
         ###################################################

@@ -23,12 +23,13 @@ class Reader:
     class_subtoken_table = None
     class_target_table = None
     class_node_table = None
+    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
-    def __init__(self, subtoken_to_index, target_to_index, node_to_index, config, is_evaluating=False, adv_training = False, adv_transf = 0, func = 0, epoch = 0):
+    def __init__(self, subtoken_to_index, target_to_index, node_to_index, config, is_evaluating=False, adv_training = False, adv_transf = 0, batch_id = 0, epoch = 0):
         self.config = config
         if adv_training:
             if is_evaluating:
-                self.file_path = config.TRAIN_DIR+"/"+str(adv_transf)+"/"+str(func)+".train.c2s"
+                self.file_path = config.TRAIN_DIR+"/"+str(adv_transf)+"/"+str(batch_id)+".train.c2s"
             else:
                 self.file_path = config.TRAIN_PATH + str(epoch) +".train.c2s"
         else:
@@ -36,6 +37,7 @@ class Reader:
         if self.file_path is not None and not os.path.exists(self.file_path):
                 print(
                     '%s cannot find file: %s' % ('Evaluation reader' if is_evaluating else 'Train reader', self.file_path))
+        print(self.file_path)            
         self.batch_size = config.TEST_BATCH_SIZE if is_evaluating else config.BATCH_SIZE
         self.is_evaluating = is_evaluating
 
