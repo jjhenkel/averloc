@@ -37,7 +37,7 @@ class Reader:
         if self.file_path is not None and not os.path.exists(self.file_path):
                 print(
                     '%s cannot find file: %s' % ('Evaluation reader' if is_evaluating else 'Train reader', self.file_path))
-        print(self.file_path)            
+        #print(self.file_path)            
         self.batch_size = config.TEST_BATCH_SIZE if is_evaluating else config.BATCH_SIZE
         self.is_evaluating = is_evaluating
 
