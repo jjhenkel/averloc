@@ -40,9 +40,9 @@ if [ "${1}" == "java" ]; then
   NODE_HISTOGRAM_FILE=/mnt/outputs/histo.node.c2s
 
   echo "Creating histograms from the training data"
-  cat ${TRAIN_DATA_FILE} | cut -d' ' -f1 | tr '|' '\n' | awk '{n[$0]++} END {for (i in n) print i,n[i]}' > ${TARGET_HISTOGRAM_FILE}
-  cat ${TRAIN_DATA_FILE} | cut -d' ' -f2- | tr ' ' '\n' | cut -d',' -f1,3 | tr ',|' '\n' | awk '{n[$0]++} END {for (i in n) print i,n[i]}' > ${SOURCE_SUBTOKEN_HISTOGRAM}
-  cat ${TRAIN_DATA_FILE} | cut -d' ' -f2- | tr ' ' '\n' | cut -d',' -f2 | tr '|' '\n' | awk '{n[$0]++} END {for (i in n) print i,n[i]}' > ${NODE_HISTOGRAM_FILE}
+  cat ${TRAIN_DATA_FILE} | cut -d' ' -f2 | tr '|' '\n' | awk '{n[$0]++} END {for (i in n) print i,n[i]}' > ${TARGET_HISTOGRAM_FILE}
+  cat ${TRAIN_DATA_FILE} | cut -d' ' -f3- | tr ' ' '\n' | cut -d',' -f1,3 | tr ',|' '\n' | awk '{n[$0]++} END {for (i in n) print i,n[i]}' > ${SOURCE_SUBTOKEN_HISTOGRAM}
+  cat ${TRAIN_DATA_FILE} | cut -d' ' -f3- | tr ' ' '\n' | cut -d',' -f2 | tr '|' '\n' | awk '{n[$0]++} END {for (i in n) print i,n[i]}' > ${NODE_HISTOGRAM_FILE}
 
   ${PYTHON} /code2seq/preprocess.py --train_data ${TRAIN_DATA_FILE} ${EXTRA_FLAG} --test_data ${TEST_DATA_FILE} --val_data ${VAL_DATA_FILE} \
     --max_contexts ${MAX_CONTEXTS} --max_data_contexts ${MAX_DATA_CONTEXTS} --subtoken_vocab_size ${SUBTOKEN_VOCAB_SIZE} \
@@ -97,9 +97,9 @@ elif [ "${1}" == "python" ]; then
   SOURCE_SUBTOKEN_HISTOGRAM=/mnt/outputs/histo.ori.c2s
   NODE_HISTOGRAM_FILE=/mnt/outputs/histo.node.c2s
 
-  cut <"${train_data_file}" -d' ' -f1 | tr '|' '\n' | awk '{n[$0]++} END {for (i in n) print i,n[i]}' >"${TARGET_HISTOGRAM_FILE}"
-  cut <"${train_data_file}" -d' ' -f2- | tr ' ' '\n' | cut -d',' -f1,3 | tr ',|' '\n' | awk '{n[$0]++} END {for (i in n) print i,n[i]}' >"${SOURCE_SUBTOKEN_HISTOGRAM}"
-  cut <"${train_data_file}" -d' ' -f2- | tr ' ' '\n' | cut -d',' -f2 | tr '|' '\n' | awk '{n[$0]++} END {for (i in n) print i,n[i]}' >"${NODE_HISTOGRAM_FILE}"
+  cut <"${train_data_file}" -d' ' -f2 | tr '|' '\n' | awk '{n[$0]++} END {for (i in n) print i,n[i]}' >"${TARGET_HISTOGRAM_FILE}"
+  cut <"${train_data_file}" -d' ' -f3- | tr ' ' '\n' | cut -d',' -f1,3 | tr ',|' '\n' | awk '{n[$0]++} END {for (i in n) print i,n[i]}' >"${SOURCE_SUBTOKEN_HISTOGRAM}"
+  cut <"${train_data_file}" -d' ' -f3- | tr ' ' '\n' | cut -d',' -f2 | tr '|' '\n' | awk '{n[$0]++} END {for (i in n) print i,n[i]}' >"${NODE_HISTOGRAM_FILE}"
   echo "  + Histograms created"
 
   echo "Preprocessing..."

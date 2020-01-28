@@ -3,7 +3,7 @@ import sys
 import json
 
 
-def parse_file(contents):
+def parse_file(contents, from_file):
     global c, d
     tree = ast.parse(contents)
     
@@ -124,14 +124,16 @@ def parse_file(contents):
         return pos
     
     traverse(tree)
-    return json.dumps(json_tree, separators=(',', ':'), ensure_ascii=False)
+    final_tree = { 'from_file': from_file, 'ast': json_tree }
+    
+    return json.dumps(final_tree, separators=(',', ':'), ensure_ascii=False)
 
 
 if __name__ == "__main__":
     for line in sys.stdin:
       try:
         as_json = json.loads(line)
-        result = parse_file(as_json['source_code'])
+        result = parse_file(as_json['source_code'], as_json['from_file'])
         print(result)
       except Exception:
         continue

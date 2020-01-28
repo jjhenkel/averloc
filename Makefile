@@ -501,7 +501,7 @@ datasets/transformed/preprocessed/ast-paths/sri/py150: ## <!PRIVATE>
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
 
 ETAP_DEPS := datasets/transformed/preprocessed/ast-paths/c2s/java-small
-ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/c2s/java-med
+# ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/c2s/java-med
 ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/csn/java
 ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/csn/python
 ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/sri/py150
