@@ -57,7 +57,7 @@ def get_attention_attributions(src_seq, model, src_vocab, tgt_vocab):
     return output_seq, attention_scores
 
 
-def get_IG_attributions(src_seq, model, src_vocab, tgt_vocab, opt=None, verify_IG=True, return_attn=False):
+def get_IG_attributions(src_seq, model, src_vocab, tgt_vocab, opt=None, verify_IG=True, return_attn=False, len_thresh=200):
     '''
     model object returned by load_model
     src_seq is a list of words
@@ -95,6 +95,10 @@ def get_IG_attributions(src_seq, model, src_vocab, tgt_vocab, opt=None, verify_I
         attention_scores = torch.cat(decoder_features['attention_score']).cpu().detach().numpy().squeeze()
         attention_scores = attention_scores[:len(final_output_seq),:]
 
+    # if len(src_seq)>len_thresh:
+    #     print('Skipping IG for instance')
+    #     return final_output_seq, None, attention_scores
+
     # print(final_output_seq)
     # get embeddings of the src_seq
     src_id_seq = torch.LongTensor([src_vocab.stoi[tok] for tok in src_seq]).view(1, -1)
@@ -107,7 +111,7 @@ def get_IG_attributions(src_seq, model, src_vocab, tgt_vocab, opt=None, verify_I
     baseline = np.zeros(np_embed.shape)
     
     # set number of steps in IG approximation (S from formula in original paper)
-    NUM_STEPS = 300
+    NUM_STEPS = 250
     N = NUM_STEPS + 1
 
     l = []
@@ -128,55 +132,63 @@ def get_IG_attributions(src_seq, model, src_vocab, tgt_vocab, opt=None, verify_I
     # reset model gradients
     model.zero_grad()
 
-    softmax_list, _, decoder_features = model(input_variable=src_id_seq, input_lengths=lengths, target_variable=target_variable, teacher_forcing_ratio=1.0, embedded=IG_inputs)
+    try:
+
+        softmax_list, _, decoder_features = model(input_variable=src_id_seq, input_lengths=lengths, target_variable=target_variable, teacher_forcing_ratio=1.0, embedded=IG_inputs)
+        
+        if verbose:
+            separator()
+            print('Progression of IG outputs:')
+            for i in range(0,N,25):
+                length = decoder_features['length'][i]
+                output_id_seq = [decoder_features['sequence'][di][i].data[0] for di in range(length)]
+                output_seq = [tgt_vocab.itos[tok] for tok in output_id_seq]
+                print(i, ' '.join(output_seq))
+                
+        length = decoder_features['length'][N-1]
+        output_id_seq = [decoder_features['sequence'][di][N-1].data[0] for di in range(length)]
+        output_seq = [tgt_vocab.itos[tok] for tok in output_id_seq] 
+        
+        # print(final_output_seq[:-1]==output_seq)
+        # print(final_output_seq[:],output_seq)
+
+        
+        assert final_output_seq[:-1] == output_seq, 'Something wrong'
+        output_len = len(output_seq)
+        input_len = src_id_seq.size(1)
+
+
+        IG_diff = IG_inputs[-1] - IG_inputs[0]
     
-    if verbose:
-        separator()
-        print('Progression of IG outputs:')
-        for i in range(0,N,25):
-            length = decoder_features['length'][i]
-            output_id_seq = [decoder_features['sequence'][di][i].data[0] for di in range(length)]
-            output_seq = [tgt_vocab.itos[tok] for tok in output_id_seq]
-            print(i, ' '.join(output_seq))
+        l = []
+        ones = torch.ones(softmax_list[0][:,0].size(), device=device)
+        for i in range(output_len):
+            model.zero_grad()
+            t = softmax_list[i] # N x V+1
             
-    length = decoder_features['length'][N-1]
-    output_id_seq = [decoder_features['sequence'][di][N-1].data[0] for di in range(length)]
-    output_seq = [tgt_vocab.itos[tok] for tok in output_id_seq] 
-    
-    # print(final_output_seq[:-1]==output_seq)
-    # print(final_output_seq[:],output_seq)
+            # Reset gradient to zero
+            if model.encoder.embedded[0].grad is not None:
+                model.encoder.embedded[0].grad.data.zero_() 
 
-    
-    assert final_output_seq[:-1] == output_seq, 'Something wrong'
-    output_len = len(output_seq)
-    input_len = src_id_seq.size(1)
+            assert final_output_id_seq[i]==t[-1,:].max(0)[1], "Something wrong"
+            t = t[:,final_output_id_seq[i]] # Size N
+            
+            # necessary to prevent: RuntimeError: cudnn RNN backward can only be called in training mode
+            # with backends.cudnn.flags(enabled=False):
+            model.encoder.embedded[0].retain_grad()        
+            t.backward(gradient=ones, retain_graph=True)
+            g = model.encoder.embedded[0].grad
+            g2 = g.view(input_len,N,-1)
+            g3 = torch.mean(g2,axis=1)
+            g4 = g3*IG_diff
+            g5 = torch.sum(g4, axis=1)
+            l.append(g5)
 
+    except:
+        print('CUDA out of memory, seq_len', len(src_seq))
+        torch.cuda.empty_cache()
+        return final_output_seq, None, attention_scores
 
-    IG_diff = IG_inputs[-1] - IG_inputs[0]
-
-    l = []
-    ones = torch.ones(softmax_list[0][:,0].size(), device=device)
-    for i in range(output_len):
-        model.zero_grad()
-        t = softmax_list[i] # N x V+1
-        
-        # Reset gradient to zero
-        if model.encoder.embedded[0].grad is not None:
-            model.encoder.embedded[0].grad.data.zero_() 
-
-        assert final_output_id_seq[i]==t[-1,:].max(0)[1], "Something wrong"
-        t = t[:,final_output_id_seq[i]] # Size N
-        
-        # necessary to prevent: RuntimeError: cudnn RNN backward can only be called in training mode
-        # with backends.cudnn.flags(enabled=False):
-        model.encoder.embedded[0].retain_grad()        
-        t.backward(gradient=ones, retain_graph=True)
-        g = model.encoder.embedded[0].grad
-        g2 = g.view(input_len,N,-1)
-        g3 = torch.mean(g2,axis=1)
-        g4 = g3*IG_diff
-        g5 = torch.sum(g4, axis=1)
-        l.append(g5)
 
     attr = torch.stack(l).cpu().detach().numpy()
     

@@ -17,9 +17,11 @@ json.encoder.FLOAT_REPR = lambda o: format(o, '.3f')
 from seq2seq.attributions import get_IG_attributions
 
 def myfmt(r):
+    if r is None:
+        return None
     return "%.3f" % (r,)
 
-vecfmt = np.vectorize(lambda x: "%.5f"%(x))
+vecfmt = np.vectorize(myfmt)
 
 def parse_args():
     parser = argparse.ArgumentParser()
