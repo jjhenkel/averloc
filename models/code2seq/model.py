@@ -23,7 +23,7 @@ def append_file(source, dest):
 class Model:
     topk = 10
     num_batches_to_log = 100
-    os.environ['CUDA_VISIBLE_DEVICES'] = '2'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
     def __init__(self, config):
         self.config = config
@@ -217,9 +217,8 @@ class Model:
             adv = reader.Reader(subtoken_to_index=self.subtoken_to_index, node_to_index=self.node_to_index,target_to_index=self.target_to_index,config=self.config, adv_training = True, is_evaluating=True, adv_transf = transf)
             self.eval_queues.append(adv)
                     
-        debug_queue = reader.Reader(subtoken_to_index=self.subtoken_to_index, node_to_index=self.node_to_index,target_to_index=self.target_to_index,config=self.config, adv_training = True, is_evaluating=True, adv_transf = transf, debug = True)
         
-        open("training_timing.log",'w').close()
+        open("training_timing_new.log",'w').close()
         
         self.print_hyperparams()
         print('Number of trainable params:',
@@ -229,11 +228,6 @@ class Model:
         if self.config.LOAD_PATH:
             self.load_model(self.sess)
 
-        debug_queue.reset(self.sess)
-        debug_tensor_data = debug_queue.get_output()
-        eval_input_tensors = self.sess.run(debug_tensor_data)
-        with open("batch.log",'w') as db:
-            db.write(str(eval_input_tensors[reader.TARGET_INDEX_KEY]))
         time.sleep(1)
         print('Started reader...')
 
@@ -244,68 +238,44 @@ class Model:
             my_training_elapse = time.time() - my_training_start_time
             my_training_start_time = time.time()
             
-            with open("training_timing.log",'a+') as trf:
+            with open("training_timing_new.log",'a+') as trf:
                 trf.write(str(my_training_elapse)+"\n")
-            open(self.config.TRAIN_PATH+str(iteration)+".train.c2s",'w').close()
+            #open(self.config.TRAIN_PATH+str(iteration)+".train.c2s",'w').close()
             print("start evaluation")
-            a_time = time.time() 
-            batch_id = 0
+            a_time = time.time()
             a_time = time.time()
             for transf in range(self.config.TRANSFS):
                 self.eval_queues[transf].reset(self.sess)
             try:
                 while True:
+                    batch_num += 1
                     worst_loss = 0.0
-                    worst_transf = 0
+                    worst_tensors = None
+                    print("Evaluating and training %d th batch"%batch_num)
                     print(time.time()-a_time)
                     a_time = time.time()
                     for transf in range(self.config.TRANSFS):
                         eval_input_tensors_data = self.eval_queues[transf].get_output()
                         eval_input_tensors = self.sess.run(eval_input_tensors_data)
-                        if batch_id == 2:
-                            with open("batch"+str(transf)+".log",'w') as db:
-                                db.write(str(eval_input_tensors[reader.TARGET_INDEX_KEY]))
                         eval_curr_loss = self.sess.run(eval_graph_loss, feed_dict={eval_target_index: eval_input_tensors[reader.TARGET_INDEX_KEY], eval_target_lengths: eval_input_tensors[reader.TARGET_LENGTH_KEY], eval_path_source_indices: eval_input_tensors[reader.PATH_SOURCE_INDICES_KEY], eval_node_indices: eval_input_tensors[reader.NODE_INDICES_KEY], eval_path_target_indices: eval_input_tensors[reader.PATH_TARGET_INDICES_KEY],  eval_valid_context_mask: eval_input_tensors[reader.VALID_CONTEXT_MASK_KEY], eval_path_source_lengths: eval_input_tensors[reader.PATH_SOURCE_LENGTHS_KEY], eval_path_lengths: eval_input_tensors[reader.PATH_LENGTHS_KEY], eval_path_target_lengths: eval_input_tensors[reader.PATH_TARGET_LENGTHS_KEY]})
-                        print(eval_curr_loss)
+                        #print(eval_curr_loss)
                         if eval_curr_loss > worst_loss:
                             worst_loss = eval_curr_loss
-                            worst_transf = transf
+                            worst_tensors = eval_input_tensors
                     
-                    append_file(self.config.TRAIN_DIR+"/adv_data/"+str(worst_transf)+"/"+str(batch_id)+".train.c2s", self.config.TRAIN_PATH+str(iteration)+".train.c2s")      
-                    print("append "+self.config.TRAIN_DIR+"/adv_data/"+str(worst_transf)+"/"+str(batch_id)+".train.c2s"+"to "+self.config.TRAIN_PATH+str(iteration)+".train.c2s") 
-                    batch_id += 1       
-                            
-            except tf.errors.OutOfRangeError:
-                pass          
-            
-            self.queue_thread = reader.Reader(subtoken_to_index=self.subtoken_to_index,
-                                          node_to_index=self.node_to_index,
-                                          target_to_index=self.target_to_index,
-                                          config=self.config, adv_training = True,
-                                          epoch = iteration)
-            
-            input_tensors_data = self.queue_thread.get_output()
-            
-            self.queue_thread.reset(self.sess)
-            try:
-                while True:
-                    batch_num += 1
-                    input_tensors=self.sess.run(input_tensors_data)
-                    
-                    _, batch_loss = self.sess.run([train_op, train_loss],feed_dict={target_index: input_tensors[reader.TARGET_INDEX_KEY], target_lengths: input_tensors[reader.TARGET_LENGTH_KEY], path_source_indices: input_tensors[reader.PATH_SOURCE_INDICES_KEY], node_indices: input_tensors[reader.NODE_INDICES_KEY], path_target_indices: input_tensors[reader.PATH_TARGET_INDICES_KEY],  valid_context_mask: input_tensors[reader.VALID_CONTEXT_MASK_KEY], path_source_lengths: input_tensors[reader.PATH_SOURCE_LENGTHS_KEY], path_lengths: input_tensors[reader.PATH_LENGTHS_KEY], path_target_lengths: input_tensors[reader.PATH_TARGET_LENGTHS_KEY]})
+                    _, batch_loss = self.sess.run([train_op, train_loss],feed_dict={target_index: worst_tensors[reader.TARGET_INDEX_KEY], target_lengths: worst_tensors[reader.TARGET_LENGTH_KEY], path_source_indices: worst_tensors[reader.PATH_SOURCE_INDICES_KEY], node_indices: worst_tensors[reader.NODE_INDICES_KEY], path_target_indices: worst_tensors[reader.PATH_TARGET_INDICES_KEY],  valid_context_mask: worst_tensors[reader.VALID_CONTEXT_MASK_KEY], path_source_lengths: worst_tensors[reader.PATH_SOURCE_LENGTHS_KEY], path_lengths: worst_tensors[reader.PATH_LENGTHS_KEY], path_target_lengths: worst_tensors[reader.PATH_TARGET_LENGTHS_KEY]})
                     sum_loss += batch_loss
                     if batch_num % self.num_batches_to_log == 0:
                         self.trace(sum_loss, batch_num, multi_batch_start_time)
                         sum_loss = 0
-                        multi_batch_start_time = time.time()
+                        multi_batch_start_time = time.time()    
 
 
             except tf.errors.OutOfRangeError:
                 self.epochs_trained += self.config.SAVE_EVERY_EPOCHS
                 print('Finished %d epochs' % self.config.SAVE_EVERY_EPOCHS)
                       
-                
-               
+
                 results, precision, recall, f1 = self.evaluate()
                 if self.config.BEAM_WIDTH == 0:
                     print('Accuracy after %d epochs: %.5f' % (self.epochs_trained, results))
@@ -346,7 +316,7 @@ class Model:
         multi_batch_elapsed = time.time() - multi_batch_start_time
         avg_loss = sum_loss / self.num_batches_to_log
         print('Average loss at batch %d: %f, \tthroughput: %d samples/sec' % (batch_num, avg_loss,
-                                                                              self.config.BATCH_SIZE * self.num_batches_to_log / (
+                                                                              self.config.BATCH_SIZE * self.num_batches_to_log * (self.config.TRANSFS+1) / (
                                                                                   multi_batch_elapsed if multi_batch_elapsed > 0 else 1)))
 
     
