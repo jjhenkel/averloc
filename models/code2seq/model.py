@@ -23,7 +23,7 @@ import time
 class Model:
     topk = 10
     num_batches_to_log = 100
-    os.environ['CUDA_VISIBLE_DEVICES'] = '2'
+    # os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
     def __init__(self, config):
         self.config = config

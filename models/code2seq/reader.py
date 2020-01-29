@@ -33,7 +33,7 @@ class Reader:
                 if debug:
             	    self.file_path = config.TRAIN_DIR+"/3/2.train.c2s"
                 else:
-                    self.file_path = config.TRAIN_DIR+"/data"+str(adv_transf)+".trans.c2s"
+                    self.file_path = config.TRAIN_DIR+"/data"+str(adv_transf)+".train.c2s"
             else:
                 self.file_path = config.TRAIN_PATH + str(epoch) +".train.c2s"
         else:

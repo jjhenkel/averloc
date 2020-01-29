@@ -186,12 +186,12 @@ build-image-spoon-apply-transforms: submodules ## Builds our dockerized version 
 
 .PHONY: build-image-test-model-code2seq
 build-image-test-model-code2seq: submodules ## Build tasks/test-model-code2seq <!PRIVATE>
-	@"${ROOT_DIR}/scripts/build-image.sh" \
+	@"${ROOT_DIR}/scripts/build-model-image.sh" \
 		test-model-code2seq
 
 .PHONY: build-image-train-model-code2seq
 build-image-train-model-code2seq: submodules ## Build tasks/train-model-code2seq <!PRIVATE>
-	@"${ROOT_DIR}/scripts/build-image.sh" \
+	@"${ROOT_DIR}/scripts/build-model-image.sh" \
 		train-model-code2seq
 
 .PHONY: build-image-test-model-seq2seq
