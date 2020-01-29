@@ -102,12 +102,19 @@ def build_val_data(src_dir, dirs, des_dir):
             for line in sampled_lines:
                 f.write(line)
 
+def remove_hash(a_f):
+	with open(a_f) as f:
+		with open("temp", 'w') as g:
+			line = f.readline()
+			while line:
+				content = " ".join(line.split(" ")[1:])
+				g.write(content)
+				line = f.readline()
+	call("mv -f temp "+af,shell=True)
 
 subdirs = get_subdirs(src_dir)
-#subdir_dicts = build_dict_dirs(dest_dir, subdirs, src_dir)
-#build_adv_data(src_dir, dest_dir, subdirs, subdir_dicts)
-#build_batches(subdirs, dest_dir, batch_size)
-#call("cp identity/data.train.c2s data0.train.c2s", cwd="data/transformed_data", shell=True)
-#call("cp "+src_dir+"/identity/data.dict.c2s "+dest_dir, shell=True)
-#open(training_dir+"/data0.train.c2s",'w').close()
+subdir_dicts = build_dict_dirs(dest_dir, subdirs, src_dir)
+build_adv_data(src_dir, dest_dir, subdirs, subdir_dicts)
+call("cp "+src_dir+"/identity/data.dict.c2s "+dest_dir, shell=True)
 build_val_data(src_dir, subdirs, dest_dir)
+remove_hash(des_dir+"/"+"data.val.c2s")

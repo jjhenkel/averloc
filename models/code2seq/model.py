@@ -14,16 +14,16 @@ from common import Common
 import time
 
 
-def append_file(source, dest):
-    if os.path.exists(source):
-        with open(dest, 'a+') as f:
-            f.write(open(source).read())
+#def append_file(source, dest):
+#    if os.path.exists(source):
+#        with open(dest, 'a+') as f:
+ #           f.write(open(source).read())
 
 
 class Model:
     topk = 10
     num_batches_to_log = 100
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '2'
 
     def __init__(self, config):
         self.config = config
@@ -91,7 +91,6 @@ class Model:
         #self.eval_losses = []
         #self.p1s = []
         #self.p2s = []
-        
         
 
         
@@ -200,12 +199,6 @@ class Model:
 
 
             eval_logits = eval_outputs.rnn_output  # (batch, max_output_length, dim * 2 + rnn_size)
-            #file_name = "file://eval_training.log"
-            #file_name1 = "file://eval_training"+str(count+1)+".log"
-            #p_op = tf.print(tf.shape(eval_target_index), output_stream=file_name, summarize=-1)
-            #p_op2 = tf.print(tf.shape(logits), output_stream=file_name1, summarize=-1)
-            #print(logits)
-            #print(target_index)
             eval_crossent = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=eval_target_index, logits=eval_logits)
             eval_target_words_nonzero = tf.sequence_mask(eval_target_lengths + 1,
                                                     maxlen=self.config.MAX_TARGET_PARTS + 1, dtype=tf.float32)
@@ -216,7 +209,7 @@ class Model:
         for transf in range(self.config.TRANSFS):
             adv = reader.Reader(subtoken_to_index=self.subtoken_to_index, node_to_index=self.node_to_index,target_to_index=self.target_to_index,config=self.config, adv_training = True, is_evaluating=True, adv_transf = transf)
             self.eval_queues.append(adv)
-                    
+                                     
         
         open("training_timing_new.log",'w').close()
         
@@ -235,6 +228,7 @@ class Model:
         
         my_training_start_time = time.time()
         for iteration in range(1, (self.config.NUM_EPOCHS // self.config.SAVE_EVERY_EPOCHS) + 1):
+    #    for iteration in range(1, 20):
             my_training_elapse = time.time() - my_training_start_time
             my_training_start_time = time.time()
             
@@ -242,7 +236,6 @@ class Model:
                 trf.write(str(my_training_elapse)+"\n")
             #open(self.config.TRAIN_PATH+str(iteration)+".train.c2s",'w').close()
             print("start evaluation")
-            a_time = time.time()
             a_time = time.time()
             for transf in range(self.config.TRANSFS):
                 self.eval_queues[transf].reset(self.sess)
@@ -274,8 +267,8 @@ class Model:
             except tf.errors.OutOfRangeError:
                 self.epochs_trained += self.config.SAVE_EVERY_EPOCHS
                 print('Finished %d epochs' % self.config.SAVE_EVERY_EPOCHS)
-                      
-
+               
+               
                 results, precision, recall, f1 = self.evaluate()
                 if self.config.BEAM_WIDTH == 0:
                     print('Accuracy after %d epochs: %.5f' % (self.epochs_trained, results))
@@ -297,13 +290,7 @@ class Model:
                         print('Best scores - epoch %d: ' % best_epoch)
                         print('Precision: %.5f, recall: %.5f, F1: %.5f' % (best_f1_precision, best_f1_recall, best_f1))
                         return
-                self.queue_thread = reader.Reader(subtoken_to_index=self.subtoken_to_index,
-                                          node_to_index=self.node_to_index,
-                                          target_to_index=self.target_to_index,
-                                          config=self.config, adv_training = True,
-                                          epoch = iteration)
-            
-                input_tensors_data = self.queue_thread.get_output()
+
 
         if self.config.SAVE_PATH:
             self.save_model(self.sess, self.config.SAVE_PATH + '.final')
