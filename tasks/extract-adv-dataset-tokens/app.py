@@ -10,8 +10,11 @@ if __name__ == "__main__":
   ID_MAP = {}
 
   print("Loading identity transform...")
-  with open("/mnt/inputs/transforms.Identity/{}.tsv".format(sys.argv[1])) as identity_tsv:
-    reader = csv.reader(identity_tsv, delimiter='\t', quoting=csv.QUOTE_NONE)
+  with open("/mnt/inputs/transforms.Identity/{}.tsv".format(sys.argv[1]), 'r') as identity_tsv:
+    reader = csv.reader(
+      (x.replace('\0', '') for x in identity_tsv),
+      delimiter='\t', quoting=csv.QUOTE_NONE
+    )
     next(reader, None)
     for line in reader:
       ID_MAP[line[0]] = (line[1], line[2])
@@ -21,8 +24,11 @@ if __name__ == "__main__":
   TRANSFORMED = {}
   for transform_name in sys.argv[2:]:
     TRANSFORMED[transform_name] = {}
-    with open("/mnt/inputs/{}/{}.tsv".format(transform_name, sys.argv[1])) as current_tsv:
-      reader = csv.reader(current_tsv, delimiter='\t', quoting=csv.QUOTE_NONE)
+    with open("/mnt/inputs/{}/{}.tsv".format(transform_name, sys.argv[1]), 'r') as current_tsv:
+      reader = csv.reader(
+        (x.replace('\0', '') for x in current_tsv),
+        delimiter='\t', quoting=csv.QUOTE_NONE
+      )
       next(reader, None)
       for line in reader:
         TRANSFORMED[transform_name][line[0]] = line[1]
@@ -34,7 +40,7 @@ if __name__ == "__main__":
   with open("/mnt/outputs/{}.tsv".format(sys.argv[1]), "w") as out_f:
     out_f.write('src\ttgt\t{}\n'.format(
       '\t'.join([ 
-        'src_adv{}'.format(i) for i in range(0, len(sys.argv[2:]))
+        'src_adv{}'.format(i) for i in sys.argv[2:]
       ])
     ))
 

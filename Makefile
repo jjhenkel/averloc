@@ -149,6 +149,12 @@ build-image-download-csn-dataset: submodules ## Builds tasks/download-csn-datase
 	@"${ROOT_DIR}/scripts/build-image.sh" \
 		download-csn-dataset
 
+
+.PHONY: build-image-extract-adv-dataset-c2s
+build-image-extract-adv-dataset-c2s: submodules ## Builds our adversarial dataset extractor (representation: ast-paths). <!PRIVATE>
+	@"${ROOT_DIR}/scripts/build-model-image.sh" \
+		extract-adv-dataset-c2s
+
 .PHONY: build-image-extract-adv-dataset-tokens
 build-image-extract-adv-dataset-tokens: submodules ## Builds our adversarial dataset extractor (representation: tokens). <!PRIVATE>
 	@"${ROOT_DIR}/scripts/build-image.sh" \
@@ -186,12 +192,12 @@ build-image-spoon-apply-transforms: submodules ## Builds our dockerized version 
 
 .PHONY: build-image-test-model-code2seq
 build-image-test-model-code2seq: submodules ## Build tasks/test-model-code2seq <!PRIVATE>
-	@"${ROOT_DIR}/scripts/build-image.sh" \
+	@"${ROOT_DIR}/scripts/build-model-image.sh" \
 		test-model-code2seq
 
 .PHONY: build-image-train-model-code2seq
 build-image-train-model-code2seq: submodules ## Build tasks/train-model-code2seq <!PRIVATE>
-	@"${ROOT_DIR}/scripts/build-image.sh" \
+	@"${ROOT_DIR}/scripts/build-model-image.sh" \
 		train-model-code2seq
 
 .PHONY: build-image-test-model-seq2seq
@@ -501,10 +507,10 @@ datasets/transformed/preprocessed/ast-paths/sri/py150: ## <!PRIVATE>
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
 
 ETAP_DEPS := datasets/transformed/preprocessed/ast-paths/c2s/java-small
-# ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/c2s/java-med
 ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/csn/java
 ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/csn/python
 ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/sri/py150
+ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/c2s/java-med
 
 extract-transformed-ast-paths: build-image-preprocess-dataset-c2s | $(ETAP_DEPS) ## (DS-6) Extract preprocessed representations (ast-paths) from our transfromed (normalized) datasets 
 	@$(call echo_info,"AST Paths (code2seq style) preprocessed representations extracted (for transformed datasets)!")
@@ -729,6 +735,64 @@ check-adversarial-mode:
 ifndef ADVERSARIAL_MODE
 	$(error ADVERSARIAL_MODE is a required parameter for this target.)
 endif
+
+.PHONY: extract-adv-dataset-ast-paths-c2s-java-small
+extract-adv-dataset-ast-paths-c2s-java-small: | check-adversarial-mode build-image-extract-adv-dataset-c2s
+	@$(call adversarial_mode_setup)
+	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-c2s:$(shell git rev-parse HEAD)"
+	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
+		-v "${ROOT_DIR}/tasks/extract-adv-dataset-c2s:/app" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-small:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/adversarial/$${DIR_PART}/ast-paths/c2s/java-small:/mnt/outputs" \
+		"$${IMAGE_NAME}"  $${TRANSFORMS}
+
+.PHONY: extract-adv-dataset-ast-paths-c2s-java-med
+extract-adv-dataset-ast-paths-c2s-java-med: | check-adversarial-mode build-image-extract-adv-dataset-c2s
+	@$(call adversarial_mode_setup)
+	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-c2s:$(shell git rev-parse HEAD)"
+	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
+		-v "${ROOT_DIR}/tasks/extract-adv-dataset-c2s:/app" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-med:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/adversarial/$${DIR_PART}/ast-paths/c2s/java-med:/mnt/outputs" \
+		"$${IMAGE_NAME}"  $${TRANSFORMS}
+
+.PHONY: extract-adv-dataset-ast-paths-csn-java
+extract-adv-dataset-ast-paths-csn-java: | check-adversarial-mode build-image-extract-adv-dataset-c2s
+	@$(call adversarial_mode_setup)
+	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-c2s:$(shell git rev-parse HEAD)"
+	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
+		-v "${ROOT_DIR}/tasks/extract-adv-dataset-c2s:/app" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/csn/java:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/adversarial/$${DIR_PART}/ast-paths/csn/java:/mnt/outputs" \
+		"$${IMAGE_NAME}"  $${TRANSFORMS}
+
+.PHONY: extract-adv-dataset-ast-paths-csn-python
+extract-adv-dataset-ast-paths-csn-python: | check-adversarial-mode build-image-extract-adv-dataset-c2s
+	@$(call adversarial_mode_setup)
+	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-c2s:$(shell git rev-parse HEAD)"
+	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
+		-v "${ROOT_DIR}/tasks/extract-adv-dataset-c2s:/app" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/csn/python:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/adversarial/$${DIR_PART}/ast-paths/csn/python:/mnt/outputs" \
+		"$${IMAGE_NAME}"  $${TRANSFORMS}
+
+.PHONY: extract-adv-dataset-ast-paths-sri-py150
+extract-adv-dataset-ast-paths-sri-py150: | check-adversarial-mode build-image-extract-adv-dataset-c2s
+	@$(call adversarial_mode_setup)
+	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-c2s:$(shell git rev-parse HEAD)"
+	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
+		-v "${ROOT_DIR}/tasks/extract-adv-dataset-c2s:/app" \
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/sri/py150:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/adversarial/$${DIR_PART}/ast-paths/sri/py150:/mnt/outputs" \
+		"$${IMAGE_NAME}"  $${TRANSFORMS}
+
+#######################################################################################################################
+#######################################################################################################################
 
 .PHONY: extract-adv-dataset-tokens-c2s-java-small 
 extract-adv-dataset-tokens-c2s-java-small: | check-adversarial-mode build-image-extract-adv-dataset-tokens
