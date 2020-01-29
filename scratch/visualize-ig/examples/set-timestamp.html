@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="Quick visualization for IG and Attention Attributions.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <title>IG and Attention Attributions</title>
+
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.teal-red.min.css">
+  <style>
+    #view-source {
+      position: fixed;
+      display: block;
+      right: 0;
+      bottom: 0;
+      margin-right: 40px;
+      margin-bottom: 40px;
+      z-index: 900;
+    }
+
+    .demo-ribbon {
+      width: 100%;
+      height: 40vh;
+      background-color: #3F51B5;
+      -webkit-flex-shrink: 0;
+      -ms-flex-negative: 0;
+      flex-shrink: 0;
+    }
+
+    .demo-main {
+      margin-top: -35vh;
+      -webkit-flex-shrink: 0;
+      -ms-flex-negative: 0;
+      flex-shrink: 0;
+    }
+
+    .demo-header .mdl-layout__header-row {
+      padding-left: 40px;
+    }
+
+    .demo-container {
+      max-width: 1600px;
+      width: calc(100% - 16px);
+      margin: 0 auto;
+    }
+
+    .demo-content {
+      border-radius: 2px;
+      padding: 80px 56px;
+      margin-bottom: 80px;
+    }
+
+    .demo-layout.is-small-screen .demo-content {
+      padding: 40px 28px;
+    }
+
+    .demo-content h3 {
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="demo-layout mdl-layout mdl-layout--fixed-header mdl-js-layout mdl-color--grey-100">
+    <header
+      class="demo-header mdl-layout__header mdl-layout__header--scroll mdl-color--grey-100 mdl-color-text--grey-800">
+      <div class="mdl-layout__header-row">
+        <span class="mdl-layout-title">IG and Attention Attributions</span>
+        <div class="mdl-layout-spacer"></div>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+          <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
+            <i class="material-icons">search</i>
+          </label>
+          <div class="mdl-textfield__expandable-holder">
+            <input class="mdl-textfield__input" type="text" id="search">
+            <label class="mdl-textfield__label" for="search">Enter your query...</label>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="demo-ribbon"></div>
+    <main class="demo-main mdl-layout__content">
+      <div class="demo-container mdl-grid">
+        <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
+        <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
+          <main class="mdl-layout__content">
+            <div class="mdl-grid">
+              <div class="mdl-card mdl-cell mdl-cell--6-col" style="min-height: 0;"><h3>set</h3></div>
+<div class="mdl-card mdl-cell mdl-cell--6-col" style="min-height: 0;"><h3>timestamp</h3></div>
+
+            </div>
+            <div class="mdl-grid">
+              <div class="mdl-card mdl-cell mdl-cell--6-col"><table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp"><thead><tr><th class="mdl-data-table__cell--non-numeric">Source Token</th><th>IG (N)</th><th>IG (A)</th></tr></thead><tbody><tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #ff149149">-0.462</td><td style="background-color: #ff180180">-0.511</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">long</td><td style="background-color: #ff7c7c">0.820</td><td style="background-color: #ff0b0b">0.970</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">timestamp</td><td style="background-color: #ffd6d6">0.258</td><td style="background-color: #ff150150">-0.323</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #ff1818">1.441</td><td style="background-color: #ff3b3b">0.779</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">{</td><td style="background-color: #ff2121">1.383</td><td style="background-color: #ff4e4e">0.701</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">if</td><td style="background-color: #ff121121">-0.214</td><td style="background-color: #fff5f5">0.040</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #ff137137">-0.348</td><td style="background-color: #ff14a14a">-0.296</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">timestamp</td><td style="background-color: #fff0f0">0.095</td><td style="background-color: #ff107107">-0.030</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric"><=</td><td style="background-color: #ff12e12e">-0.293</td><td style="background-color: #fff4f4">0.044</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">0</td><td style="background-color: #ff109109">-0.063</td><td style="background-color: #fffbfb">0.017</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #ffd6d6">0.255</td><td style="background-color: #ff9e9e">0.385</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">{</td><td style="background-color: #ffdddd">0.214</td><td style="background-color: #ffb0b0">0.312</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">throw</td><td style="background-color: #fff4f4">0.066</td><td style="background-color: #ff116116">-0.090</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">new</td><td style="background-color: #fff4f4">0.066</td><td style="background-color: #ffd7d7">0.159</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">Illegal</td><td style="background-color: #ff111111">-0.113</td><td style="background-color: #ff105105">-0.024</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">Argument</td><td style="background-color: #ff109109">-0.065</td><td style="background-color: #fff4f4">0.045</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">Exception</td><td style="background-color: #fffefe">0.006</td><td style="background-color: #ffecec">0.074</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #ff12e12e">-0.294</td><td style="background-color: #ff1c61c6">-0.790</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">"timestamp</td><td style="background-color: #ff10b10b">-0.072</td><td style="background-color: #fffafa">0.020</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">must</td><td style="background-color: #ffe5e5">0.163</td><td style="background-color: #fff8f8">0.026</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">be</td><td style="background-color: #ffdada">0.229</td><td style="background-color: #ffd1d1">0.182</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">greater</td><td style="background-color: #ff10c10c">-0.084</td><td style="background-color: #ff124124">-0.145</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">than</td><td style="background-color: #ff11f11f">-0.200</td><td style="background-color: #ff12b12b">-0.175</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">0"</td><td style="background-color: #ff11a11a">-0.171</td><td style="background-color: #fff2f2">0.051</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #ffeeee">0.106</td><td style="background-color: #ffa0a0">0.376</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">;</td><td style="background-color: #ff11c11c">-0.184</td><td style="background-color: #fffcfc">0.011</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">}</td><td style="background-color: #fff3f3">0.075</td><td style="background-color: #ffdada">0.146</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">this</td><td style="background-color: #ff6969">0.934</td><td style="background-color: #ff1e1e">0.891</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">.</td><td style="background-color: #ff8d8d">0.709</td><td style="background-color: #ff0c0c">0.964</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">timestamp</td><td style="background-color: #ff123123">-0.223</td><td style="background-color: #ffe9e9">0.086</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">=</td><td style="background-color: #ff0000">1.591</td><td style="background-color: #ff0000">1.012</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">timestamp</td><td style="background-color: #ffefef">0.099</td><td style="background-color: #ffbcbc">0.267</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">;</td><td style="background-color: #ffe5e5">0.162</td><td style="background-color: #ff137137">-0.221</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">}</td><td style="background-color: #ff12b12b">-0.272</td><td style="background-color: #ff14b14b">-0.300</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric"><eos></td><td style="background-color: #ff155155">-0.537</td><td style="background-color: #ff141141">-0.263</td></tr>
+</tbody></table></div>
+<div class="mdl-card mdl-cell mdl-cell--6-col"><table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp"><thead><tr><th class="mdl-data-table__cell--non-numeric">Source Token</th><th>IG (N)</th><th>IG (A)</th></tr></thead><tbody><tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #ff9292">0.832</td><td style="background-color: #ffc8c8">0.452</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">long</td><td style="background-color: #ff9d9d">0.745</td><td style="background-color: #ff9d9d">0.798</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">timestamp</td><td style="background-color: #ff7676">1.048</td><td style="background-color: #ffcbcb">0.421</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #ff123123">-0.273</td><td style="background-color: #fffefe">0.005</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">{</td><td style="background-color: #ff125125">-0.292</td><td style="background-color: #fffbfb">0.031</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">if</td><td style="background-color: #ffc1c1">0.471</td><td style="background-color: #ff105105">-0.046</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #ffc7c7">0.426</td><td style="background-color: #ffd8d8">0.317</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">timestamp</td><td style="background-color: #ff8c8c">0.876</td><td style="background-color: #ffa5a5">0.735</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric"><=</td><td style="background-color: #fff7f7">0.059</td><td style="background-color: #fffbfb">0.030</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">0</td><td style="background-color: #fff3f3">0.089</td><td style="background-color: #fff8f8">0.060</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #fffafa">0.036</td><td style="background-color: #fffcfc">0.025</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">{</td><td style="background-color: #fffcfc">0.024</td><td style="background-color: #fff7f7">0.064</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">throw</td><td style="background-color: #ffdddd">0.258</td><td style="background-color: #ffcfcf">0.390</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">new</td><td style="background-color: #fffafa">0.037</td><td style="background-color: #ff111111">-0.146</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">Illegal</td><td style="background-color: #ffffff">0.001</td><td style="background-color: #ff101101">-0.017</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">Argument</td><td style="background-color: #fff9f9">0.044</td><td style="background-color: #fffcfc">0.026</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">Exception</td><td style="background-color: #fffafa">0.037</td><td style="background-color: #fffcfc">0.022</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #ff11b11b">-0.213</td><td style="background-color: #ff15d15d">-0.770</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">"timestamp</td><td style="background-color: #fff8f8">0.052</td><td style="background-color: #fffbfb">0.035</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">must</td><td style="background-color: #ff104104">-0.035</td><td style="background-color: #fffcfc">0.026</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">be</td><td style="background-color: #fff9f9">0.048</td><td style="background-color: #fff8f8">0.060</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">greater</td><td style="background-color: #ffe0e0">0.238</td><td style="background-color: #ffe0e0">0.254</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">than</td><td style="background-color: #ffdddd">0.258</td><td style="background-color: #ffeded">0.144</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">0"</td><td style="background-color: #fff8f8">0.052</td><td style="background-color: #fff1f1">0.114</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #ffefef">0.120</td><td style="background-color: #ffcbcb">0.428</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">;</td><td style="background-color: #ff10e10e">-0.113</td><td style="background-color: #ff11b11b">-0.226</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">}</td><td style="background-color: #fff9f9">0.042</td><td style="background-color: #fff7f7">0.064</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">this</td><td style="background-color: #ffeaea">0.164</td><td style="background-color: #ffcccc">0.417</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">.</td><td style="background-color: #ffb4b4">0.576</td><td style="background-color: #ff4a4a">1.476</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">timestamp</td><td style="background-color: #ff0000">1.947</td><td style="background-color: #ff0000">2.083</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">=</td><td style="background-color: #fff8f8">0.055</td><td style="background-color: #ff11d11d">-0.245</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">timestamp</td><td style="background-color: #ff5d5d">1.239</td><td style="background-color: #ff7676">1.119</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">;</td><td style="background-color: #ffb7b7">0.546</td><td style="background-color: #ffe7e7">0.198</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">}</td><td style="background-color: #fff8f8">0.056</td><td style="background-color: #ff108108">-0.077</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric"><eos></td><td style="background-color: #ff106106">-0.050</td><td style="background-color: #ff101101">-0.013</td></tr>
+</tbody></table></div>
+
+            </div>
+          </main>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+</body>
+</html>
+

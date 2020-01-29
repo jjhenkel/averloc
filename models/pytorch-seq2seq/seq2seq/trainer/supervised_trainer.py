@@ -100,7 +100,10 @@ class SupervisedTrainer(object):
         # self.checkpoint_every = (total_steps+1)//num_checkpoints
 
         if start_step>0 and dev_data is not None:
-            dev_loss, accuracy, other_metrics, _ = self.evaluator.evaluate(model, dev_data)
+            d = self.evaluator.evaluate(model, dev_data)
+            dev_loss = d['metrics']['Loss']
+            accuracy = d['metrics']['accuracy (torch)']
+            other_metrics=d['metrics']
             best_f1 = other_metrics['f1']
             best_acc = accuracy
         else:
@@ -162,7 +165,10 @@ class SupervisedTrainer(object):
 
             other_metrics = {}
             if dev_data is not None:
-                dev_loss, accuracy, other_metrics, _ = self.evaluator.evaluate(model, dev_data)
+                d = self.evaluator.evaluate(model, dev_data)
+                dev_loss = d['metrics']['Loss']
+                accuracy = d['metrics']['accuracy (torch)']
+                other_metrics=d['metrics']
                 self.optimizer.update(dev_loss, epoch)
                 log_msg += ", Dev %s: %.4f, Accuracy: %.4f" % (self.loss.name, dev_loss, accuracy)
                 self.writer.add_scalar('Val/loss', dev_loss, epoch)

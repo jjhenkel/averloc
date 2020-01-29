@@ -23,13 +23,17 @@ class Reader:
     class_subtoken_table = None
     class_target_table = None
     class_node_table = None
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '2'
 
-    def __init__(self, subtoken_to_index, target_to_index, node_to_index, config, is_evaluating=False, adv_training = False, adv_transf = 0, batch_id = 0, epoch = 0):
+    def __init__(self, subtoken_to_index, target_to_index, node_to_index, config, is_evaluating=False, adv_training = False, adv_transf = 0, epoch = 0, debug = False):
         self.config = config
+        self.adv_training = adv_training
         if adv_training:
             if is_evaluating:
-                self.file_path = config.TRAIN_DIR+"/"+str(adv_transf)+"/"+str(batch_id)+".train.c2s"
+                if debug:
+            	    self.file_path = config.TRAIN_DIR+"/3/2.train.c2s"
+                else:
+                    self.file_path = config.TRAIN_DIR+"/data"+str(adv_transf)+".train.c2s"
             else:
                 self.file_path = config.TRAIN_PATH + str(epoch) +".train.c2s"
         else:
@@ -190,7 +194,8 @@ class Reader:
         if not self.is_evaluating:
             if self.config.SAVE_EVERY_EPOCHS > 1:
                 dataset = dataset.repeat(self.config.SAVE_EVERY_EPOCHS)
-            dataset = dataset.shuffle(self.config.SHUFFLE_BUFFER_SIZE, reshuffle_each_iteration=True)
+            if not self.adv_training:
+                dataset = dataset.shuffle(self.config.SHUFFLE_BUFFER_SIZE, reshuffle_each_iteration=True)
         dataset = dataset.apply(tf.data.experimental.map_and_batch(
             map_func=self.process_dataset, batch_size=self.batch_size,
             num_parallel_batches=self.config.READER_NUM_PARALLEL_BATCHES))
