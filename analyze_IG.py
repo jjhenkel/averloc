@@ -14,9 +14,9 @@ def parse_args():
     return opt
 
 
-def calc_gini(attr_matrix, method=1):
+def calc_gini(attr_matrix, method=2):
     if method==1:
-        x = attr_matrix.flatten()
+        x = np.abs(attr_matrix.flatten())
         # Mean absolute difference
         mad = np.abs(np.subtract.outer(x, x)).mean()
         # Relative mean absolute difference
@@ -27,7 +27,7 @@ def calc_gini(attr_matrix, method=1):
     else:
         s = 0
         for i in range(attr_matrix.shape[0]):
-            x = attr_matrix[i,:]
+            x = np.abs(attr_matrix[i,:])
             mad = np.abs(np.subtract.outer(x, x)).mean()
             # Relative mean absolute difference
             rmad = mad/(np.mean(x)+0.00000001)
@@ -107,27 +107,29 @@ for model in models:
 
 
 plt.figure()
-plt.boxplot([[i for i in data[model]['IG_gini'] if not np.isnan(i)] for model in models], labels=models)
+
+plt.subplot(2,2,1)
+plt.boxplot([[i for i in data[model]['IG_gini'] if not np.isnan(i)] for model in models], labels=models, whis='range')
 plt.title('IG Gini')
 
 
-plt.figure()
-plt.boxplot([data[model]['attn_gini'] for model in models], labels=models)
+plt.subplot(2,2,2)
+plt.boxplot([data[model]['attn_gini'] for model in models], labels=models, whis='range')
 plt.title('Attention Gini')
 
-plt.figure()
+plt.subplot(2,2,3)
 l = []
 print(len(data['adversarial-all']['IG_gini']), len(data['normal']['IG_gini']))
 l1 = [data['adversarial-all']['IG_gini'][i]-data['normal']['IG_gini'][i] for i in range(len(data['adversarial-all']['IG_gini'])) 
     if not np.isnan(data['adversarial-all']['IG_gini'][i]-data['normal']['IG_gini'][i])]
 l.append(l1)
-plt.boxplot(l, labels=['delta-GINI(IG)']) #, showfliers=False)
+plt.boxplot(l, labels=['delta-GINI(IG)'], whis='range') #, showfliers=False)
 plt.title('Delta Gini Plot (IG)')
 
-plt.figure()
+plt.subplot(2,2,4)
 l = []
 l.append([data['adversarial-all']['attn_gini'][i]-data['normal']['attn_gini'][i] for i in range(len(data['adversarial-all']['attn_gini']))])
-plt.boxplot(l, labels=['delta-GINI(attn)'], whis=0.5)
+plt.boxplot(l, labels=['delta-GINI(attn)'], whis='range')
 plt.title('Delta Gini Plot (attention)')
 
 plt.show()
