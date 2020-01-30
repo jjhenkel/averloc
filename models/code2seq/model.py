@@ -31,7 +31,7 @@ class Model:
         self.predict_placeholder = None
         self.eval_predicted_indices_op, self.eval_top_values_op, self.eval_true_target_strings_op, self.eval_topk_values = None, None, None, None
         self.predict_top_indices_op, self.predict_top_scores_op, self.predict_target_strings_op = None, None, None
-        self.subtoken_to_index = Non
+        self.subtoken_to_index = None
 
         if config.LOAD_PATH:
             self.load_model(sess=None)
