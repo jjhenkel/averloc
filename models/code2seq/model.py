@@ -14,16 +14,10 @@ from common import Common
 import time
 
 
-#def append_file(source, dest):
-#    if os.path.exists(source):
-#        with open(dest, 'a+') as f:
- #           f.write(open(source).read())
-
 
 class Model:
     topk = 10
     num_batches_to_log = 100
-    # os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
     def __init__(self, config):
         self.config = config
@@ -32,17 +26,12 @@ class Model:
         self.eval_queue = None
         self.predict_queue = None
         
-        ####new vars####
-        #self.eval_train_queues = []
 
         self.eval_placeholder = None
         self.predict_placeholder = None
         self.eval_predicted_indices_op, self.eval_top_values_op, self.eval_true_target_strings_op, self.eval_topk_values = None, None, None, None
         self.predict_top_indices_op, self.predict_top_scores_op, self.predict_target_strings_op = None, None, None
-        self.subtoken_to_index = None
-        #self.datasize = ???
-        
-        #self.batches = ceil(self.datasize/config.BATCH_SIZE)
+        self.subtoken_to_index = Non
 
         if config.LOAD_PATH:
             self.load_model(sess=None)
@@ -88,9 +77,6 @@ class Model:
         epochs_no_improve = 0
 
         self.eval_queues = []
-        #self.eval_losses = []
-        #self.p1s = []
-        #self.p2s = []
         
 
         
