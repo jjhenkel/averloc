@@ -22,7 +22,6 @@ GPU=0 MODELS_OUT=trained-models/code2seq/c2s/java-small/adversarial-all DATASET_
 GPU=0 MODELS_OUT=trained-models/code2seq/c2s/java-small/adversarial-one-step DATASET_NAME=datasets/adversarial/all-attacks/ast-paths/c2s/java-small ARGS="7" time make train-model-code2seq && \
 GPU=0 MODELS_OUT=trained-models/code2seq/c2s/java-small/normal DATASET_NAME=datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.Identity ARGS="--regular_training" time make train-model-code2seq
 
-
 GPU=1 MODELS_OUT=trained-models/code2seq/csn/java/adversarial-all DATASET_NAME=datasets/adversarial/all-attacks/ast-paths/csn/java ARGS="8" time make train-model-code2seq && \
 GPU=1 MODELS_OUT=trained-models/code2seq/csn/java/adversarial-one-step DATASET_NAME=datasets/adversarial/all-attacks/ast-paths/csn/java ARGS="7" time make train-model-code2seq && \
 GPU=1 MODELS_OUT=trained-models/code2seq/csn/java/normal DATASET_NAME=datasets/transformed/preprocessed/ast-paths/csn/java/transforms.Identity ARGS="--regular_training" time make train-model-code2seq
