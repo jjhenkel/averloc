@@ -227,8 +227,8 @@ class Model:
         multi_batch_start_time = time.time()
         
         my_training_start_time = time.time()
-        for iteration in range(1, (self.config.NUM_EPOCHS // self.config.SAVE_EVERY_EPOCHS) + 1):
-    #    for iteration in range(1, 20):
+    #    for iteration in range(1, (self.config.NUM_EPOCHS // self.config.SAVE_EVERY_EPOCHS) + 1):
+        for iteration in range(1, 16):
             my_training_elapse = time.time() - my_training_start_time
             my_training_start_time = time.time()
             
