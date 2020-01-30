@@ -164,6 +164,9 @@ def get_IG_attributions(src_seq, model, src_vocab, tgt_vocab, opt=None, verify_I
         ones = torch.ones(softmax_list[0][:,0].size(), device=device)
         for i in range(output_len):
             model.zero_grad()
+
+            softmax_list[i] = torch.nn.functional.softmax(softmax_list[i], dim=1)
+
             t = softmax_list[i] # N x V+1
             
             # Reset gradient to zero
