@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="Quick visualization for IG and Attention Attributions.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <title>IG and Attention Attributions</title>
+
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.teal-red.min.css">
+  <style>
+    #view-source {
+      position: fixed;
+      display: block;
+      right: 0;
+      bottom: 0;
+      margin-right: 40px;
+      margin-bottom: 40px;
+      z-index: 900;
+    }
+
+    .demo-ribbon {
+      width: 100%;
+      height: 40vh;
+      background-color: #3F51B5;
+      -webkit-flex-shrink: 0;
+      -ms-flex-negative: 0;
+      flex-shrink: 0;
+    }
+
+    .demo-main {
+      margin-top: -35vh;
+      -webkit-flex-shrink: 0;
+      -ms-flex-negative: 0;
+      flex-shrink: 0;
+    }
+
+    .demo-header .mdl-layout__header-row {
+      padding-left: 40px;
+    }
+
+    .demo-container {
+      max-width: 1600px;
+      width: calc(100% - 16px);
+      margin: 0 auto;
+    }
+
+    .demo-content {
+      border-radius: 2px;
+      padding: 80px 56px;
+      margin-bottom: 80px;
+    }
+
+    .demo-layout.is-small-screen .demo-content {
+      padding: 40px 28px;
+    }
+
+    .demo-content h3 {
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="demo-layout mdl-layout mdl-layout--fixed-header mdl-js-layout mdl-color--grey-100">
+    <header
+      class="demo-header mdl-layout__header mdl-layout__header--scroll mdl-color--grey-100 mdl-color-text--grey-800">
+      <div class="mdl-layout__header-row">
+        <span class="mdl-layout-title">IG and Attention Attributions</span>
+        <div class="mdl-layout-spacer"></div>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+          <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
+            <i class="material-icons">search</i>
+          </label>
+          <div class="mdl-textfield__expandable-holder">
+            <input class="mdl-textfield__input" type="text" id="search">
+            <label class="mdl-textfield__label" for="search">Enter your query...</label>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="demo-ribbon"></div>
+    <main class="demo-main mdl-layout__content">
+      <div class="demo-container mdl-grid">
+        <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
+        <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
+          <main class="mdl-layout__content">
+            <div class="mdl-grid">
+              <div class="mdl-card mdl-cell mdl-cell--6-col" style="min-height: 0;"><h3>get</h3></div>
+<div class="mdl-card mdl-cell mdl-cell--6-col" style="min-height: 0;"><h3>minimum</h3></div>
+
+            </div>
+            <div class="mdl-grid">
+              <div class="mdl-card mdl-cell mdl-cell--6-col"><table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp"><thead><tr><th class="mdl-data-table__cell--non-numeric">Source Token</th><th>IG (N)</th><th>IG (A)</th></tr></thead><tbody><tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #ffacac">1.234</td><td style="background-color: #ff128128">-0.649</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #ffd0d0">0.706</td><td style="background-color: #ffe4e4">0.436</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">{</td><td style="background-color: #ff123123">-0.531</td><td style="background-color: #ffe6e6">0.400</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">return</td><td style="background-color: #ff0000">3.793</td><td style="background-color: #ff0000">4.058</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">minimum</td><td style="background-color: #ffd3d3">0.656</td><td style="background-color: #fff5f5">0.166</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">;</td><td style="background-color: #ff132132">-0.759</td><td style="background-color: #ff111111">-0.285</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">}</td><td style="background-color: #fff7f7">0.121</td><td style="background-color: #fff8f8">0.109</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric"><eos></td><td style="background-color: #fffcfc">0.044</td><td style="background-color: #ff102102">-0.040</td></tr>
+</tbody></table></div>
+<div class="mdl-card mdl-cell mdl-cell--6-col"><table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp"><thead><tr><th class="mdl-data-table__cell--non-numeric">Source Token</th><th>IG (N)</th><th>IG (A)</th></tr></thead><tbody><tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #fff7f7">0.177</td><td style="background-color: #ff132132">-1.029</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #fff1f1">0.306</td><td style="background-color: #ffb8b8">1.416</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">{</td><td style="background-color: #ff106106">-0.140</td><td style="background-color: #ffeaea">0.412</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">return</td><td style="background-color: #ff9292">2.318</td><td style="background-color: #ffe2e2">0.580</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">minimum</td><td style="background-color: #ff0000">5.446</td><td style="background-color: #ff0000">5.112</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">;</td><td style="background-color: #ffebeb">0.417</td><td style="background-color: #ff112112">-0.390</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">}</td><td style="background-color: #ff101101">-0.045</td><td style="background-color: #ff11e11e">-0.613</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric"><eos></td><td style="background-color: #ff105105">-0.123</td><td style="background-color: #ffffff">0.004</td></tr>
+</tbody></table></div>
+
+            </div>
+          </main>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+</body>
+</html>
+
