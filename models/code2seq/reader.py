@@ -23,7 +23,6 @@ class Reader:
     class_subtoken_table = None
     class_target_table = None
     class_node_table = None
-    # os.environ['CUDA_VISIBLE_DEVICES'] = '2'
 
     def __init__(self, subtoken_to_index, target_to_index, node_to_index, config, is_evaluating=False, adv_training = False, adv_transf = 0, epoch = 0, debug = False):
         self.config = config
