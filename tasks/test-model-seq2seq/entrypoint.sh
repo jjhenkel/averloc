@@ -32,8 +32,7 @@ else
     --data_path "${TEST_FILE}" \
     --expt_dir /models/lstm \
     --output_dir /mnt/outputs \
-    --load_checkpoint Best_F1 \
-      $@
+    --load_checkpoint Best_F1
 fi
 
 if [ -f /mnt/inputs/baseline.tsv ]; then
