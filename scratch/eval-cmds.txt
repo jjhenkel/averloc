@@ -30,6 +30,6 @@ GPU=2 MODELS_OUT=trained-models/code2seq/csn/python/adversarial-all DATASET_NAME
 GPU=2 MODELS_OUT=trained-models/code2seq/csn/python/adversarial-one-step DATASET_NAME=datasets/adversarial/all-attacks/ast-paths/csn/python ARGS="7" time make train-model-code2seq && \
 GPU=2 MODELS_OUT=trained-models/code2seq/csn/python/normal DATASET_NAME=datasets/transformed/preprocessed/ast-paths/csn/python/transforms.Identity ARGS="--regular_training" time make train-model-code2seq
 
-GPU=4 MODELS_OUT=trained-models/code2seq/sri/py150/adversarial-all DATASET_NAME=datasets/adversarial/all-attacks/ast-paths/sri/py150 ARGS="8" time make train-model-code2seq && \
-GPU=4 MODELS_OUT=trained-models/code2seq/sri/py150/adversarial-one-step DATASET_NAME=datasets/adversarial/all-attacks/ast-paths/sri/py150 ARGS="7" time make train-model-code2seq && \
-GPU=4 MODELS_OUT=trained-models/code2seq/sri/py150/normal DATASET_NAME=datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.Identity ARGS="--regular_training" time make train-model-code2seq
+GPU=3 MODELS_OUT=trained-models/code2seq/sri/py150/adversarial-all DATASET_NAME=datasets/adversarial/all-attacks/ast-paths/sri/py150 ARGS="8" time make train-model-code2seq && \
+GPU=3 MODELS_OUT=trained-models/code2seq/sri/py150/adversarial-one-step DATASET_NAME=datasets/adversarial/all-attacks/ast-paths/sri/py150 ARGS="7" time make train-model-code2seq && \
+GPU=3 MODELS_OUT=trained-models/code2seq/sri/py150/normal DATASET_NAME=datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.Identity ARGS="--regular_training" time make train-model-code2seq

@@ -702,7 +702,7 @@ test-model-code2seq: check-dataset-name check-gpu check-models-in build-image-te
 .PHONY: train-model-code2seq
 train-model-code2seq: check-dataset-name check-gpu check-models-out build-image-train-model-code2seq ## (TRAIN) Trains the code2seq model on a selected dataset.
 	@IMAGE_NAME="$(shell whoami)/averloc--train-model-code2seq:$(shell git rev-parse HEAD)"
-	DOCKER_API_VERSION=1.40 docker run -it --rm \
+	DOCKER_API_VERSION=1.40 docker run -it \
 		--gpus "device=$${GPU}" \
 		-v "${ROOT_DIR}/$${MODELS_OUT}:/mnt/outputs" \
 		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs" \

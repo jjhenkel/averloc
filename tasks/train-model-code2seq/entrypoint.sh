@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -ex
+mkdir /mnt/outputs/model
 
 if [ "${1}" = "--regular_training" ]; then
 
@@ -8,7 +9,7 @@ if [ "${1}" = "--regular_training" ]; then
   python3 -u /code2seqORIG/code2seq.py \
     --data "/mnt/inputs/data" \
     --test "/mnt/inputs/data.val.c2s" \
-    --save_prefix /mnt/outputs \
+    --save_prefix /mnt/outputs/model \
     $@
 
 else
@@ -20,7 +21,7 @@ else
     --test "/mnt/inputs/data.val.c2s" \
     -td "/mnt/inputs" \
     -t "${T}" \
-    --save_prefix /mnt/outputs \
+    --save_prefix /mnt/outputs/model \
     $@
 
 fi
