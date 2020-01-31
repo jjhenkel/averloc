@@ -10,19 +10,31 @@ if grep -qF 'from_file' "${TEST_FILE}"; then
   TEST_FILE=/inputs.tsv
 fi
 
-python /model/evaluate.py \
-  --data_path "${TEST_FILE}" \
-  --expt_dir /models/lstm \
-  --output_dir /mnt/outputs \
-  --load_checkpoint Best_F1 \
-    $@
+if [ "${1}" = "--no-attack" ]; then
+  echo "Skipping attack.py"
+  shift
 
-python /model/attack.py \
-  --data_path "${TEST_FILE}" \
-  --expt_dir /models/lstm \
-  --output_dir /mnt/outputs \
-  --load_checkpoint Best_F1 \
-    $@
+  python /model/evaluate.py \
+    --data_path "${TEST_FILE}" \
+    --expt_dir /models/lstm \
+    --output_dir /mnt/outputs \
+    --load_checkpoint Best_F1 \
+      $@
+else
+  python /model/evaluate.py \
+    --data_path "${TEST_FILE}" \
+    --expt_dir /models/lstm \
+    --output_dir /mnt/outputs \
+    --load_checkpoint Best_F1 \
+      $@
+
+  python /model/attack.py \
+    --data_path "${TEST_FILE}" \
+    --expt_dir /models/lstm \
+    --output_dir /mnt/outputs \
+    --load_checkpoint Best_F1 \
+      $@
+fi
 
 if [ -f /mnt/inputs/baseline.tsv ]; then
   cat /mnt/inputs/baseline.tsv | cut -f2- > /baseline-fixed.tsv
