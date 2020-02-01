@@ -437,9 +437,7 @@ class Model:
                 with open("predicted_target", 'a+') as g:
                     g.write(predicted_target +"\n")
                 with open("attention_weights", 'a+') as g:
-                    g.write(word_attention +"\n")
-                if not worst_tensors == None:
-                   return 
+                    g.write(word_attention +"\n") 
                 
         except tf.errors.OutOfRangeError:
             return    
