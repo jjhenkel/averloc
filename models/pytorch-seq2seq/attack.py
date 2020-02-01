@@ -99,16 +99,23 @@ def attack_model(model, data, attacks, src_vocab, tgt_vocab):
     outputs = []
     gts = []
 
+    attack_counts = {x:0 for x in attacks}
+
     with open(os.path.join(opt.output_dir,'attacked.txt'), 'w') as f:
         for batch in tqdm.tqdm(batch_generator):
             d  = get_best_attack(batch, model, attacks, src_vocab, tgt_vocab)
             outputs.append(d['output_seq'])
             gts.append(d['ground_truth'])
+            attack_counts[d['best_attack']] += 1
             f.write(json.dumps(d)+'\n')
 
-    metrics = calculate_metrics(outputs, gts)
+    f.write(json.dumps(attack_counts)+'\n')
+
+    print(attack_counts)
 
     print('Details written to', os.path.join(opt.output_dir,'attacked.txt'))
+
+    metrics = calculate_metrics(outputs, gts)
 
     print(metrics)
 
