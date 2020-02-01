@@ -24,17 +24,14 @@ class Reader:
     class_target_table = None
     class_node_table = None
 
-    def __init__(self, subtoken_to_index, target_to_index, node_to_index, config, is_evaluating=False, adv_training = False, adv_transf = 0, epoch = 0, debug = False):
+    def __init__(self, subtoken_to_index, target_to_index, node_to_index, config, is_evaluating=False, adv_training = False, adv_transf = 0, adv_testing = False):
         self.config = config
         self.adv_training = adv_training
         if adv_training:
             if is_evaluating:
-                if debug:
-            	    self.file_path = config.TRAIN_DIR+"/3/2.train.c2s"
-                else:
-                    self.file_path = config.TRAIN_DIR+"/data"+str(adv_transf)+".train.c2s"
-            else:
-                self.file_path = config.TRAIN_PATH + str(epoch) +".train.c2s"
+                self.file_path = config.TRAIN_DIR+"/data"+str(adv_transf)+".trans.c2s"
+            if adv_testing:
+                self.file_path = config.TRAIN_DIR+"/data"+str(adv_transf)+".test.c2s"
         else:
             self.file_path = config.TEST_PATH if is_evaluating else (config.TRAIN_PATH + '.train.c2s')
         if self.file_path is not None and not os.path.exists(self.file_path):
