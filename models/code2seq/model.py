@@ -387,9 +387,10 @@ class Model:
         for transf in range(self.config.TRANSFS):
             test_queues[transf].reset(self.sess)
         
-        open("predicted_target", 'w').close()
-        open("true_target", 'w').close()
-        open("attention_weights", 'w').close()
+        path_prefix = '/mnt/outputs/' if "PATH_PREFIX" in os.environ else ''
+        open("{}predicted_target".format(path_prefix), 'w').close()
+        open("{}true_target".format(path_prefix), 'w').close()
+        open("{}attention_weights".format(path_prefix), 'w').close()
         try:
             while True:
                 worst_loss = 0.0
@@ -432,11 +433,11 @@ class Model:
                 predicted_target = format_pred(predicted_strings)
                 word_attention = format_attention(word_attention_pairs)
                 
-                with open('true_target','a+') as f:
+                with open('{}true_target'.format(path_prefix),'a+') as f:
                     f.write(true_target+"\n")
-                with open("predicted_target", 'a+') as g:
+                with open("{}predicted_target".format(path_prefix), 'a+') as g:
                     g.write(predicted_target +"\n")
-                with open("attention_weights", 'a+') as g:
+                with open("{}attention_weights".format(path_prefix), 'a+') as g:
                     g.write(word_attention +"\n") 
                 
         except tf.errors.OutOfRangeError:

@@ -691,12 +691,13 @@ ifndef GPU
 endif
 
 .PHONY: test-model-code2seq
-test-model-code2seq: check-dataset-name check-gpu check-models-in build-image-test-model-code2seq ## (TEST) Tests the code2seq model on a selected dataset.
+test-model-code2seq: check-dataset-name check-results-out check-gpu check-models-in build-image-test-model-code2seq ## (TEST) Tests the code2seq model on a selected dataset.
 	@IMAGE_NAME="$(shell whoami)/averloc--test-model-code2seq:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		--gpus "device=$${GPU}" \
 		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
 		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs" \
+		-v "${ROOT_DIR}/$${RESULTS_OUT}:/mnt/outputs" \
 		"$${IMAGE_NAME}" $${ARGS}
 
 .PHONY: train-model-code2seq

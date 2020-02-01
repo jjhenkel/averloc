@@ -1,20 +1,25 @@
 #!/bin/bash
 
-mkdir -p /models
-
 set -ex
+export PATH_PREFIX=true
 
-# python3 -u /code2seq/code2seq.py \
-#   --data "/datasets/preprocessed/ast-paths/${DATASET_NAME}/data" \
-#   --test "/datasets/preprocessed/ast-paths/${DATASET_NAME}/data.val.c2s" \
-#   --save_prefix /models
+if [ "${1}" = "--no-attack" ]; then
 
-python3 /code2seq/code2seq.py \
-  --load /app/models/java-large-model/model_iter52.release \
-  --test /mnt/inputs/data.test.c2s | tail -n3
+  echo "Skipping attack.py"
+  shift
+  python3 /code2seqORIG/code2seq.py \
+    --load /models/model.final_iter15 \
+    --test /mnt/inputs/data.test.c2s
 
-if [ -f /mnt/inputs/data.baseline.c2s ]; then
-  python3 /code2seq/code2seq.py \
-    --load /app/models/java-large-model/model_iter52.release \
-    --test /mnt/inputs/data.baseline.c2s | tail -n3
+else
+
+  T="${1}"
+  shift
+  python3 /code2seqADVR/code2seq.py \
+    --load /models/model.final_iter15 \
+    -td /mnt/inputs \
+    --adv_eval \
+    -t "${T}" \
+    -bs 1
+
 fi
