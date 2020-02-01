@@ -5,11 +5,11 @@
 for MODEL in normal adversarial-one-step adversarial-all; do
     
   if [ "${MODEL}" = "normal" ]; then
-    FULL_STR="seq2seq,N training,"
+    FULL_STR='seq2seq,Natural,'
   elif [ "${MODEL}" = "adversarial-one-step" ]; then
-    FULL_STR=",A(1) training,"
+    FULL_STR=',Adv-${\seqs^1}$,'
   else
-    FULL_STR=",A(1+5) training,"
+    FULL_STR=',Adv-${\seqs^{1,5}}$,'
   fi
   
   for DATASET in c2s/java-small csn/java sri/py150 csn/python; do
