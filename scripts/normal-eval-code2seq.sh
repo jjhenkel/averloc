@@ -2,8 +2,6 @@
 
 set -ex
 
-export GPU=0
-
 THE_DS=$1
 
 DATASET_NAME=datasets/transformed/preprocessed/tokens/${THE_DS}/transforms.Identity \
