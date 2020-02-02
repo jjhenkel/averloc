@@ -111,7 +111,7 @@ def attack_model(model, data, attacks, src_vocab, tgt_vocab):
             attack_counts[d['best_attack']] += 1
             f.write(json.dumps(d)+'\n')
 
-    f.write(json.dumps(attack_counts)+'\n')
+        f.write(json.dumps(attack_counts)+'\n')
 
     print(attack_counts)
 
