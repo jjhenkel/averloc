@@ -40,7 +40,7 @@ if __name__ == "__main__":
   with open("/mnt/outputs/{}.tsv".format(sys.argv[1]), "w") as out_f:
     out_f.write('src\ttgt\t{}\n'.format(
       '\t'.join([ 
-        'src_adv{}'.format(i) for i in sys.argv[2:]
+        '{}'.format(i) for i in sys.argv[2:]
       ])
     ))
 

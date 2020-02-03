@@ -58,29 +58,132 @@ define run_dataset_ast_paths_preprocessing
 endef
 
 define adversarial_mode_setup
-	if [ "$${ADVERSARIAL_MODE}" = "all" ]; then
+	if [ "$${ADVERSARIAL_MODE}" = "depth-1" ]; then
 		export TRANSFORMS="
-			transforms.RenameParameters \
-			transforms.RenameFields \
-			transforms.RenameLocalVariables \
-			transforms.ShuffleParameters \
-			transforms.ShuffleLocalVariables \
-			transforms.ReplaceTrueFalse \
-			transforms.InsertPrintStatements \
-			transforms.All
+			transforms.Seq(RenameParameters) \
+			transforms.Seq(RenameFields) \
+			transforms.Seq(RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse) \
+			transforms.Seq(InsertPrintStatements)
 		"
-		export DIR_PART="all-attacks"
-	elif [ "$${ADVERSARIAL_MODE}" = "one-step" ]; then
+		export DIR_PART="depth-1"
+	elif [ "$${ADVERSARIAL_MODE}" = "depth-2" ]; then
 		export TRANSFORMS="
-			transforms.RenameParameters \
-			transforms.RenameFields \
-			transforms.RenameLocalVariables \
-			transforms.ShuffleParameters \
-			transforms.ShuffleLocalVariables \
-			transforms.ReplaceTrueFalse \
-			transforms.InsertPrintStatements
+			transforms.Seq(RenameParameters) \
+			transforms.Seq(RenameFields) \
+			transforms.Seq(RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse) \
+			transforms.Seq(InsertPrintStatements) \
+			transforms.Seq(InsertPrintStatements,RenameFields) \
+			transforms.Seq(InsertPrintStatements,RenameLocalVariables) \
+			transforms.Seq(InsertPrintStatements,RenameParameters) \
+			transforms.Seq(RenameFields,RenameLocalVariables) \
+			transforms.Seq(RenameFields,RenameParameters) \
+			transforms.Seq(RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields) \
+			transforms.Seq(ReplaceTrueFalse,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,RenameParameters) 
 		"
-		export DIR_PART="just-one-step-attacks"
+		export DIR_PART="depth-2"
+	elif [ "$${ADVERSARIAL_MODE}" = "depth-3" ]; then
+		export TRANSFORMS="
+			transforms.Seq(RenameParameters) \
+			transforms.Seq(RenameFields) \
+			transforms.Seq(RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse) \
+			transforms.Seq(InsertPrintStatements) \
+			transforms.Seq(InsertPrintStatements,RenameFields) \
+			transforms.Seq(InsertPrintStatements,RenameLocalVariables) \
+			transforms.Seq(InsertPrintStatements,RenameParameters) \
+			transforms.Seq(RenameFields,RenameLocalVariables) \
+			transforms.Seq(RenameFields,RenameParameters) \
+			transforms.Seq(RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields) \
+			transforms.Seq(ReplaceTrueFalse,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,RenameParameters) \
+			transforms.Seq(InsertPrintStatements,RenameFields,RenameLocalVariables) \
+			transforms.Seq(InsertPrintStatements,RenameFields,RenameParameters) \
+			transforms.Seq(InsertPrintStatements,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(RenameFields,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,RenameLocalVariables,RenameParameters)
+		"
+		export DIR_PART="depth-3"
+	elif [ "$${ADVERSARIAL_MODE}" = "depth-4" ]; then
+		export TRANSFORMS="
+			transforms.Seq(RenameParameters) \
+			transforms.Seq(RenameFields) \
+			transforms.Seq(RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse) \
+			transforms.Seq(InsertPrintStatements) \
+			transforms.Seq(InsertPrintStatements,RenameFields) \
+			transforms.Seq(InsertPrintStatements,RenameLocalVariables) \
+			transforms.Seq(InsertPrintStatements,RenameParameters) \
+			transforms.Seq(RenameFields,RenameLocalVariables) \
+			transforms.Seq(RenameFields,RenameParameters) \
+			transforms.Seq(RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields) \
+			transforms.Seq(ReplaceTrueFalse,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,RenameParameters) \
+			transforms.Seq(InsertPrintStatements,RenameFields,RenameLocalVariables) \
+			transforms.Seq(InsertPrintStatements,RenameFields,RenameParameters) \
+			transforms.Seq(InsertPrintStatements,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(RenameFields,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(InsertPrintStatements,RenameFields,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables,RenameParameters)
+		"
+		export DIR_PART="depth-4"
+	elif [ "$${ADVERSARIAL_MODE}" = "depth-5" ]; then
+		export TRANSFORMS="
+			transforms.Seq(RenameParameters) \
+			transforms.Seq(RenameFields) \
+			transforms.Seq(RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse) \
+			transforms.Seq(InsertPrintStatements) \
+			transforms.Seq(InsertPrintStatements,RenameFields) \
+			transforms.Seq(InsertPrintStatements,RenameLocalVariables) \
+			transforms.Seq(InsertPrintStatements,RenameParameters) \
+			transforms.Seq(RenameFields,RenameLocalVariables) \
+			transforms.Seq(RenameFields,RenameParameters) \
+			transforms.Seq(RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields) \
+			transforms.Seq(ReplaceTrueFalse,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,RenameParameters) \
+			transforms.Seq(InsertPrintStatements,RenameFields,RenameLocalVariables) \
+			transforms.Seq(InsertPrintStatements,RenameFields,RenameParameters) \
+			transforms.Seq(InsertPrintStatements,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(RenameFields,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(InsertPrintStatements,RenameFields,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameLocalVariables,RenameParameters)
+		"
+		export DIR_PART="depth-5"
 	else
 		echo -e "\033[0;31m[ERR]:\033[0m Adversarial mode := $${ADVERSARIAL_MODE} is unsupported"
 		exit 1
@@ -441,11 +544,44 @@ extract-tokens: build-image-preprocess-dataset-tokens | $(ETOK_DEPS) ## (DS-3) G
 #######################################################################################################################
 #######################################################################################################################
 
+ALL_TRANSFORMS:=Identity
+ALL_TRANSFORMS+="Seq(InsertPrintStatements)"
+ALL_TRANSFORMS+="Seq(InsertPrintStatements,RenameFields)"
+ALL_TRANSFORMS+="Seq(InsertPrintStatements,RenameFields,RenameLocalVariables)"
+ALL_TRANSFORMS+="Seq(InsertPrintStatements,RenameFields,RenameLocalVariables,RenameParameters)"
+ALL_TRANSFORMS+="Seq(InsertPrintStatements,RenameFields,RenameParameters)"
+ALL_TRANSFORMS+="Seq(InsertPrintStatements,RenameLocalVariables)"
+ALL_TRANSFORMS+="Seq(InsertPrintStatements,RenameLocalVariables,RenameParameters)"
+ALL_TRANSFORMS+="Seq(InsertPrintStatements,RenameParameters)"
+ALL_TRANSFORMS+="Seq(RenameFields)"
+ALL_TRANSFORMS+="Seq(RenameFields,RenameLocalVariables)"
+ALL_TRANSFORMS+="Seq(RenameFields,RenameLocalVariables,RenameParameters)"
+ALL_TRANSFORMS+="Seq(RenameFields,RenameParameters)"
+ALL_TRANSFORMS+="Seq(RenameLocalVariables)"
+ALL_TRANSFORMS+="Seq(RenameLocalVariables,RenameParameters)"
+ALL_TRANSFORMS+="Seq(RenameParameters)"
+ALL_TRANSFORMS+="Seq(ReplaceTrueFalse)"
+ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,InsertPrintStatements)"
+ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields)"
+ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameLocalVariables)"
+ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameLocalVariables,RenameParameters)"
+ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameParameters)"
+ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables)"
+ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables,RenameParameters)"
+ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,InsertPrintStatements,RenameParameters)"
+ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,RenameFields)"
+ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables)"
+ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables,RenameParameters)"
+ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,RenameFields,RenameParameters)"
+ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,RenameLocalVariables)"
+ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,RenameLocalVariables,RenameParameters)"
+ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,RenameParameters)"
+
 datasets/transformed/preprocessed/ast-paths/c2s/java-small: ## <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/c2s/java-small/transforms.Identity' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
-	@for transform in All Identity InsertPrintStatements RenameFields RenameLocalVariables RenameParameters ReplaceTrueFalse ShuffleLocalVariables ShuffleParameters; do 
+	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
 			-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
 			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.$${transform}:/mnt/inputs" \
@@ -458,7 +594,7 @@ datasets/transformed/preprocessed/ast-paths/c2s/java-med: ## <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/c2s/java-med/transforms.Identity' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
-	@for transform in All Identity InsertPrintStatements RenameFields RenameLocalVariables RenameParameters ReplaceTrueFalse ShuffleLocalVariables ShuffleParameters; do 
+	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
 			-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
 			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-med/transforms.$${transform}:/mnt/inputs" \
@@ -471,7 +607,7 @@ datasets/transformed/preprocessed/ast-paths/csn/java: ## <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/csn/java/transforms.Identity' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
-	@for transform in All Identity InsertPrintStatements RenameFields RenameLocalVariables RenameParameters ReplaceTrueFalse ShuffleLocalVariables ShuffleParameters; do 
+	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
 			-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
 			-v "${ROOT_DIR}/datasets/transformed/normalized/csn/java/transforms.$${transform}:/mnt/inputs" \
@@ -484,7 +620,7 @@ datasets/transformed/preprocessed/ast-paths/csn/python: ## <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/csn/python/transforms.Identity' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
-	@for transform in All Identity InsertPrintStatements RenameFields RenameLocalVariables RenameParameters ReplaceTrueFalse ShuffleLocalVariables ShuffleParameters; do 
+	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
 			-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
 			-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python/transforms.$${transform}:/mnt/inputs" \
@@ -497,7 +633,7 @@ datasets/transformed/preprocessed/ast-paths/sri/py150: ## <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/sri/py150/transforms.Identity' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
-	@for transform in All Identity InsertPrintStatements RenameFields RenameLocalVariables RenameParameters ReplaceTrueFalse ShuffleLocalVariables ShuffleParameters; do 
+	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
 			-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
 			-v "${ROOT_DIR}/datasets/transformed/normalized/sri/py150/transforms.$${transform}:/mnt/inputs" \
@@ -522,7 +658,7 @@ datasets/transformed/preprocessed/tokens/c2s/java-small: ## Generate a preproces
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/c2s/java-small' (using 'tokens' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
-	@for transform in All Identity InsertPrintStatements RenameFields RenameLocalVariables RenameParameters ReplaceTrueFalse ShuffleLocalVariables ShuffleParameters; do 
+	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
 			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.$${transform}:/mnt/inputs" \
 			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/c2s/java-small/transforms.$${transform}:/mnt/outputs" \
@@ -534,7 +670,7 @@ datasets/transformed/preprocessed/tokens/c2s/java-med: ## Generate a preprocesse
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/c2s/java-med' (using 'tokens' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
-	@for transform in All Identity InsertPrintStatements RenameFields RenameLocalVariables RenameParameters ReplaceTrueFalse ShuffleLocalVariables ShuffleParameters; do 
+	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
 			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-med/transforms.$${transform}:/mnt/inputs" \
 			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/c2s/java-med/transforms.$${transform}:/mnt/outputs" \
@@ -546,7 +682,7 @@ datasets/transformed/preprocessed/tokens/csn/java: ## Generate a preprocessed (r
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/csn/java' (using 'tokens' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
-	@for transform in All Identity InsertPrintStatements RenameFields RenameLocalVariables RenameParameters ReplaceTrueFalse ShuffleLocalVariables ShuffleParameters; do 
+	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
 			-v "${ROOT_DIR}/datasets/transformed/normalized/csn/java/transforms.$${transform}:/mnt/inputs" \
 			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/java/transforms.$${transform}:/mnt/outputs" \
@@ -558,7 +694,7 @@ datasets/transformed/preprocessed/tokens/csn/python: ## Generate a preprocessed 
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/csn/python' (using 'tokens' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
-	@for transform in All Identity InsertPrintStatements RenameFields RenameLocalVariables RenameParameters ReplaceTrueFalse ShuffleLocalVariables ShuffleParameters; do 
+	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
 			-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python/transforms.$${transform}:/mnt/inputs" \
 			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/python/transforms.$${transform}:/mnt/outputs" \
@@ -570,7 +706,7 @@ datasets/transformed/preprocessed/tokens/sri/py150: ## Generate a preprocessed (
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/sri/py150' (using 'tokens' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
-	@for transform in All Identity InsertPrintStatements RenameFields RenameLocalVariables RenameParameters ReplaceTrueFalse ShuffleLocalVariables ShuffleParameters; do 
+	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
 			-v "${ROOT_DIR}/datasets/transformed/normalized/sri/py150/transforms.$${transform}:/mnt/inputs" \
 			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/sri/py150/transforms.$${transform}:/mnt/outputs" \
@@ -579,7 +715,7 @@ datasets/transformed/preprocessed/tokens/sri/py150: ## Generate a preprocessed (
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
 
 ETT_DEPS := datasets/transformed/preprocessed/tokens/c2s/java-small
-ETT_DEPS += datasets/transformed/preprocessed/tokens/c2s/java-med
+# ETT_DEPS += datasets/transformed/preprocessed/tokens/c2s/java-med
 ETT_DEPS += datasets/transformed/preprocessed/tokens/csn/java
 ETT_DEPS += datasets/transformed/preprocessed/tokens/csn/python
 ETT_DEPS += datasets/transformed/preprocessed/tokens/sri/py150

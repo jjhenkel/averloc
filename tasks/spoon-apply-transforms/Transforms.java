@@ -46,6 +46,7 @@ class TransformFileTask implements Runnable {
 		this.split = split;
 		this.inputs = inputs;
 		this.topTargetSubtokens = (ArrayList<String>)topTargetSubtokens.clone();
+		// System.out.println(String.format("Here %s : %s inputs", split, inputs.size()));
 	}
 
 	private Launcher buildLauncher(AverlocTransformer transformer) {
@@ -67,64 +68,73 @@ class TransformFileTask implements Runnable {
 		launcher.addProcessor(transformer);
 
 		launcher.setSourceOutputDirectory(
-			String.format("/mnt/raw-outputs/%s/%s", transformer.getClass().getName(), split)
+			String.format("/mnt/raw-outputs/%s/%s", transformer.getOutName(), split)
 		);
 
 		return launcher;
 	}
 
 	public void run() {
-		ArrayList<AverlocTransformer> transformers = new ArrayList<AverlocTransformer>();
+			ArrayList<AverlocTransformer> candidates = new ArrayList<AverlocTransformer>();
+			ArrayList<AverlocTransformer> transformers = new ArrayList<AverlocTransformer>();
 
-		transformers.add(new InsertPrintStatements(
-			3,                 // Min insertions
-			9,                 // Max insertions
-			3,                 // Min literal length
-			10,                 // Max literal length
-			topTargetSubtokens // Subtokens to use to build literal
-		));
+		// System.out.println("Building depth-k transforms:");
 
-		transformers.add(new RenameFields(
-			2,                 // Name min length
-			10,                 // Name max length
-			1.0,               // Percent to rename
-			topTargetSubtokens // Subtokens to use to build names
-		));
+		transformers.add(new Identity());
 
-		transformers.add(new RenameLocalVariables(
-			2,                 // Name min length
-			10,                 // Name max length
-			1.0,               // Percent to rename
-			topTargetSubtokens // Subtokens to use to build names
-		));
+		int total = (1 << 5);
+		for (int i = 1; i < total; i++) {
+			ArrayList<AverlocTransformer> subset = new ArrayList<AverlocTransformer>();
+			String theName = "transforms.Seq(";
+			for (int j = 0; j < 5; j++) {
+				if ((i & (1 << j)) > 0) {
+					if (j == 0) {
+						subset.add(new ReplaceTrueFalse(
+							1.0 // Replacement chance
+						));
 
-		transformers.add(new RenameParameters(
-			2,                 // Name min length
-			10,                 // Name max length
-			1.0,               // Percent to rename
-			topTargetSubtokens // Subtokens to use to build names
-		));
-		
-		transformers.add(new ReplaceTrueFalse(
-			1.0 // Replacement chance
-		));
+					} else if (j == 1) {
+						subset.add(new InsertPrintStatements(
+							3,                 // Min insertions
+							9,                 // Max insertions
+							3,                 // Min literal length
+							10,                 // Max literal length
+							topTargetSubtokens // Subtokens to use to build literal
+						));
+					} else if (j == 2) {
+						subset.add(new RenameFields(
+							2,                 // Name min length
+							10,                 // Name max length
+							1.0,               // Percent to rename
+							topTargetSubtokens // Subtokens to use to build names
+						));
+					} else if (j == 3) {
+						subset.add(new RenameLocalVariables(
+							2,                 // Name min length
+							10,                 // Name max length
+							1.0,               // Percent to rename
+							topTargetSubtokens // Subtokens to use to build names
+						));
+					} else if (j == 4) {
+						subset.add(new RenameParameters(
+							2,                 // Name min length
+							10,                 // Name max length
+							1.0,               // Percent to rename
+							topTargetSubtokens // Subtokens to use to build names
+						));
+					}
 
-		// Use all the previous in our "All" transformer
-		transformers.add(new All(
-			(ArrayList<AverlocTransformer>)transformers.clone()
-		));
+					theName += subset.get(subset.size() -1).getClass().getName().replace("transforms.", "") + ",";
+				}
+			}
+			transformers.add(new All(
+				subset,
+				theName.substring(0, theName.length() - 1) + ")"
+			));
+			// System.out.println(String.format("  + Built: %s", transformers.get(transformers.size() - 1).getOutName()));
+		}
 
-		transformers.add(new ShuffleLocalVariables(
-			1.0 // Percentage to shuffle
-		));
-
-		transformers.add(new ShuffleParameters(
-			1.0 // Percentage to shuffle
-		));
-		
-		transformers.add(new Identity(
-			// No params
-		));
+		// System.out.println(String.format("Have %s tranforms.", transformers.size()));
 
 		// Track these so we don't fail (N-1) times when an input 
 		// fails on the first transform (due to malformed / spoon internal error / etc.)
@@ -154,7 +164,7 @@ class TransformFileTask implements Runnable {
 						Path path = Paths.get(
 							String.format(
 								"/mnt/raw-outputs/%s/%s/%s.java",
-								transformer.getClass().getName(),
+								transformer.getOutName(),
 								split,
 								outputClass.getSimpleName().replace("WRAPPER_", "")
 							)
@@ -174,6 +184,7 @@ class TransformFileTask implements Runnable {
 					}
 				}
 			} catch (Exception ex1) {
+				// ex1.printStackTrace(System.out);
 				for (VirtualFile singleInput : inputs) {
 					try {
 						// Skip things that have failed a previous transform
@@ -201,7 +212,7 @@ class TransformFileTask implements Runnable {
 								Path path = Paths.get(
 									String.format(
 										"/mnt/raw-outputs/%s/%s/%s.java",
-										transformer.getClass().getName(),
+										transformer.getOutName(),
 										split,
 										outputClass.getSimpleName().replace("WRAPPER_", "")
 									)
@@ -221,8 +232,8 @@ class TransformFileTask implements Runnable {
 							}
 						}
 					} catch (Exception ex2) {
-						// ex1.printStackTrace(System.out);
-						// ex2.printStackTrace(System.out);
+						ex1.printStackTrace(System.out);
+						ex2.printStackTrace(System.out);
 						System.out.println(
 							String.format(
 								"     * Failed to build model for: %s",
@@ -237,6 +248,7 @@ class TransformFileTask implements Runnable {
 
 		int finished = counter.incrementAndGet();
 		System.out.println(String.format("     + Tasks finished: %s", finished));
+	
 	}
 }
 
@@ -256,8 +268,13 @@ public class Transforms {
     return new Callable<Void>() {
         @Override
         public Void call() {
+					try {
             runnable.run();
-            return null;
+					} catch (Exception e) {
+						e.printStackTrace(System.err);
+						System.err.println(e.toString());
+					}
+						return null;
         }
     };
 	} 
@@ -323,7 +340,7 @@ public class Transforms {
 				));
 			}
 
-			for (ArrayList<VirtualFile> chunk : chopped(inputs, 2000)) {
+			for (ArrayList<VirtualFile> chunk : chopped(inputs, 200)) {
 				tasks.add(toCallable(new TransformFileTask(split, chunk, topTargetSubtokens)));
 			}
 
@@ -364,6 +381,7 @@ public class Transforms {
 			System.out.println("   - Running in parallel with 64 threads...");
 			ExecutorService pool = Executors.newFixedThreadPool(64);
 
+			// allTasks.get(0).call();
 			pool.invokeAll(allTasks);
 
 			pool.shutdown(); 

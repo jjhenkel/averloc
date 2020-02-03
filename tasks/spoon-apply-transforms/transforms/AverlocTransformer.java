@@ -20,6 +20,15 @@ public class AverlocTransformer extends AbstractProcessor<CtExecutable> {
 
   protected ArrayList<String> changes = new ArrayList<String>();
 
+  protected String name = null;
+
+  public String getOutName() {
+    if (name != null) {
+      return name;
+    }
+    return this.getClass().getName();
+  }
+
   public boolean changes(String name) {
     return this.changes.contains(name);
   }

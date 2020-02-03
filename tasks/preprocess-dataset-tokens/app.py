@@ -70,7 +70,7 @@ if __name__ == "__main__":
   has_baselines = False
 
   tasks = []
-  for split in ["test", "train", "valid", "baseline"]:
+  for split in ["test"]:
     if not os.path.isfile('/mnt/inputs/{}.jsonl.gz'.format(split)):
       continue
     if split == 'baseline':
@@ -84,9 +84,7 @@ if __name__ == "__main__":
   print("  + Inputs loaded")
 
   out_map = {
-    'train': open('/mnt/outputs/train.tsv', 'w'),
-    'test': open('/mnt/outputs/test.tsv', 'w'),
-    'valid': open('/mnt/outputs/valid.tsv', 'w'),
+    'test': open('/mnt/outputs/test.tsv', 'w')
   }
 
   if has_baselines:
@@ -96,13 +94,11 @@ if __name__ == "__main__":
   
   print("  + Output files opened")
 
-  out_map['train'].write('from_file\tsrc\ttgt\n')
   out_map['test'].write('from_file\tsrc\ttgt\n')
-  out_map['valid'].write('from_file\tsrc\ttgt\n')
 
   print("  - Processing in parallel...")
   iterator =  tqdm.tqdm(
-    pool.imap_unordered(process, tasks, 10000),
+    pool.imap_unordered(process, tasks, 1000),
     desc="    - Tokenizing",
     total=len(tasks)
   )
