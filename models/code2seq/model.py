@@ -14,16 +14,35 @@ from common import Common
 import time
 
 
-#def append_file(source, dest):
-#    if os.path.exists(source):
-#        with open(dest, 'a+') as f:
- #           f.write(open(source).read())
-
+######Auxilary function for formatting evaluation outputs####
+def format_orig(target):
+    result = " ".join(target.split('|'))
+    return result
+    
+def format_pred(target):
+    result = ""
+    for tk in target:
+        if not tk == '<PAD>':
+            result += tk + " "
+    return result
+    
+def format_attention(word_attention):
+    result = ""
+    for predicted_word, attention_timestep in word_attention:
+        result = result + predicted_word + "$"
+        for context, attention in [(key, attention_timestep[key]) for key in sorted(attention_timestep, key=attention_timestep.get, reverse=True)]:
+            context_string = ""
+            for c in context:
+                context_string += c+","
+            result = result + context_string + ":" + str(attention.item())+" "
+            #current_timestep_paths = .append((attention.item(), context))
+        result += " & "
+    return result
+    
 
 class Model:
     topk = 10
     num_batches_to_log = 100
-    # os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
     def __init__(self, config):
         self.config = config
@@ -32,17 +51,12 @@ class Model:
         self.eval_queue = None
         self.predict_queue = None
         
-        ####new vars####
-        #self.eval_train_queues = []
 
         self.eval_placeholder = None
         self.predict_placeholder = None
         self.eval_predicted_indices_op, self.eval_top_values_op, self.eval_true_target_strings_op, self.eval_topk_values = None, None, None, None
         self.predict_top_indices_op, self.predict_top_scores_op, self.predict_target_strings_op = None, None, None
         self.subtoken_to_index = None
-        #self.datasize = ???
-        
-        #self.batches = ceil(self.datasize/config.BATCH_SIZE)
 
         if config.LOAD_PATH:
             self.load_model(sess=None)
@@ -88,9 +102,6 @@ class Model:
         epochs_no_improve = 0
 
         self.eval_queues = []
-        #self.eval_losses = []
-        #self.p1s = []
-        #self.p2s = []
         
 
         
@@ -307,16 +318,130 @@ class Model:
                                                                                   multi_batch_elapsed if multi_batch_elapsed > 0 else 1)))
 
     
-    ####IG should load a trained model, a target input and a baseline input####
-    def IG(self, tensor1, tensor2):
-    ###################build the model first######################
+    def adv_eval(self):
+        test_queues = []
+        print("\n\n",1)
+    ################Build the eval graph to select the worst data###############
+        eval_target_index = tf.placeholder(tf.int32, [None, None])
+        eval_target_lengths = tf.placeholder(tf.int64, [None,])
+        eval_path_source_indices = tf.placeholder(tf.int32, [None, 200, 5])
+        eval_node_indices = tf.placeholder(tf.int32, [None, 200, 9])
+        eval_path_target_indices = tf.placeholder(tf.int32, [None, 200, 5])
+        eval_valid_context_mask = tf.placeholder(tf.float32, [None, 200])
+        eval_path_source_lengths = tf.placeholder(tf.int32, [None, 200])
+        eval_path_lengths = tf.placeholder(tf.int32, [None, 200])
+        eval_path_target_lengths = tf.placeholder(tf.int32, [None, 200])
+
+        with tf.variable_scope('model', reuse=self.get_should_reuse_variables()):
+            eval_subtoken_vocab = tf.get_variable('SUBTOKENS_VOCAB',
+                                             shape=(self.subtoken_vocab_size, self.config.EMBEDDINGS_SIZE),
+                                             dtype=tf.float32, trainable=False)
+            eval_target_words_vocab = tf.get_variable('TARGET_WORDS_VOCAB',
+                                                 shape=(self.target_vocab_size, self.config.EMBEDDINGS_SIZE),
+                                                 dtype=tf.float32, trainable=False)
+            eval_nodes_vocab = tf.get_variable('NODES_VOCAB',
+                                          shape=(self.nodes_vocab_size, self.config.EMBEDDINGS_SIZE),
+                                          dtype=tf.float32, trainable=False)
+
+            eval_batched_contexts = self.compute_contexts(subtoken_vocab=eval_subtoken_vocab, nodes_vocab=eval_nodes_vocab,
+                                                     source_input=eval_path_source_indices, nodes_input=eval_node_indices,
+                                                     target_input=eval_path_target_indices,
+                                                     valid_mask=eval_valid_context_mask,
+                                                     path_source_lengths=eval_path_source_lengths,
+                                                     path_lengths=eval_path_lengths, path_target_lengths=eval_path_target_lengths, is_evaluating=True)
+
+            eval_batch_size = tf.shape(eval_target_index)[0]
+            #print("batch size is "+str(batch_size)
+            eval_outputs, eval_final_states = self.decode_outputs(target_words_vocab=eval_target_words_vocab,
+                                                        target_input=eval_target_index, batch_size=eval_batch_size,
+                                                        batched_contexts=eval_batched_contexts,
+                                                        valid_mask=eval_valid_context_mask, is_evaluating=False, dropout=0, adv_testing = True)
+
+
+            #pred_outputs, pred_final_states = self.decode_outputs(target_words_vocab=eval_target_words_vocab,
+            #                                            target_input=eval_target_index, batch_size=eval_batch_size,
+            #                                            batched_contexts=eval_batched_contexts, valid_mask=eval_valid_context_mask,
+            #                                            is_evaluating=True)
+            
+            eval_logits = eval_outputs.rnn_output  # (batch, max_output_length, dim * 2 + rnn_size)
+            eval_crossent = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=eval_target_index, logits=eval_logits)
+            eval_target_words_nonzero = tf.sequence_mask(eval_target_lengths + 1,
+                                                    maxlen=self.config.MAX_TARGET_PARTS + 1, dtype=tf.float32)
+            eval_graph_loss = tf.reduce_sum(eval_crossent * eval_target_words_nonzero) / tf.to_float(eval_batch_size)
+            
+            
+            predicted_indices_op = eval_outputs.sample_id
+            self.saver = tf.train.Saver(max_to_keep=10)
+            topk_values = tf.constant(1, shape=(1, 1), dtype=tf.float32)
+            predicted_indices_attention_weights = tf.squeeze(eval_final_states.alignment_history.stack(), 1)
+  
+    ###############################end of build graph######################################
+        for transf in range(self.config.TRANSFS):
+            adv = reader.Reader(subtoken_to_index=self.subtoken_to_index, node_to_index=self.node_to_index,target_to_index=self.target_to_index,config=self.config, adv_training = True, adv_testing=True, adv_transf = transf)
+            #adv.reset(self.sess)
+            test_queues.append(adv)
         
-    
-    #################end of build model###########################
         if self.config.LOAD_PATH and not self.config.TRAIN_PATH:
             self.initialize_session_variables(self.sess)
             self.load_model(self.sess)
-        return
+        for transf in range(self.config.TRANSFS):
+            test_queues[transf].reset(self.sess)
+        
+        path_prefix = '/mnt/outputs/' if "PATH_PREFIX" in os.environ else ''
+        open("{}predicted_target".format(path_prefix), 'w').close()
+        open("{}true_target".format(path_prefix), 'w').close()
+        open("{}attention_weights".format(path_prefix), 'w').close()
+        try:
+            while True:
+                worst_loss = 0.0
+                worst_tensors = None
+                for transf in range(self.config.TRANSFS):
+                    test_input_tensors_data = test_queues[transf].get_output()
+                    test_input_tensors = self.sess.run(test_input_tensors_data)
+                    test_curr_loss = self.sess.run(eval_graph_loss, feed_dict={eval_target_index: test_input_tensors[reader.TARGET_INDEX_KEY], eval_target_lengths: test_input_tensors[reader.TARGET_LENGTH_KEY], eval_path_source_indices: test_input_tensors[reader.PATH_SOURCE_INDICES_KEY], eval_node_indices: test_input_tensors[reader.NODE_INDICES_KEY], eval_path_target_indices: test_input_tensors[reader.PATH_TARGET_INDICES_KEY],  eval_valid_context_mask: test_input_tensors[reader.VALID_CONTEXT_MASK_KEY], eval_path_source_lengths: test_input_tensors[reader.PATH_SOURCE_LENGTHS_KEY], eval_path_lengths: test_input_tensors[reader.PATH_LENGTHS_KEY], eval_path_target_lengths: test_input_tensors[reader.PATH_TARGET_LENGTHS_KEY]})
+                    if test_curr_loss > worst_loss:
+                        worst_loss = test_curr_loss
+                        worst_tensors = test_input_tensors
+                        
+                predicted_indices, top_scores, attention_weights = self.sess.run([predicted_indices_op, topk_values, predicted_indices_attention_weights], feed_dict={eval_target_index: worst_tensors[reader.TARGET_INDEX_KEY], eval_target_lengths: worst_tensors[reader.TARGET_LENGTH_KEY], eval_path_source_indices: worst_tensors[reader.PATH_SOURCE_INDICES_KEY], eval_node_indices: worst_tensors[reader.NODE_INDICES_KEY], eval_path_target_indices: worst_tensors[reader.PATH_TARGET_INDICES_KEY],  eval_valid_context_mask: worst_tensors[reader.VALID_CONTEXT_MASK_KEY], eval_path_source_lengths: worst_tensors[reader.PATH_SOURCE_LENGTHS_KEY], eval_path_lengths: worst_tensors[reader.PATH_LENGTHS_KEY], eval_path_target_lengths: worst_tensors[reader.PATH_TARGET_LENGTHS_KEY]})
+                ####These are used to retrive the attention weights####
+                path_source_string = worst_tensors[reader.PATH_SOURCE_STRINGS_KEY]
+                path_strings = worst_tensors[reader.PATH_STRINGS_KEY]
+                path_target_string = worst_tensors[reader.PATH_TARGET_STRINGS_KEY]
+                path_source_string = path_source_string.reshape((-1))
+                path_strings = path_strings.reshape((-1))
+                path_target_string = path_target_string.reshape((-1))
+                
+                #####These are used in output predicted string#####
+                true_target = Common.binary_to_string(worst_tensors[reader.TARGET_STRING_KEY][0])
+                predicted_indices = np.squeeze(predicted_indices, axis=0)
+                top_scores = np.squeeze(top_scores, axis=0)
+                predicted_strings = [self.index_to_target[idx]
+                                     for idx in predicted_indices]
+                                     
+                attention_per_path = self.get_attention_per_path(path_source_string, path_strings, path_target_string, attention_weights)                     
+               
+                
+                result = [(true_target, predicted_strings, top_scores, attention_per_path)]
+                word_attention_pairs = [(word, attention) for word, attention in
+                                        zip(predicted_strings, attention_per_path) if
+                                        Common.legal_method_names_checker(word)]
+                
+                #print("true target {}".format(true_target))
+                #print("predicted target {}".format(predicted_strings))
+                true_target = format_orig(true_target)
+                predicted_target = format_pred(predicted_strings)
+                word_attention = format_attention(word_attention_pairs)
+                
+                with open('{}true_target'.format(path_prefix),'a+') as f:
+                    f.write(true_target+"\n")
+                with open("{}predicted_target".format(path_prefix), 'a+') as g:
+                    g.write(predicted_target +"\n")
+                with open("{}attention_weights".format(path_prefix), 'a+') as g:
+                    g.write(word_attention +"\n") 
+                
+        except tf.errors.OutOfRangeError:
+            return    
     
     
     
@@ -573,7 +698,7 @@ class Model:
         return train_op, loss
 
     def decode_outputs(self, target_words_vocab, target_input, batch_size, batched_contexts, valid_mask,
-                       is_evaluating=False, dropout=None):
+                       is_evaluating=False, dropout=None, adv_testing=False):
         if not dropout:
             dropout = self.config.RNN_DROPOUT_KEEP_PROB
         num_contexts_per_example = tf.count_nonzero(valid_mask, axis=-1)
@@ -598,7 +723,7 @@ class Model:
             memory=batched_contexts
         )
         # TF doesn't support beam search with alignment history
-        should_save_alignment_history = is_evaluating and self.config.BEAM_WIDTH == 0
+        should_save_alignment_history = (is_evaluating or adv_testing) and self.config.BEAM_WIDTH == 0
         decoder_cell = tf.contrib.seq2seq.AttentionWrapper(decoder_cell, attention_mechanism,
                                                            attention_layer_size=self.config.DECODER_SIZE,
                                                            alignment_history=should_save_alignment_history)

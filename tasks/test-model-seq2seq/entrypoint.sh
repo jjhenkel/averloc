@@ -2,22 +2,41 @@
 
 set -ex
 
-python /model/evaluate.py \
-  --data_path /mnt/inputs/test.tsv \
-  --expt_dir /models/lstm \
-  --output_dir /mnt/outputs \
-  --load_checkpoint Best_F1 \
-    $@
+TEST_FILE=/mnt/inputs/test.tsv
 
-python /model/attack.py \
-  --data_path /mnt/inputs/test.tsv \
-  --expt_dir /models/lstm \
-  --output_dir /mnt/outputs \
-  --load_checkpoint Best_F1 \
-    $@
+if grep -qF 'from_file' "${TEST_FILE}"; then
+  echo "Stripping first column hashes..."
+  cat "${TEST_FILE}" | cut -f2- > /inputs.tsv
+  TEST_FILE=/inputs.tsv
+fi
+
+if [ "${1}" = "--no-attack" ]; then
+  echo "Skipping attack.py"
+  shift
+
+  python /model/evaluate.py \
+    --data_path "${TEST_FILE}" \
+    --expt_dir /models/lstm \
+    --output_dir /mnt/outputs \
+    --load_checkpoint Best_F1 \
+      $@
+else
+  python /model/evaluate.py \
+    --data_path "${TEST_FILE}" \
+    --expt_dir /models/lstm \
+    --output_dir /mnt/outputs \
+    --load_checkpoint Best_F1 \
+      $@
+
+  python /model/attack.py \
+    --data_path "${TEST_FILE}" \
+    --expt_dir /models/lstm \
+    --output_dir /mnt/outputs \
+    --load_checkpoint Best_F1
+fi
 
 if [ -f /mnt/inputs/baseline.tsv ]; then
-  cat /mnt/inputs/baseline.tsv | awk -F'\t' '{ print $2 "\t" $3 }' > /baseline-fixed.tsv
+  cat /mnt/inputs/baseline.tsv | cut -f2- > /baseline-fixed.tsv
   
   python /model/evaluate.py \
     --data_path /baseline-fixed.tsv \

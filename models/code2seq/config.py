@@ -5,7 +5,7 @@ class Config:
         config.NUM_EPOCHS = 3000
         config.SAVE_EVERY_EPOCHS = 1
         config.PATIENCE = 10
-        config.BATCH_SIZE = args.batch_size
+        config.BATCH_SIZE = args.batch_size if args.batch_size is not None else 512
         config.TEST_BATCH_SIZE = 256
         config.READER_NUM_PARALLEL_BATCHES = 1
         config.SHUFFLE_BUFFER_SIZE = 10000
@@ -49,7 +49,7 @@ class Config:
         self.TRAIN_PATH = args.data_path
         self.TEST_PATH = args.test_path if args.test_path is not None else ''
         ###New config used for adv-training/evaluation###
-        self.BATCHES = args.batches
+        # self.BATCHES = args.batches
         self.TRANSFS = args.transformations
         self.TRAIN_DIR = args.train_dir
         ###################################################

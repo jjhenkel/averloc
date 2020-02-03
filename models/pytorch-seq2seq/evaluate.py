@@ -81,9 +81,13 @@ def calc_attributions(model, data, output_fname):
     info = []
     with open(os.path.join(opt.output_dir,'attributions.txt'), 'w') as f:
         for d in tqdm.tqdm(data.examples):
-            out, IG, attn = get_IG_attributions(d.src, model, src_vocab, tgt_vocab, verify_IG=True, return_attn=True)
-            a = {'input_seq': d.src, 'pred_seq': out, 'target_seq':d.tgt[1:-1], 'IG_attrs': vecfmt(IG).tolist(), 'attn_attrs': vecfmt(attn).tolist()}
-            f.write(json.dumps(a)+'\n')
+            try:
+                out, IG, attn = get_IG_attributions(d.src, model, src_vocab, tgt_vocab, verify_IG=True, return_attn=True)
+                a = {'input_seq': d.src, 'pred_seq': out, 'target_seq':d.tgt[1:-1], 'IG_attrs': vecfmt(IG).tolist(), 'attn_attrs': vecfmt(attn).tolist()}
+                f.write(json.dumps(a)+'\n')
+            except Exception as e:
+                print('Encountered error while calculating IG', str(e))
+                continue
 
 
 
