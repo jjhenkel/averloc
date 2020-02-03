@@ -62,11 +62,12 @@ def load_data(data_path):
 
 
 def get_best_attack(batch, model, attacks, src_vocab, tgt_vocab):
-    d = {}
+    l = []
     with torch.no_grad():
+        target_variables = getattr(batch, seq2seq.tgt_field_name)
+
         for attack in attacks:
             input_variables, input_lengths  = getattr(batch, attack)
-            target_variables = getattr(batch, seq2seq.tgt_field_name)
 
             decoder_outputs, decoder_hidden, other = model(input_variables, input_lengths.tolist(), target_variables)
 
@@ -75,8 +76,6 @@ def get_best_attack(batch, model, attacks, src_vocab, tgt_vocab):
                 batch_size = target_variables.size(0)
                 loss.eval_batch(step_output.contiguous().view(batch_size, -1), target_variables[:, step + 1])
 
-            d["loss_%s"%attack] = loss.get_loss()
-
             # other['length'] should be a list of length 1 only, so the loop is redundant
             for i,output_seq_len in enumerate(other['length']):
                 tgt_id_seq = [other['sequence'][di][i].data[0] for di in range(output_seq_len)]
@@ -84,10 +83,17 @@ def get_best_attack(batch, model, attacks, src_vocab, tgt_vocab):
                 output_seq = ' '.join([x for x in tgt_seq if x not in ['<sos>','<eos>','<pad>']])
                 gt = [tgt_vocab.itos[tok] for tok in target_variables[i]]
                 ground_truth = ' '.join([x for x in gt if x not in ['<sos>','<eos>','<pad>']])
-            
-    d['best_attack'] = max(d, key=d.get)
-    d['output_seq'] = output_seq
+
+            attack_depth = 0 if attack == 'src' else attack.count(',')+1
+            l.append((loss.get_loss(), attack_depth, attack, output_seq))
+
+    l = sorted(l, key=lambda x:x[0], reverse=True)
+    d = {}
+    d['best_attack_depth'] = l[0][1]
+    d['best_attack'] = l[0][2]
+    d['output_seq'] = l[0][3]
     d['ground_truth'] = ground_truth
+    d['logs'] = l
 
     return d
 
@@ -98,12 +104,23 @@ def attack_model(model, data, attacks, src_vocab, tgt_vocab):
     batch_generator = batch_iterator.__iter__()
     outputs = []
     gts = []
+    attack_counts = {}
+    attack_depth_counts = {}
 
     with open(os.path.join(opt.output_dir,'attacked.txt'), 'w') as f:
         for batch in tqdm.tqdm(batch_generator):
             d  = get_best_attack(batch, model, attacks, src_vocab, tgt_vocab)
             outputs.append(d['output_seq'])
             gts.append(d['ground_truth'])
+            
+            if d['best_attack'] not in attack_counts:
+                attack_counts[d['best_attack']] = 0
+            attack_counts[d['best_attack']] += 1
+
+            if d['best_attack_depth'] not in attack_depth_counts:
+                attack_depth_counts[d['best_attack_depth']] = 0
+            attack_depth_counts[d['best_attack_depth']] += 1
+
             f.write(json.dumps(d)+'\n')
 
     metrics = calculate_metrics(outputs, gts)
@@ -111,6 +128,9 @@ def attack_model(model, data, attacks, src_vocab, tgt_vocab):
     print('Details written to', os.path.join(opt.output_dir,'attacked.txt'))
 
     print(metrics)
+
+    print(attack_counts)
+    print(attack_depth_counts)
 
     with open(os.path.join(opt.output_dir,'attacked_metrics.txt'), 'w') as f:
         f.write(json.dumps(metrics)+'\n')
@@ -126,6 +146,7 @@ if __name__=="__main__":
 
     data, fields, src, tgt = load_data(opt.data_path)
     attacks = [field[0] for field in fields if field[0] not in ['tgt']]
+    # print(attacks)
 
     print('Loaded Data')
 
