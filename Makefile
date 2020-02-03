@@ -695,7 +695,7 @@ ifndef GPU
 endif
 
 .PHONY: depth-k-test-seq2seq
-depth-k-test-seq2seq: check-dataset-name check-gpu check-models-out build-image-depth-k-test-seq2seq
+depth-k-test-seq2seq: check-dataset-name check-gpu check-models-in build-image-depth-k-test-seq2seq
 	@IMAGE_NAME="$(shell whoami)/averloc--depth-k-test-seq2seq:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		--gpus "device=$${GPU}" \
