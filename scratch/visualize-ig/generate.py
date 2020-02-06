@@ -9,25 +9,27 @@ def blend_hex(alpha, color=[255,0,0], base=[255,255,255]):
     ]])
 
 
-def generate(template_str, json_nrm, json_adv):
-  TARGET_TOKEN_BLOCK = '<div class="mdl-card mdl-cell mdl-cell--4-col" style="min-height: 0;"><h3>{}</h3></div>'
+def generate(N, template_str, json_nrm, json_adv):
+  TARGET_TOKEN_BLOCK = '<div class="mdl-card" style="min-height: 0;"><h3>{}</h3></div>'
   SOURCE_TOKEN_ROW = '<tr><td class="mdl-data-table__cell--non-numeric">{}</td><td style="background-color: {}">{}</td><td style="background-color: {}">{}</td></tr>'
-  SOURCE_TOKEN_BLOCK = '<div class="mdl-card mdl-cell mdl-cell--4-col"><table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp"><thead><tr><th class="mdl-data-table__cell--non-numeric">Source Token</th><th>IG (N)</th><th>IG (A)</th></tr></thead><tbody>{}</tbody></table></div>'
+  SOURCE_TOKEN_BLOCK = '<div class="mdl-card"><table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp"><thead><tr><th class="mdl-data-table__cell--non-numeric">Source Token</th><th>IG (N)</th><th>IG (A)</th></tr></thead><tbody>{}</tbody></table></div>'
 
   target_token_blocks = ''
   source_token_blocks = ''
 
-  for i, tok in enumerate(json_nrm['pred_seq']):
+  for i in range(min(len(json_nrm['pred_seq']), len(json_adv['pred_seq']))):
     target_token_blocks += (
-      TARGET_TOKEN_BLOCK.format(tok) + '\n'
+      TARGET_TOKEN_BLOCK.format(json_nrm['pred_seq'][i] + '|' + json_adv['pred_seq'][i]) + '\n'
     )
   
     source_token_rows = ''
     max_ig1 = max([ float(f) for f in json_nrm['IG_attrs'][i] ])
     max_ig2 = max([ float(f) for f in json_adv['IG_attrs'][i] ])
+    max_ig = max(max_ig1, max_ig2)
     for tok, ig1, ig2 in zip(json_nrm['input_seq'], json_nrm['IG_attrs'][i], json_adv['IG_attrs'][i]):
       formatted = SOURCE_TOKEN_ROW.format(
-        tok, blend_hex(float(ig1) / max_ig1), ig1, blend_hex(float(ig2) / max_ig2), ig2
+        # tok, blend_hex(float(ig1) / max_ig), blend_hex(float(ig1) / max_ig1), blend_hex(float(ig2) / max_ig), blend_hex(float(ig2) / max_ig2)
+        tok, blend_hex(float(ig1) / max_ig), ig1, blend_hex(float(ig2) / max_ig), ig2
       )
       source_token_rows += (formatted + '\n')
     
@@ -37,11 +39,12 @@ def generate(template_str, json_nrm, json_adv):
 
   template_str = template_str.replace('<!TARGET_TOKEN_BLOCKS>', target_token_blocks)
   template_str = template_str.replace('<!SOURCE_TOKEN_BLOCKS>', source_token_blocks)
+  template_str = template_str.replace('<!NEXT_NUM>', str(N+1))
 
   return template_str
 
 
-def select_example(index, normal, adversarial):
+def select_example(normal, adversarial):
   count = 0
   for line_n, line_a in zip(open(normal).readlines(), open(adversarial).readlines()):
     try:
@@ -50,21 +53,28 @@ def select_example(index, normal, adversarial):
     except:
       continue
 
-    if nrm['pred_seq'] == adv['pred_seq'] and len(adv['pred_seq']) == 3:
-      count += 1 
-      if count == index:
-        return nrm, adv
+    if adv['pred_seq'] == adv['target_seq'] and len(nrm['input_seq']) < 40:
+      big_swing = False
+      big_drop = False
+      exclude = False
+      for i in range(min(len(adv['pred_seq']), len(nrm['pred_seq']))):
+        for tok, ig1, ig2 in zip(nrm['input_seq'], nrm['IG_attrs'][i], adv['IG_attrs'][i]):
+          if float(ig2) - float(ig1) > 0.2:
+            big_swing = True
+            break
+      if big_swing and not exclude:
+        count += 1 
+        yield nrm, adv
+
+  print("Have {} choices...".format(count))
 
 
 if __name__ == "__main__":
   
-  nrm, adv = select_example(
-    int(sys.argv[1]), sys.argv[2], sys.argv[3]
-  )
+  the_template = open('template.html').read()
+  for i, (nrm, adv) in enumerate(list(select_example(sys.argv[1], sys.argv[2]))):
+    with open('temps/temp-{}.html'.format(i), 'w') as outf:
+      outf.write(generate(
+        i, the_template, nrm, adv
+      ))
   
-  print(
-    generate(
-      open('template.html').read(),
-      nrm, adv
-    )
-  )

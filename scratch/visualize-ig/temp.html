@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="Quick visualization for IG and Attention Attributions.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <title>IG and Attention Attributions</title>
+
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.teal-red.min.css">
+  <style>
+    #view-source {
+      position: fixed;
+      display: block;
+      right: 0;
+      bottom: 0;
+      margin-right: 40px;
+      margin-bottom: 40px;
+      z-index: 900;
+    }
+
+    .demo-ribbon {
+      width: 100%;
+      height: 40vh;
+      background-color: #3F51B5;
+      -webkit-flex-shrink: 0;
+      -ms-flex-negative: 0;
+      flex-shrink: 0;
+    }
+
+    .demo-main {
+      margin-top: -35vh;
+      -webkit-flex-shrink: 0;
+      -ms-flex-negative: 0;
+      flex-shrink: 0;
+    }
+
+    .demo-header .mdl-layout__header-row {
+      padding-left: 40px;
+    }
+
+    .demo-container {
+      max-width: 1600px;
+      width: calc(100% - 16px);
+      margin: 0 auto;
+    }
+
+    .demo-content {
+      border-radius: 2px;
+      padding: 80px 56px;
+      margin-bottom: 80px;
+    }
+
+    .demo-layout.is-small-screen .demo-content {
+      padding: 40px 28px;
+    }
+
+    .demo-content h3 {
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    td {
+      background-clip: padding-box; 
+    }
+  </style>
+</head>
+
+<body>
+  <div class="demo-layout mdl-layout mdl-layout--fixed-header mdl-js-layout mdl-color--grey-100">
+    <header
+      class="demo-header mdl-layout__header mdl-layout__header--scroll mdl-color--grey-100 mdl-color-text--grey-800">
+      <div class="mdl-layout__header-row">
+        <span class="mdl-layout-title">IG and Attention Attributions</span>
+        <div class="mdl-layout-spacer"></div>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+          <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
+            <i class="material-icons">search</i>
+          </label>
+          <div class="mdl-textfield__expandable-holder">
+            <input class="mdl-textfield__input" type="text" id="search">
+            <label class="mdl-textfield__label" for="search">Enter your query...</label>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="demo-ribbon"></div>
+    <main class="demo-main mdl-layout__content">
+      <div class="demo-container mdl-grid">
+        <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
+        <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
+          <main class="mdl-layout__content">
+            <div class="mdl-grid">
+              <div class="mdl-card mdl-cell mdl-cell--4-col" style="min-height: 0;"><h3>with</h3></div>
+<div class="mdl-card mdl-cell mdl-cell--4-col" style="min-height: 0;"><h3>expression</h3></div>
+<div class="mdl-card mdl-cell mdl-cell--4-col" style="min-height: 0;"><h3>handler</h3></div>
+
+            </div>
+            <div class="mdl-grid">
+              <div class="mdl-card mdl-cell mdl-cell--4-col"><table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp"><thead><tr><th class="mdl-data-table__cell--non-numeric">Source Token</th><th>IG (N)</th><th>IG (A)</th></tr></thead><tbody><tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #ffe7e7">#ffe7e7</td><td style="background-color: #ffb1b1">#ff5d5d</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">security</td><td style="background-color: #ffbaba">#ffbaba</td><td style="background-color: #ff111111">#ff124124</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">expression</td><td style="background-color: #ff108108">#ff108108</td><td style="background-color: #ff147147">#ff194194</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">handler</td><td style="background-color: #ff10b10b">#ff10b10b</td><td style="background-color: #ff11a11a">#ff137137</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric"><</td><td style="background-color: #ff10b10b">#ff10b10b</td><td style="background-color: #ff108108">#ff112112</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">filter</td><td style="background-color: #fffcfc">#fffcfc</td><td style="background-color: #ffe7e7">#ffcdcd</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">invocation</td><td style="background-color: #ff108108">#ff108108</td><td style="background-color: #ff108108">#ff112112</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">></td><td style="background-color: #fff9f9">#fff9f9</td><td style="background-color: #ff102102">#ff105105</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">expression</td><td style="background-color: #ff117117">#ff117117</td><td style="background-color: #ff108108">#ff112112</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">handler</td><td style="background-color: #ff114114">#ff114114</td><td style="background-color: #ff108108">#ff112112</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #fff6f6">#fff6f6</td><td style="background-color: #ff105105">#ff10b10b</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">{</td><td style="background-color: #ffeded">#ffeded</td><td style="background-color: #ff117117">#ff131131</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">assert</td><td style="background-color: #ffe4e4">#ffe4e4</td><td style="background-color: #ffeaea">#ffd3d3</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">.</td><td style="background-color: #ffe7e7">#ffe7e7</td><td style="background-color: #ff108108">#ff112112</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">not</td><td style="background-color: #ffeaea">#ffeaea</td><td style="background-color: #ffcccc">#ff9595</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">null</td><td style="background-color: #ffe4e4">#ffe4e4</td><td style="background-color: #ffaeae">#ff5757</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #ff10b10b">#ff10b10b</td><td style="background-color: #ff138138">#ff175175</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">expression</td><td style="background-color: #fff9f9">#fff9f9</td><td style="background-color: #ff105105">#ff10b10b</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">handler</td><td style="background-color: #fff0f0">#fff0f0</td><td style="background-color: #ffeaea">#ffd3d3</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">expression</td><td style="background-color: #fffcfc">#fffcfc</td><td style="background-color: #ff105105">#ff10b10b</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">handler</td><td style="background-color: #ff108108">#ff108108</td><td style="background-color: #ffe1e1">#ffc1c1</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">cannot</td><td style="background-color: #fff0f0">#fff0f0</td><td style="background-color: #ff11a11a">#ff137137</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">be</td><td style="background-color: #ffc9c9">#ffc9c9</td><td style="background-color: #fffcfc">#fff9f9</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">null</td><td style="background-color: #fffcfc">#fffcfc</td><td style="background-color: #fff9f9">#fff3f3</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #ffcccc">#ffcccc</td><td style="background-color: #ffe7e7">#ffcdcd</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">;</td><td style="background-color: #ff111111">#ff111111</td><td style="background-color: #ff11a11a">#ff137137</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">this</td><td style="background-color: #ff5d5d">#ff5d5d</td><td style="background-color: #ffa8a8">#ff4b4b</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">.</td><td style="background-color: #ffc3c3">#ffc3c3</td><td style="background-color: #ffd8d8">#ffaeae</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">expression</td><td style="background-color: #ffb1b1">#ffb1b1</td><td style="background-color: #ff129129">#ff156156</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">handler</td><td style="background-color: #fff6f6">#fff6f6</td><td style="background-color: #ff117117">#ff131131</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">=</td><td style="background-color: #ff105105">#ff105105</td><td style="background-color: #ffe4e4">#ffc7c7</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">expression</td><td style="background-color: #ffaeae">#ffaeae</td><td style="background-color: #ffd2d2">#ffa2a2</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">handler</td><td style="background-color: #ffc0c0">#ffc0c0</td><td style="background-color: #fff9f9">#fff3f3</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">;</td><td style="background-color: #ff150150">#ff150150</td><td style="background-color: #ff117117">#ff131131</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">return</td><td style="background-color: #ff3333">#ff3333</td><td style="background-color: #ffa8a8">#ff4b4b</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">this</td><td style="background-color: #ff0000">#ff0000</td><td style="background-color: #ff8484">#ff0000</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">;</td><td style="background-color: #ff12f12f">#ff12f12f</td><td style="background-color: #fff9f9">#fff3f3</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">}</td><td style="background-color: #ff147147">#ff147147</td><td style="background-color: #ff117117">#ff131131</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric"><eos></td><td style="background-color: #ffe1e1">#ffe1e1</td><td style="background-color: #fffcfc">#fff9f9</td></tr>
+</tbody></table></div>
+<div class="mdl-card mdl-cell mdl-cell--4-col"><table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp"><thead><tr><th class="mdl-data-table__cell--non-numeric">Source Token</th><th>IG (N)</th><th>IG (A)</th></tr></thead><tbody><tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #ff106106">#ff112112</td><td style="background-color: #fff5f5">#fff5f5</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">security</td><td style="background-color: #ffe3e3">#ffb0b0</td><td style="background-color: #fffefe">#fffefe</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">expression</td><td style="background-color: #fff4f4">#ffdfdf</td><td style="background-color: #fff2f2">#fff2f2</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">handler</td><td style="background-color: #fff8f8">#ffecec</td><td style="background-color: #ff110110">#ff110110</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric"><</td><td style="background-color: #fff9f9">#ffeded</td><td style="background-color: #ff104104">#ff104104</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">filter</td><td style="background-color: #ffeded">#ffcdcd</td><td style="background-color: #fff6f6">#fff6f6</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">invocation</td><td style="background-color: #ff117117">#ff141141</td><td style="background-color: #ff10d10d">#ff10d10d</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">></td><td style="background-color: #fff9f9">#ffefef</td><td style="background-color: #ff10c10c">#ff10c10c</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">expression</td><td style="background-color: #ff103103">#ff10a10a</td><td style="background-color: #ff102102">#ff102102</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">handler</td><td style="background-color: #ff11c11c">#ff14f14f</td><td style="background-color: #ff105105">#ff105105</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #ff10c10c">#ff124124</td><td style="background-color: #fffcfc">#fffcfc</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">{</td><td style="background-color: #fffefe">#fffdfd</td><td style="background-color: #fffdfd">#fffdfd</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">assert</td><td style="background-color: #fff7f7">#ffe9e9</td><td style="background-color: #fffcfc">#fffcfc</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">.</td><td style="background-color: #fff6f6">#ffe7e7</td><td style="background-color: #ff10f10f">#ff10f10f</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">not</td><td style="background-color: #fff5f5">#ffe4e4</td><td style="background-color: #fff5f5">#fff5f5</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">null</td><td style="background-color: #ff102102">#ff109109</td><td style="background-color: #ffefef">#ffefef</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #fff5f5">#ffe2e2</td><td style="background-color: #ff106106">#ff106106</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">expression</td><td style="background-color: #ffdbdb">#ff9c9c</td><td style="background-color: #ffe3e3">#ffe3e3</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">handler</td><td style="background-color: #ff10a10a">#ff11f11f</td><td style="background-color: #ff108108">#ff108108</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">expression</td><td style="background-color: #ffe3e3">#ffb2b2</td><td style="background-color: #fff0f0">#fff0f0</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">handler</td><td style="background-color: #ffffff">#ffffff</td><td style="background-color: #ffffff">#ffffff</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">cannot</td><td style="background-color: #fffdfd">#fff9f9</td><td style="background-color: #ff101101">#ff101101</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">be</td><td style="background-color: #ffeded">#ffcdcd</td><td style="background-color: #fff8f8">#fff8f8</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">null</td><td style="background-color: #fff3f3">#ffdddd</td><td style="background-color: #fff8f8">#fff8f8</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #ff108108">#ff117117</td><td style="background-color: #ff102102">#ff102102</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">;</td><td style="background-color: #fff5f5">#ffe4e4</td><td style="background-color: #fffefe">#fffefe</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">this</td><td style="background-color: #fff0f0">#ffd5d5</td><td style="background-color: #ffe6e6">#ffe6e6</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">.</td><td style="background-color: #ffc5c5">#ff5d5d</td><td style="background-color: #ff106106">#ff106106</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">expression</td><td style="background-color: #ffa4a4">#ff0000</td><td style="background-color: #ff0000">#ff0000</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">handler</td><td style="background-color: #ff113113">#ff136136</td><td style="background-color: #ff107107">#ff107107</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">=</td><td style="background-color: #ffd5d5">#ff8a8a</td><td style="background-color: #ff102102">#ff102102</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">expression</td><td style="background-color: #ffd6d6">#ff8c8c</td><td style="background-color: #ffbebe">#ffbebe</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">handler</td><td style="background-color: #fff5f5">#ffe4e4</td><td style="background-color: #ff107107">#ff107107</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">;</td><td style="background-color: #fff6f6">#ffe7e7</td><td style="background-color: #fffdfd">#fffdfd</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">return</td><td style="background-color: #ffe5e5">#ffb7b7</td><td style="background-color: #ffffff">#ffffff</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">this</td><td style="background-color: #fff9f9">#ffefef</td><td style="background-color: #fffbfb">#fffbfb</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">;</td><td style="background-color: #ff10f10f">#ff12a12a</td><td style="background-color: #fffbfb">#fffbfb</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">}</td><td style="background-color: #fffafa">#fff1f1</td><td style="background-color: #ffffff">#ffffff</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric"><eos></td><td style="background-color: #fff6f6">#ffe5e5</td><td style="background-color: #fff8f8">#fff8f8</td></tr>
+</tbody></table></div>
+<div class="mdl-card mdl-cell mdl-cell--4-col"><table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp"><thead><tr><th class="mdl-data-table__cell--non-numeric">Source Token</th><th>IG (N)</th><th>IG (A)</th></tr></thead><tbody><tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #ffe4e4">#ffe2e2</td><td style="background-color: #ff107107">#ff107107</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">security</td><td style="background-color: #fff6f6">#fff5f5</td><td style="background-color: #ffeeee">#ffeeee</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">expression</td><td style="background-color: #ff110110">#ff112112</td><td style="background-color: #ff12b12b">#ff12b12b</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">handler</td><td style="background-color: #ffdfdf">#ffdcdc</td><td style="background-color: #ffd9d9">#ffd9d9</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric"><</td><td style="background-color: #ff102102">#ff102102</td><td style="background-color: #fffafa">#fffafa</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">filter</td><td style="background-color: #ff10b10b">#ff10c10c</td><td style="background-color: #fffafa">#fffafa</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">invocation</td><td style="background-color: #fffefe">#fffefe</td><td style="background-color: #fff9f9">#fff9f9</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">></td><td style="background-color: #ffeaea">#ffe8e8</td><td style="background-color: #fffdfd">#fffdfd</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">expression</td><td style="background-color: #ff11b11b">#ff11e11e</td><td style="background-color: #ff109109">#ff109109</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">handler</td><td style="background-color: #ffeded">#ffebeb</td><td style="background-color: #fffafa">#fffafa</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #ff104104">#ff105105</td><td style="background-color: #ffecec">#ffecec</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">{</td><td style="background-color: #ff100100">#ff100100</td><td style="background-color: #fff4f4">#fff4f4</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">assert</td><td style="background-color: #fff4f4">#fff3f3</td><td style="background-color: #ffeeee">#ffeeee</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">.</td><td style="background-color: #fff9f9">#fff8f8</td><td style="background-color: #ff111111">#ff111111</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">not</td><td style="background-color: #ffefef">#ffeded</td><td style="background-color: #ffecec">#ffecec</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">null</td><td style="background-color: #fff2f2">#fff1f1</td><td style="background-color: #ffe2e2">#ffe2e2</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #ff104104">#ff104104</td><td style="background-color: #ff101101">#ff101101</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">expression</td><td style="background-color: #ff10c10c">#ff10d10d</td><td style="background-color: #ff10a10a">#ff10a10a</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">handler</td><td style="background-color: #ffc2c2">#ffbcbc</td><td style="background-color: #ffbcbc">#ffbcbc</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">expression</td><td style="background-color: #ff111111">#ff112112</td><td style="background-color: #ff116116">#ff116116</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">handler</td><td style="background-color: #ffd6d6">#ffd2d2</td><td style="background-color: #ffe0e0">#ffe0e0</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">cannot</td><td style="background-color: #ff101101">#ff101101</td><td style="background-color: #ff100100">#ff100100</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">be</td><td style="background-color: #ffd3d3">#ffcfcf</td><td style="background-color: #ffeded">#ffeded</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">null</td><td style="background-color: #fff6f6">#fff5f5</td><td style="background-color: #ffeaea">#ffeaea</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #ffe7e7">#ffe5e5</td><td style="background-color: #ffdddd">#ffdddd</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">;</td><td style="background-color: #ff104104">#ff105105</td><td style="background-color: #fffafa">#fffafa</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">this</td><td style="background-color: #ffb9b9">#ffb2b2</td><td style="background-color: #ffc8c8">#ffc8c8</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">.</td><td style="background-color: #ffe3e3">#ffe1e1</td><td style="background-color: #fffdfd">#fffdfd</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">expression</td><td style="background-color: #ff11d11d">#ff120120</td><td style="background-color: #ff101101">#ff101101</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">handler</td><td style="background-color: #ff1717">#ff0000</td><td style="background-color: #ff0000">#ff0000</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">=</td><td style="background-color: #fff2f2">#fff1f1</td><td style="background-color: #ffc1c1">#ffc1c1</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">expression</td><td style="background-color: #fff7f7">#fff7f7</td><td style="background-color: #ff104104">#ff104104</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">handler</td><td style="background-color: #ffa4a4">#ff9b9b</td><td style="background-color: #ff7777">#ff7777</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">;</td><td style="background-color: #fff4f4">#fff2f2</td><td style="background-color: #fff8f8">#fff8f8</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">return</td><td style="background-color: #fff1f1">#fff0f0</td><td style="background-color: #ff10e10e">#ff10e10e</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">this</td><td style="background-color: #ffe1e1">#ffdede</td><td style="background-color: #fffdfd">#fffdfd</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">;</td><td style="background-color: #ff104104">#ff105105</td><td style="background-color: #fffefe">#fffefe</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">}</td><td style="background-color: #ffe6e6">#ffe4e4</td><td style="background-color: #fff7f7">#fff7f7</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric"><eos></td><td style="background-color: #fffafa">#fff9f9</td><td style="background-color: #fff7f7">#fff7f7</td></tr>
+</tbody></table></div>
+
+            </div>
+          </main>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+</body>
+</html>
+
