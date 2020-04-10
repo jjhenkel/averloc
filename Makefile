@@ -139,6 +139,11 @@ build-image-astor-apply-transforms: submodules ## Builds our baseline generator 
 	@"${ROOT_DIR}/scripts/build-image.sh" \
 		astor-apply-transforms
 
+.PHONY: build-image-augment-dataset-tokens
+build-image-augment-dataset-tokens: submodules ## Builds our dataset-augmentation processor (for tokens) <!PRIVATE>
+	@"${ROOT_DIR}/scripts/build-image.sh" \
+		augment-dataset-tokens
+
 .PHONY: build-image-download-c2s-dataset
 build-image-download-c2s-dataset: submodules ## Builds tasks/download-c2s-dataset <!PRIVATE>
 	@"${ROOT_DIR}/scripts/build-image.sh" \
@@ -148,7 +153,6 @@ build-image-download-c2s-dataset: submodules ## Builds tasks/download-c2s-datase
 build-image-download-csn-dataset: submodules ## Builds tasks/download-csn-dataset <!PRIVATE>
 	@"${ROOT_DIR}/scripts/build-image.sh" \
 		download-csn-dataset
-
 
 .PHONY: build-image-extract-adv-dataset-c2s
 build-image-extract-adv-dataset-c2s: submodules ## Builds our adversarial dataset extractor (representation: ast-paths). <!PRIVATE>
@@ -926,3 +930,16 @@ do-integrated-gradients-seq2seq: check-dataset-name check-results-out check-gpu 
 		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs.tsv" \
 		-v "${ROOT_DIR}/$${RESULTS_OUT}:/mnt/outputs" \
 		"$${IMAGE_NAME}" $${ARGS}
+
+
+#######################################################################################################################
+#######################################################################################################################
+
+.PHONY: aug-dataset-tokens-c2s-java-small
+aug-dataset-tokens-c2s-java-small: build-image-augment-dataset-tokens ## (AUG) Do dataset augmentation for c2s/java-small
+	@IMAGE_NAME="$(shell whoami)/averloc--augment-dataset-tokens:$(shell git rev-parse HEAD)"
+	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
+		-v "${ROOT_DIR}/datasets/adversarial/all-attacks/tokens/c2s/java-small:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/augmented/all-attacks/tokens/c2s/java-small:/mnt/outputs" \
+		"$${IMAGE_NAME}"
