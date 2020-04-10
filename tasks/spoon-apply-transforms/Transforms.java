@@ -82,56 +82,58 @@ class TransformFileTask implements Runnable {
 
 		transformers.add(new Identity());
 
-		int total = (1 << 5);
-		for (int i = 1; i < total; i++) {
-			ArrayList<AverlocTransformer> subset = new ArrayList<AverlocTransformer>();
-			String theName = "transforms.Seq(";
-			for (int j = 0; j < 5; j++) {
-				if ((i & (1 << j)) > 0) {
-					if (j == 0) {
-						subset.add(new ReplaceTrueFalse(
-							1.0 // Replacement chance
-						));
+		for (int rounds = 0; rounds < 10; rounds++) {
+			int total = (1 << 5);
+			for (int i = 1; i < total; i++) {
+				ArrayList<AverlocTransformer> subset = new ArrayList<AverlocTransformer>();
+				String theName = "transforms.Seq(";
+				for (int j = 0; j < 5; j++) {
+					if ((i & (1 << j)) > 0) {
+						if (j == 0) {
+							subset.add(new ReplaceTrueFalse(
+								1.0 // Replacement chance
+							));
 
-					} else if (j == 1) {
-						subset.add(new InsertPrintStatements(
-							3,                 // Min insertions
-							9,                 // Max insertions
-							3,                 // Min literal length
-							10,                 // Max literal length
-							topTargetSubtokens // Subtokens to use to build literal
-						));
-					} else if (j == 2) {
-						subset.add(new RenameFields(
-							2,                 // Name min length
-							10,                 // Name max length
-							1.0,               // Percent to rename
-							topTargetSubtokens // Subtokens to use to build names
-						));
-					} else if (j == 3) {
-						subset.add(new RenameLocalVariables(
-							2,                 // Name min length
-							10,                 // Name max length
-							1.0,               // Percent to rename
-							topTargetSubtokens // Subtokens to use to build names
-						));
-					} else if (j == 4) {
-						subset.add(new RenameParameters(
-							2,                 // Name min length
-							10,                 // Name max length
-							1.0,               // Percent to rename
-							topTargetSubtokens // Subtokens to use to build names
-						));
+						} else if (j == 1) {
+							subset.add(new InsertPrintStatements(
+								3,                 // Min insertions
+								9,                 // Max insertions
+								3,                 // Min literal length
+								10,                 // Max literal length
+								topTargetSubtokens // Subtokens to use to build literal
+							));
+						} else if (j == 2) {
+							subset.add(new RenameFields(
+								2,                 // Name min length
+								10,                 // Name max length
+								1.0,               // Percent to rename
+								topTargetSubtokens // Subtokens to use to build names
+							));
+						} else if (j == 3) {
+							subset.add(new RenameLocalVariables(
+								2,                 // Name min length
+								10,                 // Name max length
+								1.0,               // Percent to rename
+								topTargetSubtokens // Subtokens to use to build names
+							));
+						} else if (j == 4) {
+							subset.add(new RenameParameters(
+								2,                 // Name min length
+								10,                 // Name max length
+								1.0,               // Percent to rename
+								topTargetSubtokens // Subtokens to use to build names
+							));
+						}
+
+						theName += subset.get(subset.size() -1).getClass().getName().replace("transforms.", "") + ",";
 					}
-
-					theName += subset.get(subset.size() -1).getClass().getName().replace("transforms.", "") + ",";
 				}
+				transformers.add(new All(
+					subset,
+					UUID.randomUUID().toString()
+				));
+				// System.out.println(String.format("  + Built: %s", transformers.get(transformers.size() - 1).getOutName()));
 			}
-			transformers.add(new All(
-				subset,
-				theName.substring(0, theName.length() - 1) + ")"
-			));
-			// System.out.println(String.format("  + Built: %s", transformers.get(transformers.size() - 1).getOutName()));
 		}
 
 		// System.out.println(String.format("Have %s tranforms.", transformers.size()));
