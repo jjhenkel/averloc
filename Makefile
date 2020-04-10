@@ -355,7 +355,7 @@ datasets/preprocessed/ast-paths/csn/python: ## Generate a preprocessed (represen
 	@$(call echo_debug,"Finalizing dataset 'preprocessed/ast-paths/csn/python' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
-	docker run -it --rm \
+	docker run -it  \
 		-v "${ROOT_DIR}/datasets/normalized/csn/python:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/preprocessed/ast-paths/csn/python:/mnt/outputs" \
 		"$${IMAGE_NAME}" python
