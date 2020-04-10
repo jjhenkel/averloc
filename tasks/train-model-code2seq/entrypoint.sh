@@ -1,7 +1,8 @@
 #!/bin/bash
 
 set -ex
-mkdir /mnt/outputs/model
+rm -rf /mnt/outputs/model
+mkdir -p /mnt/outputs/model
 
 if [ "${1}" = "--regular_training" ]; then
 
