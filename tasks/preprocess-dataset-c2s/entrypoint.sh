@@ -61,19 +61,19 @@ elif [ "${1}" == "python" ]; then
   # Stage files
   echo "Staging files..."
   echo "  - Staging test.jsonl.gz..."
-  cat /mnt/inputs/test.jsonl.gz | gzip -cd | python3 /stage_python.py > /staging/step1/test.json
+  cat /mnt/inputs/test.jsonl.gz | gzip -cd | python3 /pystage.py > /staging/step1/test.json
   echo "  + Complete"
   echo "  - Staging train.jsonl.gz..."
-  cat /mnt/inputs/train.jsonl.gz | gzip -cd | python3 /stage_python.py > /staging/step1/train.json
+  cat /mnt/inputs/train.jsonl.gz | gzip -cd | python3 /pystage.py > /staging/step1/train.json
   echo "  + Complete"
   echo "  - Staging valid.jsonl.gz..."
-  cat /mnt/inputs/valid.jsonl.gz | gzip -cd | python3 /stage_python.py > /staging/step1/valid.json
+  cat /mnt/inputs/valid.jsonl.gz | gzip -cd | python3 /pystage.py > /staging/step1/valid.json
   echo "  + Complete"
 
   EXTRA_FLAG=""
   if [ -f /mnt/inputs/baseline.jsonl.gz ]; then
     echo "  - Staging baseline.jsonl.gz..."
-    cat /mnt/inputs/baseline.jsonl.gz | gzip -cd | python3 /stage_python.py > /staging/step1/baseline.json
+    cat /mnt/inputs/baseline.jsonl.gz | gzip -cd | python3 /pystage.py > /staging/step1/baseline.json
     EXTRA_FLAG="--baseline_data /staging/step2/baseline_output_file.txt"
     echo "  + Complete"
   fi

@@ -17,7 +17,7 @@ for MODEL in normal adversarial-one-step adversarial-all; do
     echo "  + DATASET = ${DS_NAME}"
    
     export RESULTS_OUT=c2s-test-results/${DS_NAME}/${MODEL}/${FAKE_DS_NAME}
-    export DATASET_NAME=datasets/adversarial/all-attacks/tokens/${DS_NAME}
+    export DATASET_NAME=datasets/adversarial/all-attacks/ast-paths/${DS_NAME}
     export MODELS_IN=../../../mnt/trained-models/code2seq/${DS_NAME}/${MODEL}
 
     ARGS="${T} ${ARGS}" time make test-model-code2seq

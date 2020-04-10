@@ -1,0 +1,47 @@
+
+# test-results/<DATASET-NAME>/<MODEL-TYPE>/<DATASET-TYPE>
+GPU=1 RESULTS_OUT=test-results/c2s/java-small/adversarial-all/one-step-attacks DATASET_NAME=datasets/adversarial/just-one-step-attacks/tokens/c2s/java-small MODELS_IN=../../../mnt/trained-models/seq2seq/c2s/java-small/adversarial-all time make test-model-seq2seq && \
+GPU=1 RESULTS_OUT=test-results/c2s/java-small/adversarial-all/all-attacks DATASET_NAME=datasets/adversarial/all-attacks/tokens/c2s/java-small MODELS_IN=../../../mnt/trained-models/seq2seq/c2s/java-small/adversarial-all time make test-model-seq2seq && \
+GPU=1 RESULTS_OUT=test-results/c2s/java-small/adversarial-all/normal DATASET_NAME=datasets/transformed/preprocessed/tokens/c2s/java-small/transforms.Identity MODELS_IN=../../../mnt/trained-models/seq2seq/c2s/java-small/adversarial-all time make test-model-seq2seq
+GPU=1 RESULTS_OUT=test-results/c2s/java-small/adversarial-one-step/one-step-attacks DATASET_NAME=datasets/adversarial/just-one-step-attacks/tokens/c2s/java-small MODELS_IN=../../../mnt/trained-models/seq2seq/c2s/java-small/adversarial-one-step time make test-model-seq2seq && \
+GPU=1 RESULTS_OUT=test-results/c2s/java-small/adversarial-one-step/all-attacks DATASET_NAME=datasets/adversarial/all-attacks/tokens/c2s/java-small MODELS_IN=../../../mnt/trained-models/seq2seq/c2s/java-small/adversarial-one-step time make test-model-seq2seq
+GPU=1 RESULTS_OUT=test-results/c2s/java-small/adversarial-one-step/normal DATASET_NAME=datasets/transformed/preprocessed/tokens/c2s/java-small/transforms.Identity MODELS_IN=../../../mnt/trained-models/seq2seq/c2s/java-small/adversarial-one-step time make test-model-seq2seq
+
+GPU=0 RESULTS_OUT=test-results/csn/java/adversarial-all/one-step-attacks DATASET_NAME=datasets/adversarial/just-one-step-attacks/tokens/csn/java MODELS_IN=../../../mnt/trained-models/seq2seq/csn/java/adversarial-all time make test-model-seq2seq && \
+GPU=0 RESULTS_OUT=test-results/csn/java/adversarial-all/all-attacks DATASET_NAME=datasets/adversarial/all-attacks/tokens/csn/java MODELS_IN=../../../mnt/trained-models/seq2seq/csn/java/adversarial-all time make test-model-seq2seq && \
+GPU=0 RESULTS_OUT=test-results/csn/java/adversarial-all/normal DATASET_NAME=datasets/transformed/preprocessed/tokens/csn/java/transforms.Identity MODELS_IN=../../../mnt/trained-models/seq2seq/csn/java/adversarial-all time make test-model-seq2seq
+GPU=0 RESULTS_OUT=test-results/csn/java/adversarial-one-step/one-step-attacks DATASET_NAME=datasets/adversarial/just-one-step-attacks/tokens/csn/java MODELS_IN=../../../mnt/trained-models/seq2seq/csn/java/adversarial-one-step time make test-model-seq2seq && \
+GPU=0 RESULTS_OUT=test-results/csn/java/adversarial-one-step/all-attacks DATASET_NAME=datasets/adversarial/all-attacks/tokens/csn/java MODELS_IN=../../../mnt/trained-models/seq2seq/csn/java/adversarial-one-step time make test-model-seq2seq
+GPU=0 RESULTS_OUT=test-results/csn/java/adversarial-one-step/normal DATASET_NAME=datasets/transformed/preprocessed/tokens/csn/java/transforms.Identity MODELS_IN=../../../mnt/trained-models/seq2seq/csn/java/adversarial-one-step time make test-model-seq2seq
+
+GPU=1 RESULTS_OUT=test-results/csn/python/adversarial-all/one-step-attacks DATASET_NAME=datasets/adversarial/just-one-step-attacks/tokens/csn/python MODELS_IN=../../../mnt/trained-models/seq2seq/csn/python/adversarial-all time make test-model-seq2seq && \
+GPU=1 RESULTS_OUT=test-results/csn/python/adversarial-all/all-attacks DATASET_NAME=datasets/adversarial/all-attacks/tokens/csn/python MODELS_IN=../../../mnt/trained-models/seq2seq/csn/python/adversarial-all time make test-model-seq2seq && \
+GPU=1 RESULTS_OUT=test-results/csn/python/adversarial-all/normal DATASET_NAME=datasets/transformed/preprocessed/tokens/csn/python/transforms.Identity MODELS_IN=../../../mnt/trained-models/seq2seq/csn/python/adversarial-all time make test-model-seq2seq
+GPU=1 RESULTS_OUT=test-results/csn/python/adversarial-one-step/one-step-attacks DATASET_NAME=datasets/adversarial/just-one-step-attacks/tokens/csn/python MODELS_IN=../../../mnt/trained-models/seq2seq/csn/python/adversarial-one-step time make test-model-seq2seq && \
+GPU=1 RESULTS_OUT=test-results/csn/python/adversarial-one-step/all-attacks DATASET_NAME=datasets/adversarial/all-attacks/tokens/csn/python MODELS_IN=../../../mnt/trained-models/seq2seq/csn/python/adversarial-one-step time make test-model-seq2seq
+GPU=1 RESULTS_OUT=test-results/csn/python/adversarial-one-step/normal DATASET_NAME=datasets/transformed/preprocessed/tokens/csn/python/transforms.Identity MODELS_IN=../../../mnt/trained-models/seq2seq/csn/python/adversarial-one-step time make test-model-seq2seq
+
+GPU=0 RESULTS_OUT=test-results/sri/py150/adversarial-all/one-step-attacks DATASET_NAME=datasets/adversarial/just-one-step-attacks/tokens/sri/py150 MODELS_IN=../../../mnt/trained-models/seq2seq/sri/py150/adversarial-all time make test-model-seq2seq && \
+GPU=0 RESULTS_OUT=test-results/sri/py150/adversarial-all/all-attacks DATASET_NAME=datasets/adversarial/all-attacks/tokens/sri/py150 MODELS_IN=../../../mnt/trained-models/seq2seq/sri/py150/adversarial-all time make test-model-seq2seq && \
+GPU=0 RESULTS_OUT=test-results/sri/py150/adversarial-all/normal DATASET_NAME=datasets/transformed/preprocessed/tokens/sri/py150/transforms.Identity MODELS_IN=../../../mnt/trained-models/seq2seq/sri/py150/adversarial-all time make test-model-seq2seq
+GPU=0 RESULTS_OUT=test-results/sri/py150/adversarial-one-step/one-step-attacks DATASET_NAME=datasets/adversarial/just-one-step-attacks/tokens/sri/py150 MODELS_IN=../../../mnt/trained-models/seq2seq/sri/py150/adversarial-one-step time make test-model-seq2seq && \
+GPU=0 RESULTS_OUT=test-results/sri/py150/adversarial-one-step/all-attacks DATASET_NAME=datasets/adversarial/all-attacks/tokens/sri/py150 MODELS_IN=../../../mnt/trained-models/seq2seq/sri/py150/adversarial-one-step time make test-model-seq2seq
+GPU=0 RESULTS_OUT=test-results/sri/py150/adversarial-one-step/normal DATASET_NAME=datasets/transformed/preprocessed/tokens/sri/py150/transforms.Identity MODELS_IN=../../../mnt/trained-models/seq2seq/sri/py150/adversarial-one-step time make test-model-seq2seq
+
+---
+
+GPU=0 MODELS_OUT=trained-models/code2seq/c2s/java-small/adversarial-all DATASET_NAME=datasets/adversarial/all-attacks/ast-paths/c2s/java-small ARGS="8" time make train-model-code2seq && \
+GPU=0 MODELS_OUT=trained-models/code2seq/c2s/java-small/adversarial-one-step DATASET_NAME=datasets/adversarial/all-attacks/ast-paths/c2s/java-small ARGS="7" time make train-model-code2seq && \
+GPU=0 MODELS_OUT=trained-models/code2seq/c2s/java-small/normal DATASET_NAME=datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.Identity ARGS="--regular_training" time make train-model-code2seq
+
+GPU=1 MODELS_OUT=trained-models/code2seq/csn/java/adversarial-all DATASET_NAME=datasets/adversarial/all-attacks/ast-paths/csn/java ARGS="8" time make train-model-code2seq && \
+GPU=1 MODELS_OUT=trained-models/code2seq/csn/java/adversarial-one-step DATASET_NAME=datasets/adversarial/all-attacks/ast-paths/csn/java ARGS="7" time make train-model-code2seq && \
+GPU=1 MODELS_OUT=trained-models/code2seq/csn/java/normal DATASET_NAME=datasets/transformed/preprocessed/ast-paths/csn/java/transforms.Identity ARGS="--regular_training" time make train-model-code2seq
+
+GPU=2 MODELS_OUT=trained-models/code2seq/csn/python/adversarial-all DATASET_NAME=datasets/adversarial/all-attacks/ast-paths/csn/python ARGS="8" time make train-model-code2seq && \
+GPU=2 MODELS_OUT=trained-models/code2seq/csn/python/adversarial-one-step DATASET_NAME=datasets/adversarial/all-attacks/ast-paths/csn/python ARGS="7" time make train-model-code2seq && \
+GPU=2 MODELS_OUT=trained-models/code2seq/csn/python/normal DATASET_NAME=datasets/transformed/preprocessed/ast-paths/csn/python/transforms.Identity ARGS="--regular_training" time make train-model-code2seq
+
+GPU=3 MODELS_OUT=trained-models/code2seq/sri/py150/adversarial-all DATASET_NAME=datasets/adversarial/all-attacks/ast-paths/sri/py150 ARGS="8" time make train-model-code2seq && \
+GPU=3 MODELS_OUT=trained-models/code2seq/sri/py150/adversarial-one-step DATASET_NAME=datasets/adversarial/all-attacks/ast-paths/sri/py150 ARGS="7" time make train-model-code2seq && \
+GPU=3 MODELS_OUT=trained-models/code2seq/sri/py150/normal DATASET_NAME=datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.Identity ARGS="--regular_training" time make train-model-code2seq

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -ex
+
+export GPU=0
+
+THE_DS=csn/python
+
+DATASET_NAME=datasets/transformed/preprocessed/tokens/${THE_DS}/transforms.Identity \
+RESULTS_OUT=test-results/${THE_DS}/normal/normal \
+MODELS_IN=trained-models/seq2seq/${THE_DS}/normal \
+time make test-model-seq2seq
+
+DATASET_NAME=datasets/adversarial/all-attacks/tokens/${THE_DS} \
+RESULTS_OUT=test-results/${THE_DS}/normal/adversarial-all \
+MODELS_IN=trained-models/seq2seq/${THE_DS}/normal \
+time make test-model-seq2seq
+
+DATASET_NAME=datasets/adversarial/just-one-step-attacks/tokens/${THE_DS} \
+RESULTS_OUT=test-results/${THE_DS}/normal/adversarial-one-step \
+MODELS_IN=trained-models/seq2seq/${THE_DS}/normal \
+time make test-model-seq2seq
+

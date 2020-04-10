@@ -20,17 +20,17 @@ for MODEL in normal adversarial-one-step adversarial-all; do
     
     F1_NORM=0.0
     if [ -f "${THE_PATH_NORM}" ]; then
-      F1_NORM=$(grep -Po 'f1"?: \d+.\d+' "${THE_PATH_NORM}" | awk '{ print $2 }')
+      F1_NORM=$(grep -Po 'exact_match"?: \d+.\d+' "${THE_PATH_NORM}" | awk '{ print $2 }')
     fi
     
     F1_ONE=0.0
     if [ -f "${THE_PATH_ONE}" ]; then
-      F1_ONE=$(grep -Po 'f1"?: \d+.\d+' "${THE_PATH_ONE}" | awk '{ print $2 }')
+      F1_ONE=$(grep -Po 'exact_match"?: \d+.\d+' "${THE_PATH_ONE}" | awk '{ print $2 }')
     fi
     
     F1_ALL=0.0
     if [ -f "${THE_PATH_ALL}" ]; then
-      F1_ALL=$(grep -Po 'f1"?: \d+.\d+' "${THE_PATH_ALL}" | awk '{ print $2 }')
+      F1_ALL=$(grep -Po 'exact_match"?: \d+.\d+' "${THE_PATH_ALL}" | awk '{ print $2 }')
     fi
 
     FULL_STR+=$(printf %.2f,%.2f,%.2f, ${F1_NORM} ${F1_ONE} ${F1_ALL})

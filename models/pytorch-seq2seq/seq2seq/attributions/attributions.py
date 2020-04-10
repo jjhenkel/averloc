@@ -57,7 +57,7 @@ def get_attention_attributions(src_seq, model, src_vocab, tgt_vocab):
     return output_seq, attention_scores
 
 
-def get_IG_attributions(src_seq, model, src_vocab, tgt_vocab, opt=None, verify_IG=True, return_attn=False, len_thresh=200):
+def get_IG_attributions(src_seq, model, src_vocab, tgt_vocab, opt=None, verify_IG=True, return_attn=False, len_thresh=200, softmax=False):
     '''
     model object returned by load_model
     src_seq is a list of words
@@ -165,7 +165,8 @@ def get_IG_attributions(src_seq, model, src_vocab, tgt_vocab, opt=None, verify_I
         for i in range(output_len):
             model.zero_grad()
 
-            softmax_list[i] = torch.nn.functional.softmax(softmax_list[i], dim=1)
+            if softmax:
+                softmax_list[i] = torch.nn.functional.softmax(softmax_list[i], dim=1)
 
             t = softmax_list[i] # N x V+1
             
