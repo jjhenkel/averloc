@@ -29,7 +29,7 @@ class Reader:
         self.adv_training = adv_training
         if adv_training:
             if is_evaluating:
-                self.file_path = config.TRAIN_DIR+"/data"+str(adv_transf)+".trans.c2s"
+                self.file_path = config.TRAIN_DIR+"/data"+str(adv_transf)+".train.c2s"
             if adv_testing:
                 self.file_path = config.TRAIN_DIR+"/data"+str(adv_transf)+".test.c2s"
         else:
