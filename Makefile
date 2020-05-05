@@ -544,38 +544,162 @@ extract-tokens: build-image-preprocess-dataset-tokens | $(ETOK_DEPS) ## (DS-3) G
 #######################################################################################################################
 #######################################################################################################################
 
-ALL_TRANSFORMS:=Identity
-ALL_TRANSFORMS+="Seq(InsertPrintStatements)"
-ALL_TRANSFORMS+="Seq(InsertPrintStatements,RenameFields)"
-ALL_TRANSFORMS+="Seq(InsertPrintStatements,RenameFields,RenameLocalVariables)"
-ALL_TRANSFORMS+="Seq(InsertPrintStatements,RenameFields,RenameLocalVariables,RenameParameters)"
-ALL_TRANSFORMS+="Seq(InsertPrintStatements,RenameFields,RenameParameters)"
-ALL_TRANSFORMS+="Seq(InsertPrintStatements,RenameLocalVariables)"
-ALL_TRANSFORMS+="Seq(InsertPrintStatements,RenameLocalVariables,RenameParameters)"
-ALL_TRANSFORMS+="Seq(InsertPrintStatements,RenameParameters)"
-ALL_TRANSFORMS+="Seq(RenameFields)"
-ALL_TRANSFORMS+="Seq(RenameFields,RenameLocalVariables)"
-ALL_TRANSFORMS+="Seq(RenameFields,RenameLocalVariables,RenameParameters)"
-ALL_TRANSFORMS+="Seq(RenameFields,RenameParameters)"
-ALL_TRANSFORMS+="Seq(RenameLocalVariables)"
-ALL_TRANSFORMS+="Seq(RenameLocalVariables,RenameParameters)"
-ALL_TRANSFORMS+="Seq(RenameParameters)"
-ALL_TRANSFORMS+="Seq(ReplaceTrueFalse)"
-ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,InsertPrintStatements)"
-ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields)"
-ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameLocalVariables)"
-ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameLocalVariables,RenameParameters)"
-ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameParameters)"
-ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables)"
-ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables,RenameParameters)"
-ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,InsertPrintStatements,RenameParameters)"
-ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,RenameFields)"
-ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables)"
-ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables,RenameParameters)"
-ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,RenameFields,RenameParameters)"
-ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,RenameLocalVariables)"
-ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,RenameLocalVariables,RenameParameters)"
-ALL_TRANSFORMS+="Seq(ReplaceTrueFalse,RenameParameters)"
+ALL_TRANSFORMS:="transforms.Identity"
+ALL_TRANSFORMS+="t-r01-seq00001"
+ALL_TRANSFORMS+="t-r01-seq00010"
+ALL_TRANSFORMS+="t-r01-seq00011"
+ALL_TRANSFORMS+="t-r01-seq00100"
+ALL_TRANSFORMS+="t-r01-seq00101"
+ALL_TRANSFORMS+="t-r01-seq00110"
+ALL_TRANSFORMS+="t-r01-seq00111"
+ALL_TRANSFORMS+="t-r01-seq01000"
+ALL_TRANSFORMS+="t-r01-seq01001"
+ALL_TRANSFORMS+="t-r01-seq01010"
+ALL_TRANSFORMS+="t-r01-seq01011"
+ALL_TRANSFORMS+="t-r01-seq01100"
+ALL_TRANSFORMS+="t-r01-seq01101"
+ALL_TRANSFORMS+="t-r01-seq01110"
+ALL_TRANSFORMS+="t-r01-seq01111"
+ALL_TRANSFORMS+="t-r01-seq10000"
+ALL_TRANSFORMS+="t-r01-seq10001"
+ALL_TRANSFORMS+="t-r01-seq10010"
+ALL_TRANSFORMS+="t-r01-seq10011"
+ALL_TRANSFORMS+="t-r01-seq10100"
+ALL_TRANSFORMS+="t-r01-seq10101"
+ALL_TRANSFORMS+="t-r01-seq10110"
+ALL_TRANSFORMS+="t-r01-seq10111"
+ALL_TRANSFORMS+="t-r01-seq11000"
+ALL_TRANSFORMS+="t-r01-seq11001"
+ALL_TRANSFORMS+="t-r01-seq11010"
+ALL_TRANSFORMS+="t-r01-seq11011"
+ALL_TRANSFORMS+="t-r01-seq11100"
+ALL_TRANSFORMS+="t-r01-seq11101"
+ALL_TRANSFORMS+="t-r01-seq11110"
+ALL_TRANSFORMS+="t-r01-seq11111"
+ALL_TRANSFORMS+="t-r02-seq00001"
+ALL_TRANSFORMS+="t-r02-seq00010"
+ALL_TRANSFORMS+="t-r02-seq00011"
+ALL_TRANSFORMS+="t-r02-seq00100"
+ALL_TRANSFORMS+="t-r02-seq00101"
+ALL_TRANSFORMS+="t-r02-seq00110"
+ALL_TRANSFORMS+="t-r02-seq00111"
+ALL_TRANSFORMS+="t-r02-seq01000"
+ALL_TRANSFORMS+="t-r02-seq01001"
+ALL_TRANSFORMS+="t-r02-seq01010"
+ALL_TRANSFORMS+="t-r02-seq01011"
+ALL_TRANSFORMS+="t-r02-seq01100"
+ALL_TRANSFORMS+="t-r02-seq01101"
+ALL_TRANSFORMS+="t-r02-seq01110"
+ALL_TRANSFORMS+="t-r02-seq01111"
+ALL_TRANSFORMS+="t-r02-seq10000"
+ALL_TRANSFORMS+="t-r02-seq10001"
+ALL_TRANSFORMS+="t-r02-seq10010"
+ALL_TRANSFORMS+="t-r02-seq10011"
+ALL_TRANSFORMS+="t-r02-seq10100"
+ALL_TRANSFORMS+="t-r02-seq10101"
+ALL_TRANSFORMS+="t-r02-seq10110"
+ALL_TRANSFORMS+="t-r02-seq10111"
+ALL_TRANSFORMS+="t-r02-seq11000"
+ALL_TRANSFORMS+="t-r02-seq11001"
+ALL_TRANSFORMS+="t-r02-seq11010"
+ALL_TRANSFORMS+="t-r02-seq11011"
+ALL_TRANSFORMS+="t-r02-seq11100"
+ALL_TRANSFORMS+="t-r02-seq11101"
+ALL_TRANSFORMS+="t-r02-seq11110"
+ALL_TRANSFORMS+="t-r02-seq11111"
+ALL_TRANSFORMS+="t-r03-seq00001"
+ALL_TRANSFORMS+="t-r03-seq00010"
+ALL_TRANSFORMS+="t-r03-seq00011"
+ALL_TRANSFORMS+="t-r03-seq00100"
+ALL_TRANSFORMS+="t-r03-seq00101"
+ALL_TRANSFORMS+="t-r03-seq00110"
+ALL_TRANSFORMS+="t-r03-seq00111"
+ALL_TRANSFORMS+="t-r03-seq01000"
+ALL_TRANSFORMS+="t-r03-seq01001"
+ALL_TRANSFORMS+="t-r03-seq01010"
+ALL_TRANSFORMS+="t-r03-seq01011"
+ALL_TRANSFORMS+="t-r03-seq01100"
+ALL_TRANSFORMS+="t-r03-seq01101"
+ALL_TRANSFORMS+="t-r03-seq01110"
+ALL_TRANSFORMS+="t-r03-seq01111"
+ALL_TRANSFORMS+="t-r03-seq10000"
+ALL_TRANSFORMS+="t-r03-seq10001"
+ALL_TRANSFORMS+="t-r03-seq10010"
+ALL_TRANSFORMS+="t-r03-seq10011"
+ALL_TRANSFORMS+="t-r03-seq10100"
+ALL_TRANSFORMS+="t-r03-seq10101"
+ALL_TRANSFORMS+="t-r03-seq10110"
+ALL_TRANSFORMS+="t-r03-seq10111"
+ALL_TRANSFORMS+="t-r03-seq11000"
+ALL_TRANSFORMS+="t-r03-seq11001"
+ALL_TRANSFORMS+="t-r03-seq11010"
+ALL_TRANSFORMS+="t-r03-seq11011"
+ALL_TRANSFORMS+="t-r03-seq11100"
+ALL_TRANSFORMS+="t-r03-seq11101"
+ALL_TRANSFORMS+="t-r03-seq11110"
+ALL_TRANSFORMS+="t-r03-seq11111"
+ALL_TRANSFORMS+="t-r04-seq00001"
+ALL_TRANSFORMS+="t-r04-seq00010"
+ALL_TRANSFORMS+="t-r04-seq00011"
+ALL_TRANSFORMS+="t-r04-seq00100"
+ALL_TRANSFORMS+="t-r04-seq00101"
+ALL_TRANSFORMS+="t-r04-seq00110"
+ALL_TRANSFORMS+="t-r04-seq00111"
+ALL_TRANSFORMS+="t-r04-seq01000"
+ALL_TRANSFORMS+="t-r04-seq01001"
+ALL_TRANSFORMS+="t-r04-seq01010"
+ALL_TRANSFORMS+="t-r04-seq01011"
+ALL_TRANSFORMS+="t-r04-seq01100"
+ALL_TRANSFORMS+="t-r04-seq01101"
+ALL_TRANSFORMS+="t-r04-seq01110"
+ALL_TRANSFORMS+="t-r04-seq01111"
+ALL_TRANSFORMS+="t-r04-seq10000"
+ALL_TRANSFORMS+="t-r04-seq10001"
+ALL_TRANSFORMS+="t-r04-seq10010"
+ALL_TRANSFORMS+="t-r04-seq10011"
+ALL_TRANSFORMS+="t-r04-seq10100"
+ALL_TRANSFORMS+="t-r04-seq10101"
+ALL_TRANSFORMS+="t-r04-seq10110"
+ALL_TRANSFORMS+="t-r04-seq10111"
+ALL_TRANSFORMS+="t-r04-seq11000"
+ALL_TRANSFORMS+="t-r04-seq11001"
+ALL_TRANSFORMS+="t-r04-seq11010"
+ALL_TRANSFORMS+="t-r04-seq11011"
+ALL_TRANSFORMS+="t-r04-seq11100"
+ALL_TRANSFORMS+="t-r04-seq11101"
+ALL_TRANSFORMS+="t-r04-seq11110"
+ALL_TRANSFORMS+="t-r04-seq11111"
+ALL_TRANSFORMS+="t-r05-seq00001"
+ALL_TRANSFORMS+="t-r05-seq00010"
+ALL_TRANSFORMS+="t-r05-seq00011"
+ALL_TRANSFORMS+="t-r05-seq00100"
+ALL_TRANSFORMS+="t-r05-seq00101"
+ALL_TRANSFORMS+="t-r05-seq00110"
+ALL_TRANSFORMS+="t-r05-seq00111"
+ALL_TRANSFORMS+="t-r05-seq01000"
+ALL_TRANSFORMS+="t-r05-seq01001"
+ALL_TRANSFORMS+="t-r05-seq01010"
+ALL_TRANSFORMS+="t-r05-seq01011"
+ALL_TRANSFORMS+="t-r05-seq01100"
+ALL_TRANSFORMS+="t-r05-seq01101"
+ALL_TRANSFORMS+="t-r05-seq01110"
+ALL_TRANSFORMS+="t-r05-seq01111"
+ALL_TRANSFORMS+="t-r05-seq10000"
+ALL_TRANSFORMS+="t-r05-seq10001"
+ALL_TRANSFORMS+="t-r05-seq10010"
+ALL_TRANSFORMS+="t-r05-seq10011"
+ALL_TRANSFORMS+="t-r05-seq10100"
+ALL_TRANSFORMS+="t-r05-seq10101"
+ALL_TRANSFORMS+="t-r05-seq10110"
+ALL_TRANSFORMS+="t-r05-seq10111"
+ALL_TRANSFORMS+="t-r05-seq11000"
+ALL_TRANSFORMS+="t-r05-seq11001"
+ALL_TRANSFORMS+="t-r05-seq11010"
+ALL_TRANSFORMS+="t-r05-seq11011"
+ALL_TRANSFORMS+="t-r05-seq11100"
+ALL_TRANSFORMS+="t-r05-seq11101"
+ALL_TRANSFORMS+="t-r05-seq11110"
+ALL_TRANSFORMS+="t-r05-seq11111"
 
 datasets/transformed/preprocessed/ast-paths/c2s/java-small: ## <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/c2s/java-small/transforms.Identity' (using 'ast-paths' representation)...")
@@ -584,8 +708,8 @@ datasets/transformed/preprocessed/ast-paths/c2s/java-small: ## <!PRIVATE>
 	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
 			-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
-			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.$${transform}:/mnt/inputs" \
-			-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.$${transform}:/mnt/outputs" \
+			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-small/$${transform}:/mnt/outputs" \
 			"$${IMAGE_NAME}" java
 	done
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
@@ -597,8 +721,8 @@ datasets/transformed/preprocessed/ast-paths/c2s/java-med: ## <!PRIVATE>
 	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
 			-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
-			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-med/transforms.$${transform}:/mnt/inputs" \
-			-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-med/transforms.$${transform}:/mnt/outputs" \
+			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-med/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-med/$${transform}:/mnt/outputs" \
 			"$${IMAGE_NAME}" java
 	done
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
@@ -610,8 +734,8 @@ datasets/transformed/preprocessed/ast-paths/csn/java: ## <!PRIVATE>
 	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
 			-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
-			-v "${ROOT_DIR}/datasets/transformed/normalized/csn/java/transforms.$${transform}:/mnt/inputs" \
-			-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/csn/java/transforms.$${transform}:/mnt/outputs" \
+			-v "${ROOT_DIR}/datasets/transformed/normalized/csn/java/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/csn/java/$${transform}:/mnt/outputs" \
 			"$${IMAGE_NAME}" java
 	done
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
@@ -623,8 +747,8 @@ datasets/transformed/preprocessed/ast-paths/csn/python: ## <!PRIVATE>
 	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
 			-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
-			-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python/transforms.$${transform}:/mnt/inputs" \
-			-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/csn/python/transforms.$${transform}:/mnt/outputs" \
+			-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/csn/python/$${transform}:/mnt/outputs" \
 			"$${IMAGE_NAME}" python
 	done
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
@@ -636,8 +760,8 @@ datasets/transformed/preprocessed/ast-paths/sri/py150: ## <!PRIVATE>
 	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
 			-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
-			-v "${ROOT_DIR}/datasets/transformed/normalized/sri/py150/transforms.$${transform}:/mnt/inputs" \
-			-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/sri/py150/transforms.$${transform}:/mnt/outputs" \
+			-v "${ROOT_DIR}/datasets/transformed/normalized/sri/py150/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/sri/py150/$${transform}:/mnt/outputs" \
 			"$${IMAGE_NAME}" python
 	done
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
@@ -660,8 +784,8 @@ datasets/transformed/preprocessed/tokens/c2s/java-small: ## Generate a preproces
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
 	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
-			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.$${transform}:/mnt/inputs" \
-			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/c2s/java-small/transforms.$${transform}:/mnt/outputs" \
+			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/c2s/java-small/$${transform}:/mnt/outputs" \
 			"$${IMAGE_NAME}"
 	done
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
@@ -672,8 +796,8 @@ datasets/transformed/preprocessed/tokens/c2s/java-med: ## Generate a preprocesse
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
 	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
-			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-med/transforms.$${transform}:/mnt/inputs" \
-			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/c2s/java-med/transforms.$${transform}:/mnt/outputs" \
+			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-med/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/c2s/java-med/$${transform}:/mnt/outputs" \
 			"$${IMAGE_NAME}"
 	done
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
@@ -684,8 +808,8 @@ datasets/transformed/preprocessed/tokens/csn/java: ## Generate a preprocessed (r
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
 	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
-			-v "${ROOT_DIR}/datasets/transformed/normalized/csn/java/transforms.$${transform}:/mnt/inputs" \
-			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/java/transforms.$${transform}:/mnt/outputs" \
+			-v "${ROOT_DIR}/datasets/transformed/normalized/csn/java/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/java/$${transform}:/mnt/outputs" \
 			"$${IMAGE_NAME}"
 	done
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
@@ -696,8 +820,8 @@ datasets/transformed/preprocessed/tokens/csn/python: ## Generate a preprocessed 
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
 	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
-			-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python/transforms.$${transform}:/mnt/inputs" \
-			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/python/transforms.$${transform}:/mnt/outputs" \
+			-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/python/$${transform}:/mnt/outputs" \
 			"$${IMAGE_NAME}"
 	done
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
@@ -708,8 +832,8 @@ datasets/transformed/preprocessed/tokens/sri/py150: ## Generate a preprocessed (
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
 	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
-			-v "${ROOT_DIR}/datasets/transformed/normalized/sri/py150/transforms.$${transform}:/mnt/inputs" \
-			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/sri/py150/transforms.$${transform}:/mnt/outputs" \
+			-v "${ROOT_DIR}/datasets/transformed/normalized/sri/py150/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/sri/py150/$${transform}:/mnt/outputs" \
 			"$${IMAGE_NAME}"
 	done
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
@@ -939,7 +1063,7 @@ extract-adv-dataset-tokens-c2s-java-small: | check-adversarial-mode build-image-
 		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
 		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/c2s/java-small:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/adversarial/$${DIR_PART}/tokens/c2s/java-small:/mnt/outputs" \
-		"$${IMAGE_NAME}" $${TRANSFORMS}
+		"$${IMAGE_NAME}" ${ALL_TRANSFORMS}
 
 .PHONY: extract-adv-dataset-tokens-c2s-java-med
 extract-adv-dataset-tokens-c2s-java-med: | check-adversarial-mode build-image-extract-adv-dataset-tokens
