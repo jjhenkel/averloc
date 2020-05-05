@@ -86,6 +86,7 @@ public class RenameFields extends Renamer<CtField> {
     // Get setup for renaming (use the fieldDecls we crafted earlier)
     setDefs(fieldDecls);
     setSubtokens(topTargetSubtokens);
+    setPrefix("RF");
     
     // Select some percentage of things to rename
     takePercentage(RENAME_PERCENT);

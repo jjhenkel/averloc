@@ -22,6 +22,7 @@ public class ShuffleParameters extends Renamer<CtParameter> {
         // Get setup for renaming
         setDefs(getChildrenOfType(method, CtParameter.class));
         setSubtokens(topTargetSubtokens);
+        setPrefix("SP");
         
         // Select some percentage of things to rename
         takePercentage(RENAME_PERCENT);

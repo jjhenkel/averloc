@@ -19,6 +19,9 @@ import java.lang.Math;
 
 public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
   protected boolean debug = false;
+  protected boolean useReplacementTokens = true;
+
+  protected String prefix = "R";
 
   protected ArrayList<T> theDefs;
   protected ArrayList<T> targetDefs;
@@ -32,6 +35,10 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
     targetDefs = new ArrayList<T>();
     namesOfDefs = new ArrayList<String>();
     namesOfTargetDefs = new ArrayList<String>();
+  }
+
+  protected void setPrefix(String pref) {
+    prefix = pref;
   }
 
   protected void setDefs(ArrayList<T> defs) {
@@ -170,6 +177,14 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
 
         newNames.add(name);
         renames.put(target, name);
+      }
+    }
+
+    if (useReplacementTokens) {
+      int index = 1;
+      for (T key : renames.keySet()) {
+        renames.put(key, "REPLACE_ME_" + prefix + "_" + Integer.toString(index));
+        index += 1; 
       }
     }
 

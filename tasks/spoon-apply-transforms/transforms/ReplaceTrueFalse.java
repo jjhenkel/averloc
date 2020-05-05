@@ -29,11 +29,11 @@ public class ReplaceTrueFalse extends AverlocTransformer {
 
     for (CtLiteral literal : literals) {
       if (literal.getValue() != null && literal.getValue() instanceof Boolean) {
-        int randomLiteral = rand.nextBoolean() ? 0 : 1;
+        // int randomLiteral = rand.nextBoolean() ? 0 : 1;
 
         CtBinaryOperator<Boolean> replacement = getFactory().Code().createBinaryOperator(
-          getFactory().Code().createLiteral(randomLiteral), 
-          getFactory().Code().createLiteral(randomLiteral), 
+          getFactory().Code().createLiteral("REPLACE_ME_RTF_1"), 
+          getFactory().Code().createLiteral("REPLACE_ME_RTF_1"), 
           ((Boolean)literal.getValue()) ? BinaryOperatorKind.EQ : BinaryOperatorKind.NE
         );
 

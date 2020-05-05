@@ -26,6 +26,7 @@ public class RenameLocalVariables extends Renamer<CtLocalVariable> {
         // Get setup for renaming
         setDefs(getChildrenOfType(method, CtLocalVariable.class));
         setSubtokens(topTargetSubtokens);
+        setPrefix("RLV");
         
         // Select some percentage of things to rename
         takePercentage(RENAME_PERCENT);
