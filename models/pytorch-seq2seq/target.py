@@ -17,15 +17,6 @@ from seq2seq.loss import Perplexity
 from seq2seq.util.checkpoint import Checkpoint
 
 
-def print_tensors():
-  for obj in gc.get_objects():
-    try:
-      if torch.is_tensor(obj) or (hasattr(obj, 'data') and torch.is_tensor(obj.data)):
-        print("  - GC: {} (size: {})".format(type(obj), obj.size()), file=sys.stderr)
-    except:
-      pass
-
-
 def parse_args():
   parser = argparse.ArgumentParser()
 
@@ -158,9 +149,9 @@ def find_best_replacement(batch_size, batch, model, attacks, src_vocab, tgt_voca
           best = the_loss
 
         del new_input
-
+        torch.cuda.empty_cache()
+        
         assignments = generate_assignments(batch_size, safe_keys)
-        print_tensors()
 
 
       best_replacement = []
