@@ -42,7 +42,7 @@ public class AddDeadCode extends AverlocTransformer {
       // );
 
       CtCodeSnippetStatement snippet = getFactory().Core().createCodeSnippetStatement();
-      snippet.setValue(String.format("if (false) { int REPLAC_ME_ADC_%s = 1; }", Integer.toString(i+1)));
+      snippet.setValue(String.format("if (false) { int REPLACE_ME_ADC_%s = 1; }", Integer.toString(i+1)));
 
       // Insert randomly begin/end
       if (rand.nextBoolean()) {

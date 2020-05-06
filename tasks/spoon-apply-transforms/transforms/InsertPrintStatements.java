@@ -43,7 +43,7 @@ public class InsertPrintStatements extends AverlocTransformer {
       // );
 
       CtCodeSnippetStatement snippet = getFactory().Core().createCodeSnippetStatement();
-      snippet.setValue(String.format("System.out.println(\"REPLAC_ME_IPS_%s\")", Integer.toString(i+1)));
+      snippet.setValue(String.format("System.out.println(\"REPLACE_ME_IPS_%s\")", Integer.toString(i+1)));
 
       // Insert randomly begin/end
       if (rand.nextBoolean()) {
