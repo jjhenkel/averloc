@@ -1035,10 +1035,11 @@ apply-transforms-sri-py150: build-image-astor-apply-transforms ## (DS-4) Apply o
 #######################################################################################################################
 
 .PHONY: apply-targeting-seq2seq-c2s-java-small
-apply-targeting-seq2seq-c2s-java-small: check-models-in build-image-apply-targeting-seq2seq ## (TARG-1) Apply semi-targeting to c2s/java-small (tokens) dataset
+apply-targeting-seq2seq-c2s-java-small: check-gpu check-models-in build-image-apply-targeting-seq2seq ## (TARG-1) Apply semi-targeting to c2s/java-small (tokens) dataset
 	@IMAGE_NAME="$(shell whoami)/averloc--apply-targeting-seq2seq:$(shell git rev-parse HEAD)"
 	@$(call echo_debug,"Applying semi-targeting to targeted/c2s/java-small...")
 	docker run -it --rm \
+		--gpus="${GPU}" \
 		-v "${ROOT_DIR}/tasks/apply-targeting-seq2seq:/app" \
 		-v "${ROOT_DIR}/models/pytorch-seq2seq:/model" \
 		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
