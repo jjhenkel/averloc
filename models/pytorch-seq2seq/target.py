@@ -44,6 +44,13 @@ def parse_args():
     dest='output_dir',
     default=None
   )
+  parser.add_argument(
+    '--batch_size',
+    action='store',
+    dest='batch_size',
+    default=128,
+    type=int
+  )
 
   return parser.parse_args()
 
@@ -86,70 +93,88 @@ def load_data(data_path):
   return dev, fields, src, tgt
 
 
-def find_best_replacement(batch, model, attacks, src_vocab, tgt_vocab, safe_replacements):
+def generate_assignments(batch_size, safe_keys):
+  assignments = []
+  for i in range(batch_size):
+    assignment = {}
+    assignment[-1] = random.choice(safe_keys)
+    assignment[-2] = random.choice(safe_keys)
+    assignment[-3] = random.choice(safe_keys)
+    assignment[-4] = random.choice(safe_keys)
+    assignment[-5] = random.choice(safe_keys)
+    assignments.append(assignment)
+  return assignments
+
+
+def apply_replacements_to_batch(batch, batch_size, replacements):
+  copy = batch.clone()
+  for i in range(batch_size):
+    copy[i][copy[i] == -1] = replacements[i][-1]
+    copy[i][copy[i] == -2] = replacements[i][-2]
+    copy[i][copy[i] == -3] = replacements[i][-3]
+    copy[i][copy[i] == -4] = replacements[i][-4]
+    copy[i][copy[i] == -5] = replacements[i][-5]
+  return copy
+
+
+def find_best_replacement(batch_size, batch, model, attacks, src_vocab, tgt_vocab, safe_replacements):
   safe_keys = list(safe_replacements.keys())
   with torch.no_grad():
-    best_replacements = []
+    best_replacements = {}
+
     for attack in attacks:
       input_variables, input_lengths  = getattr(batch, attack)
       target_variables = getattr(batch, seq2seq.tgt_field_name)
 
-      assignments = {}
-      assignments[-1] = random.choice(safe_keys)
-      assignments[-2] = random.choice(safe_keys)
-      assignments[-3] = random.choice(safe_keys)
-      assignments[-4] = random.choice(safe_keys)
-      assignments[-5] = random.choice(safe_keys)
+      assignments = generate_assignments(batch_size, safe_keys)
       
       worst = 0.0
       best = 100000.0
-      replacements = {}
+      best_assignments = {}
       for attempt in range(10):
-        new_input = input_variables.clone()
-        new_input[input_variables == -1] = assignments[-1]
-        new_input[input_variables == -2] = assignments[-2]
-        new_input[input_variables == -3] = assignments[-3]
-        new_input[input_variables == -4] = assignments[-4]
-        new_input[input_variables == -5] = assignments[-5]
+        new_input = apply_replacements_to_batch(input_variables, batch_size, assignments)
 
         decoder_outputs, decoder_hidden, other = model(new_input, input_lengths.tolist(), target_variables)
 
         loss.reset()
         for step, step_output in enumerate(decoder_outputs):
-          batch_size = target_variables.size(0)
           loss.eval_batch(step_output.contiguous().view(batch_size, -1), target_variables[:, step + 1])
 
         the_loss = loss.get_loss()
         if the_loss > worst:
           worst = the_loss
-          replacements = assignments.copy()
+          best_assignments = assignments.copy()
         if the_loss < best:
           best = the_loss
 
-        assignments[-1] = random.choice(safe_keys)
-        assignments[-2] = random.choice(safe_keys)
-        assignments[-3] = random.choice(safe_keys)
-        assignments[-4] = random.choice(safe_keys)
-        assignments[-5] = random.choice(safe_keys)
+        assignments = generate_assignments(batch_size, safe_keys)
 
-      best_replacements.append(' '.join([
-        src_vocab.itos[replacements[-1]],
-        src_vocab.itos[replacements[-2]],
-        src_vocab.itos[replacements[-3]],
-        src_vocab.itos[replacements[-4]],
-        src_vocab.itos[replacements[-5]]
-      ]))
+
+      best_replacement = []
+      for i, replacement in enumerate(best_assignments):
+        best_replacement.append(' '.join([
+          src_vocab.itos[replacement[-1]],
+          src_vocab.itos[replacement[-2]],
+          src_vocab.itos[replacement[-3]],
+          src_vocab.itos[replacement[-4]],
+          src_vocab.itos[replacement[-5]]
+        ]))
+      best_replacements[attack] = best_replacement
     
-    print('\t'.join(best_replacements))
+    for i in range(batch_size):
+      reordered = []
+      for attack in attacks:
+        reordered.append(best_replacements[attack][i])
+      print('\t'.join(reordered))
 
 
-def find_best_replacements(model, data, attacks, src_vocab, tgt_vocab, safe_replacements):
+def find_best_replacements(batch_size, model, data, attacks, src_vocab, tgt_vocab, safe_replacements):
   device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
   
   # Currently doing this one datapoint at a time
   batch_iterator = torchtext.data.BucketIterator(
     dataset=data,
-    batch_size=1,
+    batch_size=batch_size,
     sort=False,
     sort_within_batch=True,
     sort_key=lambda x: len(x.src),
@@ -157,8 +182,8 @@ def find_best_replacements(model, data, attacks, src_vocab, tgt_vocab, safe_repl
     repeat=False
   )
 
-  for batch in tqdm.tqdm(batch_iterator.__iter__(), file=sys.stderr, total=len(data)):
-    find_best_replacement(batch, model, attacks, src_vocab, tgt_vocab, safe_replacements)
+  for batch in tqdm.tqdm(batch_iterator.__iter__(), file=sys.stderr, total=len(data) / batch_size):
+    find_best_replacement(batch_size, batch, model, attacks, src_vocab, tgt_vocab, safe_replacements)
 
 
 if __name__=="__main__":
@@ -197,6 +222,7 @@ if __name__=="__main__":
     loss.cuda()
 
   find_best_replacements(
+    opt.batch_size,
     model,
     data, attacks,
     input_vocab,
