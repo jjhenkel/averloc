@@ -237,6 +237,11 @@ submodules: ## (MISC) Ensures that submodules are setup.
 #######################################################################################################################
 #######################################################################################################################
 
+.PHONY: build-image-apply-targeting-seq2seq
+build-image-apply-targeting-seq2seq: submodules ## Build tasks/apply-targeting-seq2seq <!PRIVATE>
+	@"${ROOT_DIR}/scripts/build-model-image.sh" \
+		apply-targeting-seq2seq
+
 .PHONY: build-image-astor-apply-transforms
 build-image-astor-apply-transforms: submodules ## Builds our baseline generator docker image  <!PRIVATE>
 	@"${ROOT_DIR}/scripts/build-image.sh" \
@@ -251,7 +256,6 @@ build-image-download-c2s-dataset: submodules ## Builds tasks/download-c2s-datase
 build-image-download-csn-dataset: submodules ## Builds tasks/download-csn-dataset <!PRIVATE>
 	@"${ROOT_DIR}/scripts/build-image.sh" \
 		download-csn-dataset
-
 
 .PHONY: build-image-extract-adv-dataset-c2s
 build-image-extract-adv-dataset-c2s: submodules ## Builds our adversarial dataset extractor (representation: ast-paths). <!PRIVATE>
@@ -545,161 +549,15 @@ extract-tokens: build-image-preprocess-dataset-tokens | $(ETOK_DEPS) ## (DS-3) G
 #######################################################################################################################
 
 ALL_TRANSFORMS:="transforms.Identity"
-ALL_TRANSFORMS+="t-r01-seq00001"
-ALL_TRANSFORMS+="t-r01-seq00010"
-ALL_TRANSFORMS+="t-r01-seq00011"
-ALL_TRANSFORMS+="t-r01-seq00100"
-ALL_TRANSFORMS+="t-r01-seq00101"
-ALL_TRANSFORMS+="t-r01-seq00110"
-ALL_TRANSFORMS+="t-r01-seq00111"
-ALL_TRANSFORMS+="t-r01-seq01000"
-ALL_TRANSFORMS+="t-r01-seq01001"
-ALL_TRANSFORMS+="t-r01-seq01010"
-ALL_TRANSFORMS+="t-r01-seq01011"
-ALL_TRANSFORMS+="t-r01-seq01100"
-ALL_TRANSFORMS+="t-r01-seq01101"
-ALL_TRANSFORMS+="t-r01-seq01110"
-ALL_TRANSFORMS+="t-r01-seq01111"
-ALL_TRANSFORMS+="t-r01-seq10000"
-ALL_TRANSFORMS+="t-r01-seq10001"
-ALL_TRANSFORMS+="t-r01-seq10010"
-ALL_TRANSFORMS+="t-r01-seq10011"
-ALL_TRANSFORMS+="t-r01-seq10100"
-ALL_TRANSFORMS+="t-r01-seq10101"
-ALL_TRANSFORMS+="t-r01-seq10110"
-ALL_TRANSFORMS+="t-r01-seq10111"
-ALL_TRANSFORMS+="t-r01-seq11000"
-ALL_TRANSFORMS+="t-r01-seq11001"
-ALL_TRANSFORMS+="t-r01-seq11010"
-ALL_TRANSFORMS+="t-r01-seq11011"
-ALL_TRANSFORMS+="t-r01-seq11100"
-ALL_TRANSFORMS+="t-r01-seq11101"
-ALL_TRANSFORMS+="t-r01-seq11110"
-ALL_TRANSFORMS+="t-r01-seq11111"
-ALL_TRANSFORMS+="t-r02-seq00001"
-ALL_TRANSFORMS+="t-r02-seq00010"
-ALL_TRANSFORMS+="t-r02-seq00011"
-ALL_TRANSFORMS+="t-r02-seq00100"
-ALL_TRANSFORMS+="t-r02-seq00101"
-ALL_TRANSFORMS+="t-r02-seq00110"
-ALL_TRANSFORMS+="t-r02-seq00111"
-ALL_TRANSFORMS+="t-r02-seq01000"
-ALL_TRANSFORMS+="t-r02-seq01001"
-ALL_TRANSFORMS+="t-r02-seq01010"
-ALL_TRANSFORMS+="t-r02-seq01011"
-ALL_TRANSFORMS+="t-r02-seq01100"
-ALL_TRANSFORMS+="t-r02-seq01101"
-ALL_TRANSFORMS+="t-r02-seq01110"
-ALL_TRANSFORMS+="t-r02-seq01111"
-ALL_TRANSFORMS+="t-r02-seq10000"
-ALL_TRANSFORMS+="t-r02-seq10001"
-ALL_TRANSFORMS+="t-r02-seq10010"
-ALL_TRANSFORMS+="t-r02-seq10011"
-ALL_TRANSFORMS+="t-r02-seq10100"
-ALL_TRANSFORMS+="t-r02-seq10101"
-ALL_TRANSFORMS+="t-r02-seq10110"
-ALL_TRANSFORMS+="t-r02-seq10111"
-ALL_TRANSFORMS+="t-r02-seq11000"
-ALL_TRANSFORMS+="t-r02-seq11001"
-ALL_TRANSFORMS+="t-r02-seq11010"
-ALL_TRANSFORMS+="t-r02-seq11011"
-ALL_TRANSFORMS+="t-r02-seq11100"
-ALL_TRANSFORMS+="t-r02-seq11101"
-ALL_TRANSFORMS+="t-r02-seq11110"
-ALL_TRANSFORMS+="t-r02-seq11111"
-ALL_TRANSFORMS+="t-r03-seq00001"
-ALL_TRANSFORMS+="t-r03-seq00010"
-ALL_TRANSFORMS+="t-r03-seq00011"
-ALL_TRANSFORMS+="t-r03-seq00100"
-ALL_TRANSFORMS+="t-r03-seq00101"
-ALL_TRANSFORMS+="t-r03-seq00110"
-ALL_TRANSFORMS+="t-r03-seq00111"
-ALL_TRANSFORMS+="t-r03-seq01000"
-ALL_TRANSFORMS+="t-r03-seq01001"
-ALL_TRANSFORMS+="t-r03-seq01010"
-ALL_TRANSFORMS+="t-r03-seq01011"
-ALL_TRANSFORMS+="t-r03-seq01100"
-ALL_TRANSFORMS+="t-r03-seq01101"
-ALL_TRANSFORMS+="t-r03-seq01110"
-ALL_TRANSFORMS+="t-r03-seq01111"
-ALL_TRANSFORMS+="t-r03-seq10000"
-ALL_TRANSFORMS+="t-r03-seq10001"
-ALL_TRANSFORMS+="t-r03-seq10010"
-ALL_TRANSFORMS+="t-r03-seq10011"
-ALL_TRANSFORMS+="t-r03-seq10100"
-ALL_TRANSFORMS+="t-r03-seq10101"
-ALL_TRANSFORMS+="t-r03-seq10110"
-ALL_TRANSFORMS+="t-r03-seq10111"
-ALL_TRANSFORMS+="t-r03-seq11000"
-ALL_TRANSFORMS+="t-r03-seq11001"
-ALL_TRANSFORMS+="t-r03-seq11010"
-ALL_TRANSFORMS+="t-r03-seq11011"
-ALL_TRANSFORMS+="t-r03-seq11100"
-ALL_TRANSFORMS+="t-r03-seq11101"
-ALL_TRANSFORMS+="t-r03-seq11110"
-ALL_TRANSFORMS+="t-r03-seq11111"
-ALL_TRANSFORMS+="t-r04-seq00001"
-ALL_TRANSFORMS+="t-r04-seq00010"
-ALL_TRANSFORMS+="t-r04-seq00011"
-ALL_TRANSFORMS+="t-r04-seq00100"
-ALL_TRANSFORMS+="t-r04-seq00101"
-ALL_TRANSFORMS+="t-r04-seq00110"
-ALL_TRANSFORMS+="t-r04-seq00111"
-ALL_TRANSFORMS+="t-r04-seq01000"
-ALL_TRANSFORMS+="t-r04-seq01001"
-ALL_TRANSFORMS+="t-r04-seq01010"
-ALL_TRANSFORMS+="t-r04-seq01011"
-ALL_TRANSFORMS+="t-r04-seq01100"
-ALL_TRANSFORMS+="t-r04-seq01101"
-ALL_TRANSFORMS+="t-r04-seq01110"
-ALL_TRANSFORMS+="t-r04-seq01111"
-ALL_TRANSFORMS+="t-r04-seq10000"
-ALL_TRANSFORMS+="t-r04-seq10001"
-ALL_TRANSFORMS+="t-r04-seq10010"
-ALL_TRANSFORMS+="t-r04-seq10011"
-ALL_TRANSFORMS+="t-r04-seq10100"
-ALL_TRANSFORMS+="t-r04-seq10101"
-ALL_TRANSFORMS+="t-r04-seq10110"
-ALL_TRANSFORMS+="t-r04-seq10111"
-ALL_TRANSFORMS+="t-r04-seq11000"
-ALL_TRANSFORMS+="t-r04-seq11001"
-ALL_TRANSFORMS+="t-r04-seq11010"
-ALL_TRANSFORMS+="t-r04-seq11011"
-ALL_TRANSFORMS+="t-r04-seq11100"
-ALL_TRANSFORMS+="t-r04-seq11101"
-ALL_TRANSFORMS+="t-r04-seq11110"
-ALL_TRANSFORMS+="t-r04-seq11111"
-ALL_TRANSFORMS+="t-r05-seq00001"
-ALL_TRANSFORMS+="t-r05-seq00010"
-ALL_TRANSFORMS+="t-r05-seq00011"
-ALL_TRANSFORMS+="t-r05-seq00100"
-ALL_TRANSFORMS+="t-r05-seq00101"
-ALL_TRANSFORMS+="t-r05-seq00110"
-ALL_TRANSFORMS+="t-r05-seq00111"
-ALL_TRANSFORMS+="t-r05-seq01000"
-ALL_TRANSFORMS+="t-r05-seq01001"
-ALL_TRANSFORMS+="t-r05-seq01010"
-ALL_TRANSFORMS+="t-r05-seq01011"
-ALL_TRANSFORMS+="t-r05-seq01100"
-ALL_TRANSFORMS+="t-r05-seq01101"
-ALL_TRANSFORMS+="t-r05-seq01110"
-ALL_TRANSFORMS+="t-r05-seq01111"
-ALL_TRANSFORMS+="t-r05-seq10000"
-ALL_TRANSFORMS+="t-r05-seq10001"
-ALL_TRANSFORMS+="t-r05-seq10010"
-ALL_TRANSFORMS+="t-r05-seq10011"
-ALL_TRANSFORMS+="t-r05-seq10100"
-ALL_TRANSFORMS+="t-r05-seq10101"
-ALL_TRANSFORMS+="t-r05-seq10110"
-ALL_TRANSFORMS+="t-r05-seq10111"
-ALL_TRANSFORMS+="t-r05-seq11000"
-ALL_TRANSFORMS+="t-r05-seq11001"
-ALL_TRANSFORMS+="t-r05-seq11010"
-ALL_TRANSFORMS+="t-r05-seq11011"
-ALL_TRANSFORMS+="t-r05-seq11100"
-ALL_TRANSFORMS+="t-r05-seq11101"
-ALL_TRANSFORMS+="t-r05-seq11110"
-ALL_TRANSFORMS+="t-r05-seq11111"
+ALL_TRANSFORMS+="transforms.AddDeadCode"
+ALL_TRANSFORMS+="transforms.All"
+ALL_TRANSFORMS+="transforms.InsertPrintStatements"
+ALL_TRANSFORMS+="transforms.RenameFields"
+ALL_TRANSFORMS+="transforms.RenameLocalVariables"
+ALL_TRANSFORMS+="transforms.RenameParameters"
+ALL_TRANSFORMS+="transforms.ReplaceTrueFalse"
+ALL_TRANSFORMS+="transforms.UnrollWhiles"
+ALL_TRANSFORMS+="transforms.WrapTryCatch"
 
 datasets/transformed/preprocessed/ast-paths/c2s/java-small: ## <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/c2s/java-small/transforms.Identity' (using 'ast-paths' representation)...")
@@ -1056,13 +914,12 @@ extract-adv-dataset-ast-paths-sri-py150: | check-adversarial-mode build-image-ex
 #######################################################################################################################
 
 .PHONY: extract-adv-dataset-tokens-c2s-java-small 
-extract-adv-dataset-tokens-c2s-java-small: | check-adversarial-mode build-image-extract-adv-dataset-tokens
-	@$(call adversarial_mode_setup)
+extract-adv-dataset-tokens-c2s-java-small: | build-image-extract-adv-dataset-tokens
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-tokens:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
 		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/c2s/java-small:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/adversarial/$${DIR_PART}/tokens/c2s/java-small:/mnt/outputs" \
+		-v "${ROOT_DIR}/datasets/adversarial/targeting/tokens/c2s/java-small:/mnt/outputs" \
 		"$${IMAGE_NAME}" ${ALL_TRANSFORMS}
 
 .PHONY: extract-adv-dataset-tokens-c2s-java-med
@@ -1173,6 +1030,22 @@ apply-transforms-sri-py150: build-image-astor-apply-transforms ## (DS-4) Apply o
 		-v "${ROOT_DIR}/tasks/astor-apply-transforms:/app" \
 		-v "${ROOT_DIR}/datasets/transformed/normalized/sri/py150:/mnt/outputs" \
 		"$${IMAGE_NAME}"
+
+#######################################################################################################################
+#######################################################################################################################
+
+.PHONY: apply-targeting-seq2seq-c2s-java-small
+apply-targeting-seq2seq-c2s-java-small: check-models-in build-image-apply-targeting-seq2seq ## (TARG-1) Apply semi-targeting to c2s/java-small (tokens) dataset
+	@IMAGE_NAME="$(shell whoami)/averloc--apply-targeting-seq2seq:$(shell git rev-parse HEAD)"
+	@$(call echo_debug,"Applying semi-targeting to targeted/c2s/java-small...")
+	docker run -it --rm \
+		-v "${ROOT_DIR}/tasks/apply-targeting-seq2seq:/app" \
+		-v "${ROOT_DIR}/models/pytorch-seq2seq:/model" \
+		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
+		-v "${ROOT_DIR}/datasets/adversarial/targeting/tokens/c2s/java-small:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/adversarial/targeted/tokens/c2s/java-small:/mnt/outputs" \
+		"$${IMAGE_NAME}"
+
 
 #######################################################################################################################
 #######################################################################################################################
