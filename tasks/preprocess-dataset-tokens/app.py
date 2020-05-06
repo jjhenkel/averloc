@@ -70,7 +70,7 @@ if __name__ == "__main__":
   has_baselines = False
 
   tasks = []
-  for split in ["test"]:
+  for split in ["test","train","valid"]:
     if not os.path.isfile('/mnt/inputs/{}.jsonl.gz'.format(split)):
       continue
     if split == 'baseline':
@@ -84,7 +84,9 @@ if __name__ == "__main__":
   print("  + Inputs loaded")
 
   out_map = {
-    'test': open('/mnt/outputs/test.tsv', 'w')
+    'test': open('/mnt/outputs/test.tsv', 'w'),
+    'train': open('/mnt/outputs/train.tsv', 'w'),
+    'valid': open('/mnt/outputs/valid.tsv', 'w')
   }
 
   if has_baselines:
@@ -95,6 +97,8 @@ if __name__ == "__main__":
   print("  + Output files opened")
 
   out_map['test'].write('from_file\tsrc\ttgt\n')
+  out_map['train'].write('from_file\tsrc\ttgt\n')
+  out_map['valid'].write('from_file\tsrc\ttgt\n')
 
   print("  - Processing in parallel...")
   iterator =  tqdm.tqdm(
