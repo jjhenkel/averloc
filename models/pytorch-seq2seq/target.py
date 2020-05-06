@@ -8,12 +8,22 @@ import sys
 import torch
 import torchtext
 import tqdm
+import gc
 
 from seq2seq.dataset import SourceField, TargetField
 from seq2seq.evaluator import Evaluator
 from seq2seq.evaluator.metrics import calculate_metrics
 from seq2seq.loss import Perplexity
 from seq2seq.util.checkpoint import Checkpoint
+
+
+def print_tensors():
+  for obj in gc.get_objects():
+    try:
+      if torch.is_tensor(obj) or (hasattr(obj, 'data') and torch.is_tensor(obj.data)):
+        print("  - GC: {} (size: {})".format(type(obj), obj.size()), file=sys.stderr)
+    except:
+      pass
 
 
 def parse_args():
@@ -147,7 +157,10 @@ def find_best_replacement(batch_size, batch, model, attacks, src_vocab, tgt_voca
         if the_loss < best:
           best = the_loss
 
+        del new_input
+
         assignments = generate_assignments(batch_size, safe_keys)
+        print_tensors()
 
 
       best_replacement = []
@@ -166,6 +179,8 @@ def find_best_replacement(batch_size, batch, model, attacks, src_vocab, tgt_voca
       for attack in attacks:
         reordered.append(best_replacements[attack][i])
       print('\t'.join(reordered))
+
+    del batch
 
 
 def find_best_replacements(batch_size, model, data, attacks, src_vocab, tgt_vocab, safe_replacements):
