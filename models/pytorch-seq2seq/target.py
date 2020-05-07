@@ -108,14 +108,18 @@ def generate_assignments(batch_size, safe_keys):
 
 
 def apply_replacements_to_batch(batch, batch_size, replacements):
-  copy = batch.clone()
-  for i in range(batch_size):
-    copy[i][copy[i] == -1] = replacements[i][-1]
-    copy[i][copy[i] == -2] = replacements[i][-2]
-    copy[i][copy[i] == -3] = replacements[i][-3]
-    copy[i][copy[i] == -4] = replacements[i][-4]
-    copy[i][copy[i] == -5] = replacements[i][-5]
-  return copy
+  try:
+    copy = batch.clone()
+    for i in range(batch_size):
+      copy[i][copy[i] == -1] = replacements[i][-1]
+      copy[i][copy[i] == -2] = replacements[i][-2]
+      copy[i][copy[i] == -3] = replacements[i][-3]
+      copy[i][copy[i] == -4] = replacements[i][-4]
+      copy[i][copy[i] == -5] = replacements[i][-5]
+  except Exception:
+    return apply_replacements_to_batch(batch, batch_size, generate_assignments(batch_size, safe_keys))
+  
+  return copy, replacements
 
 
 def find_best_replacement(batch_size, batch, model, attacks, src_vocab, tgt_vocab, safe_replacements):
@@ -133,7 +137,7 @@ def find_best_replacement(batch_size, batch, model, attacks, src_vocab, tgt_voca
       best = 100000.0
       best_assignments = {}
       for attempt in range(10):
-        new_input = apply_replacements_to_batch(input_variables, batch_size, assignments)
+        new_input, assignments = apply_replacements_to_batch(input_variables, batch_size, assignments, safe_keys)
 
         decoder_outputs, decoder_hidden, other = model(new_input, input_lengths.tolist(), target_variables)
 
@@ -150,7 +154,7 @@ def find_best_replacement(batch_size, batch, model, attacks, src_vocab, tgt_voca
 
         del new_input
         torch.cuda.empty_cache()
-        
+
         assignments = generate_assignments(batch_size, safe_keys)
 
 
@@ -188,7 +192,7 @@ def find_best_replacements(batch_size, model, data, attacks, src_vocab, tgt_voca
     repeat=False
   )
 
-  for batch in tqdm.tqdm(batch_iterator.__iter__(), file=sys.stderr, total=len(data) / batch_size):
+  for batch in tqdm.tqdm(batch_iterator.__iter__(), file=sys.stderr, total=len(data) // batch_size):
     find_best_replacement(batch_size, batch, model, attacks, src_vocab, tgt_vocab, safe_replacements)
 
 
