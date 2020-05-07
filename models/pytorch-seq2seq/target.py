@@ -107,7 +107,7 @@ def generate_assignments(batch_size, safe_keys):
   return assignments
 
 
-def apply_replacements_to_batch(batch, batch_size, replacements):
+def apply_replacements_to_batch(batch, batch_size, replacements, safe_keys):
   try:
     copy = batch.clone()
     for i in range(batch_size):
