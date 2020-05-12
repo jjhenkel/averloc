@@ -247,6 +247,16 @@ build-image-astor-apply-transforms: submodules ## Builds our baseline generator 
 	@"${ROOT_DIR}/scripts/build-image.sh" \
 		astor-apply-transforms
 
+.PHONY: build-image-augment-dataset-tokens
+build-image-augment-dataset-tokens: submodules ## Builds our dataset-augmentation processor (for tokens) <!PRIVATE>
+	@"${ROOT_DIR}/scripts/build-image.sh" \
+		augment-dataset-tokens
+
+.PHONY: build-image-depth-k-test-seq2seq
+build-image-depth-k-test-seq2seq: submodules ## Build tasks/depth-k-test-seq2seq <!PRIVATE>
+	@"${ROOT_DIR}/scripts/build-model-image.sh" \
+		depth-k-test-seq2seq
+
 .PHONY: build-image-download-c2s-dataset
 build-image-download-c2s-dataset: submodules ## Builds tasks/download-c2s-dataset <!PRIVATE>
 	@"${ROOT_DIR}/scripts/build-image.sh" \
@@ -458,7 +468,7 @@ datasets/preprocessed/ast-paths/csn/python: ## Generate a preprocessed (represen
 	@$(call echo_debug,"Finalizing dataset 'preprocessed/ast-paths/csn/python' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
-	docker run -it --rm \
+	docker run -it  \
 		-v "${ROOT_DIR}/datasets/normalized/csn/python:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/preprocessed/ast-paths/csn/python:/mnt/outputs" \
 		"$${IMAGE_NAME}" python
@@ -808,6 +818,16 @@ ifndef GPU
 	$(error GPU is a required parameter for this target.)
 endif
 
+.PHONY: depth-k-test-seq2seq
+depth-k-test-seq2seq: check-dataset-name check-gpu check-models-in build-image-depth-k-test-seq2seq
+	@IMAGE_NAME="$(shell whoami)/averloc--depth-k-test-seq2seq:$(shell git rev-parse HEAD)"
+	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		--gpus "device=$${GPU}" \
+		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
+		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs" \
+		-v "${ROOT_DIR}/$${RESULTS_OUT}:/mnt/outputs" \
+		"$${IMAGE_NAME}" $${ARGS}
+
 .PHONY: test-model-code2seq
 test-model-code2seq: check-dataset-name check-results-out check-gpu check-models-in build-image-test-model-code2seq ## (TEST) Tests the code2seq model on a selected dataset.
 	@IMAGE_NAME="$(shell whoami)/averloc--test-model-code2seq:$(shell git rev-parse HEAD)"
@@ -1059,3 +1079,16 @@ do-integrated-gradients-seq2seq: check-dataset-name check-results-out check-gpu 
 		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs.tsv" \
 		-v "${ROOT_DIR}/$${RESULTS_OUT}:/mnt/outputs" \
 		"$${IMAGE_NAME}" $${ARGS}
+
+
+#######################################################################################################################
+#######################################################################################################################
+
+.PHONY: aug-dataset-tokens-c2s-java-small
+aug-dataset-tokens-c2s-java-small: build-image-augment-dataset-tokens ## (AUG) Do dataset augmentation for c2s/java-small
+	@IMAGE_NAME="$(shell whoami)/averloc--augment-dataset-tokens:$(shell git rev-parse HEAD)"
+	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
+		-v "${ROOT_DIR}/datasets/adversarial/all-attacks/tokens/c2s/java-small:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/augmented/all-attacks/tokens/c2s/java-small:/mnt/outputs" \
+		"$${IMAGE_NAME}"

@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="Quick visualization for IG and Attention Attributions.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <title>IG and Attention Attributions</title>
+
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.teal-red.min.css">
+  <style>
+    #view-source {
+      position: fixed;
+      display: block;
+      right: 0;
+      bottom: 0;
+      margin-right: 40px;
+      margin-bottom: 40px;
+      z-index: 900;
+    }
+
+    .demo-ribbon {
+      width: 100%;
+      height: 40vh;
+      background-color: #3F51B5;
+      -webkit-flex-shrink: 0;
+      -ms-flex-negative: 0;
+      flex-shrink: 0;
+    }
+
+    .demo-main {
+      margin-top: -35vh;
+      -webkit-flex-shrink: 0;
+      -ms-flex-negative: 0;
+      flex-shrink: 0;
+    }
+
+    .demo-header .mdl-layout__header-row {
+      padding-left: 40px;
+    }
+
+    .demo-container {
+      max-width: 1600px;
+      width: calc(100% - 16px);
+      margin: 0 auto;
+    }
+
+    .demo-content {
+      border-radius: 2px;
+      padding: 80px 56px;
+      margin-bottom: 80px;
+    }
+
+    .demo-layout.is-small-screen .demo-content {
+      padding: 40px 28px;
+    }
+
+    .demo-content h3 {
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    td {
+      background-clip: padding-box; 
+    }
+  </style>
+</head>
+
+<body>
+  <div class="demo-layout mdl-layout mdl-layout--fixed-header mdl-js-layout mdl-color--grey-100">
+    <header
+      class="demo-header mdl-layout__header mdl-layout__header--scroll mdl-color--grey-100 mdl-color-text--grey-800">
+      <div class="mdl-layout__header-row">
+        <span class="mdl-layout-title">IG and Attention Attributions</span>
+        <div class="mdl-layout-spacer"></div>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+          <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
+            <i class="material-icons">search</i>
+          </label>
+          <div class="mdl-textfield__expandable-holder">
+            <input class="mdl-textfield__input" type="text" id="search">
+            <label class="mdl-textfield__label" for="search">Enter your query...</label>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="demo-ribbon"></div>
+    <main class="demo-main mdl-layout__content">
+      <div class="demo-container mdl-grid">
+        <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
+        <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
+          <main class="mdl-layout__content">
+            <div class="mdl-grid">
+              <div class="mdl-card mdl-cell mdl-cell--4-col" style="min-height: 0;"><h3>set</h3></div>
+<div class="mdl-card mdl-cell mdl-cell--4-col" style="min-height: 0;"><h3>default</h3></div>
+<div class="mdl-card mdl-cell mdl-cell--4-col" style="min-height: 0;"><h3>uri</h3></div>
+
+            </div>
+            <div class="mdl-grid">
+              <div class="mdl-card mdl-cell mdl-cell--4-col"><table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp"><thead><tr><th class="mdl-data-table__cell--non-numeric">Source Token</th><th>IG (N)</th><th>IG (A)</th></tr></thead><tbody><tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #ffe0e0">0.022</td><td style="background-color: #ff10a10a">-0.008</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">object</td><td style="background-color: #ff10d10d">-0.010</td><td style="background-color: #ff143143">-0.048</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">uri</td><td style="background-color: #ff103103">-0.003</td><td style="background-color: #fffcfc">0.002</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #ffbdbd">0.047</td><td style="background-color: #ffc4c4">0.042</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">throws</td><td style="background-color: #ffe0e0">0.022</td><td style="background-color: #ff100100">-0.001</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">uri</td><td style="background-color: #ff100100">-0.001</td><td style="background-color: #ff111111">-0.013</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">syntax</td><td style="background-color: #ff103103">-0.003</td><td style="background-color: #fffefe">0.001</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">exception</td><td style="background-color: #ff114114">-0.015</td><td style="background-color: #ffd5d5">0.030</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">{</td><td style="background-color: #ffadad">0.058</td><td style="background-color: #ff9e9e">0.069</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">this</td><td style="background-color: #ff5959">0.118</td><td style="background-color: #ff0000">0.181</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">.</td><td style="background-color: #fff0f0">0.011</td><td style="background-color: #ffafaf">0.057</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">default</td><td style="background-color: #ff129129">-0.030</td><td style="background-color: #ff12d12d">-0.033</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">uri</td><td style="background-color: #ffdada">0.026</td><td style="background-color: #ff111111">-0.013</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">=</td><td style="background-color: #fff9f9">0.004</td><td style="background-color: #ff160160">-0.069</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">new</td><td style="background-color: #fff9f9">0.004</td><td style="background-color: #ff10a10a">-0.008</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">uri</td><td style="background-color: #ffd8d8">0.028</td><td style="background-color: #ff7474">0.099</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">builder</td><td style="background-color: #ffd9d9">0.027</td><td style="background-color: #ff100100">-0.001</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #ffffff">-0.000</td><td style="background-color: #ff141141">-0.047</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">uri</td><td style="background-color: #ff103103">-0.003</td><td style="background-color: #fff7f7">0.006</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">builder</td><td style="background-color: #ff105105">-0.004</td><td style="background-color: #ffffff">0.000</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">.</td><td style="background-color: #ff100100">-0.001</td><td style="background-color: #ff126126">-0.028</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">convert</td><td style="background-color: #ffb7b7">0.051</td><td style="background-color: #ffd3d3">0.031</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">to</td><td style="background-color: #ffebeb">0.014</td><td style="background-color: #fff5f5">0.007</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">uri</td><td style="background-color: #ff102102">-0.002</td><td style="background-color: #ff10c10c">-0.009</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #ff113113">-0.014</td><td style="background-color: #ff126126">-0.028</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">uri</td><td style="background-color: #ff100100">-0.001</td><td style="background-color: #ff106106">-0.005</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #fffefe">0.001</td><td style="background-color: #ffe8e8">0.016</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">url</td><td style="background-color: #fffbfb">0.003</td><td style="background-color: #ff100100">-0.001</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">encoding</td><td style="background-color: #ff109109">-0.007</td><td style="background-color: #ff100100">-0.001</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">enabled</td><td style="background-color: #ffeded">0.013</td><td style="background-color: #ffdfdf">0.023</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">encoder</td><td style="background-color: #ff100100">-0.001</td><td style="background-color: #ffc8c8">0.039</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">config</td><td style="background-color: #fff9f9">0.004</td><td style="background-color: #ff11e11e">-0.022</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #fff0f0">0.011</td><td style="background-color: #ff114114">-0.015</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">;</td><td style="background-color: #ff10e10e">-0.011</td><td style="background-color: #ffe3e3">0.020</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">}</td><td style="background-color: #ff11d11d">-0.021</td><td style="background-color: #ff105105">-0.004</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric"><eos></td><td style="background-color: #ffdfdf">0.023</td><td style="background-color: #ffe4e4">0.019</td></tr>
+</tbody></table></div>
+<div class="mdl-card mdl-cell mdl-cell--4-col"><table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp"><thead><tr><th class="mdl-data-table__cell--non-numeric">Source Token</th><th>IG (N)</th><th>IG (A)</th></tr></thead><tbody><tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #ffa4a4">0.096</td><td style="background-color: #ff105105">-0.006</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">object</td><td style="background-color: #ff130130">-0.052</td><td style="background-color: #ff144144">-0.073</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">uri</td><td style="background-color: #ff111111">-0.019</td><td style="background-color: #fff7f7">0.008</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #ffe5e5">0.028</td><td style="background-color: #ff109109">-0.011</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">throws</td><td style="background-color: #ffe5e5">0.028</td><td style="background-color: #fff5f5">0.011</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">uri</td><td style="background-color: #ff110110">-0.018</td><td style="background-color: #ff111111">-0.019</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">syntax</td><td style="background-color: #ff109109">-0.011</td><td style="background-color: #ff107107">-0.009</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">exception</td><td style="background-color: #fffefe">0.001</td><td style="background-color: #ffc8c8">0.058</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">{</td><td style="background-color: #ffd9d9">0.040</td><td style="background-color: #ffcccc">0.054</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">this</td><td style="background-color: #ffa0a0">0.101</td><td style="background-color: #ff0000">0.270</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">.</td><td style="background-color: #ff4343">0.199</td><td style="background-color: #ff4e4e">0.187</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">default</td><td style="background-color: #ff100100">-0.001</td><td style="background-color: #ff0303">0.267</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">uri</td><td style="background-color: #ff9696">0.111</td><td style="background-color: #ff178178">-0.128</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">=</td><td style="background-color: #ff205205">-0.277</td><td style="background-color: #ff1c91c9">-0.214</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">new</td><td style="background-color: #ff119119">-0.028</td><td style="background-color: #ff9a9a">0.107</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">uri</td><td style="background-color: #ffc4c4">0.062</td><td style="background-color: #ff11c11c">-0.031</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">builder</td><td style="background-color: #ff6b6b">0.157</td><td style="background-color: #ff8d8d">0.121</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #ffcaca">0.056</td><td style="background-color: #ff103103">-0.004</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">uri</td><td style="background-color: #fffdfd">0.002</td><td style="background-color: #ff10b10b">-0.013</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">builder</td><td style="background-color: #ffe8e8">0.024</td><td style="background-color: #fff2f2">0.014</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">.</td><td style="background-color: #ff126126">-0.041</td><td style="background-color: #ff111111">-0.019</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">convert</td><td style="background-color: #ffdfdf">0.034</td><td style="background-color: #ffeaea">0.022</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">to</td><td style="background-color: #ffd1d1">0.049</td><td style="background-color: #fffbfb">0.004</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">uri</td><td style="background-color: #fffefe">0.001</td><td style="background-color: #ff107107">-0.008</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #ff100100">-0.001</td><td style="background-color: #ff117117">-0.025</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">uri</td><td style="background-color: #ff105105">-0.006</td><td style="background-color: #ff101101">-0.002</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #ffecec">0.020</td><td style="background-color: #ffeded">0.019</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">url</td><td style="background-color: #fff4f4">0.012</td><td style="background-color: #ff100100">-0.001</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">encoding</td><td style="background-color: #ff109109">-0.011</td><td style="background-color: #fffefe">0.001</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">enabled</td><td style="background-color: #ffeded">0.019</td><td style="background-color: #fffbfb">0.004</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">encoder</td><td style="background-color: #ff106106">-0.007</td><td style="background-color: #ffe7e7">0.025</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">config</td><td style="background-color: #ff107107">-0.009</td><td style="background-color: #ffefef">0.017</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #ffc2c2">0.065</td><td style="background-color: #ff114114">-0.022</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">;</td><td style="background-color: #ff13c13c">-0.065</td><td style="background-color: #ff10b10b">-0.013</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">}</td><td style="background-color: #ffe9e9">0.023</td><td style="background-color: #ffe6e6">0.027</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric"><eos></td><td style="background-color: #ffd4d4">0.046</td><td style="background-color: #ffeaea">0.022</td></tr>
+</tbody></table></div>
+<div class="mdl-card mdl-cell mdl-cell--4-col"><table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp"><thead><tr><th class="mdl-data-table__cell--non-numeric">Source Token</th><th>IG (N)</th><th>IG (A)</th></tr></thead><tbody><tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #ffe0e0">0.045</td><td style="background-color: #fff5f5">0.015</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">object</td><td style="background-color: #ff112112">-0.028</td><td style="background-color: #ff121121">-0.050</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">uri</td><td style="background-color: #ffafaf">0.117</td><td style="background-color: #ffe4e4">0.039</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #ff118118">-0.036</td><td style="background-color: #fff5f5">0.015</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">throws</td><td style="background-color: #ff11d11d">-0.044</td><td style="background-color: #ff102102">-0.004</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">uri</td><td style="background-color: #ffcccc">0.075</td><td style="background-color: #ffc7c7">0.081</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">syntax</td><td style="background-color: #fffefe">0.002</td><td style="background-color: #ff107107">-0.012</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">exception</td><td style="background-color: #fff0f0">0.022</td><td style="background-color: #fff7f7">0.011</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">{</td><td style="background-color: #fff8f8">0.010</td><td style="background-color: #ffe0e0">0.045</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">this</td><td style="background-color: #ffeaea">0.030</td><td style="background-color: #ffd7d7">0.059</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">.</td><td style="background-color: #ffc1c1">0.091</td><td style="background-color: #ffc3c3">0.088</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">default</td><td style="background-color: #ff139139">-0.085</td><td style="background-color: #ff114114">-0.030</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">uri</td><td style="background-color: #ff8989">0.172</td><td style="background-color: #ff5d5d">0.237</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">=</td><td style="background-color: #ff149149">-0.108</td><td style="background-color: #ff1aa1aa">-0.249</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">new</td><td style="background-color: #ff100100">-0.001</td><td style="background-color: #ff116116">-0.034</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">uri</td><td style="background-color: #ffa7a7">0.128</td><td style="background-color: #ff0000">0.372</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">builder</td><td style="background-color: #ffd5d5">0.061</td><td style="background-color: #ffdede">0.048</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #fff8f8">0.010</td><td style="background-color: #ffe9e9">0.032</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">uri</td><td style="background-color: #ffe9e9">0.032</td><td style="background-color: #ffefef">0.023</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">builder</td><td style="background-color: #fffbfb">0.006</td><td style="background-color: #ff104104">-0.008</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">.</td><td style="background-color: #ffe9e9">0.032</td><td style="background-color: #ffe1e1">0.044</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">convert</td><td style="background-color: #ff107107">-0.012</td><td style="background-color: #ff10f10f">-0.024</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">to</td><td style="background-color: #ff10e10e">-0.022</td><td style="background-color: #ff10e10e">-0.022</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">uri</td><td style="background-color: #ffacac">0.121</td><td style="background-color: #ffd4d4">0.063</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">(</td><td style="background-color: #ff10a10a">-0.016</td><td style="background-color: #ff11f11f">-0.047</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">uri</td><td style="background-color: #ffcdcd">0.073</td><td style="background-color: #ffebeb">0.029</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #ff108108">-0.013</td><td style="background-color: #ff104104">-0.008</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">url</td><td style="background-color: #fff1f1">0.020</td><td style="background-color: #fff7f7">0.012</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">encoding</td><td style="background-color: #fffcfc">0.004</td><td style="background-color: #ff112112">-0.027</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">enabled</td><td style="background-color: #ffe8e8">0.033</td><td style="background-color: #ffe4e4">0.039</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">encoder</td><td style="background-color: #ff100100">-0.002</td><td style="background-color: #ff10f10f">-0.023</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">config</td><td style="background-color: #ffffff">-0.000</td><td style="background-color: #fff9f9">0.009</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">)</td><td style="background-color: #ff10c10c">-0.019</td><td style="background-color: #ff112112">-0.027</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">;</td><td style="background-color: #ff10d10d">-0.021</td><td style="background-color: #ff11d11d">-0.044</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric">}</td><td style="background-color: #fff3f3">0.017</td><td style="background-color: #ffeeee">0.025</td></tr>
+<tr><td class="mdl-data-table__cell--non-numeric"><eos></td><td style="background-color: #fff5f5">0.015</td><td style="background-color: #fff6f6">0.013</td></tr>
+</tbody></table></div>
+
+            </div>
+          </main>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+</body>
+</html>
+

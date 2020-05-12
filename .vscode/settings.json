@@ -2,5 +2,18 @@
   "files.watcherExclude": {
     "datasets/**": true
   },
-  "python.formatting.provider": "black"
+  "python.formatting.provider": "black",
+  "cSpell.ignoreWords": [
+    "aix",
+    "check",
+    "commit",
+    "compat",
+    "data",
+    "hdfs",
+    "mockito",
+    "mode",
+    "output",
+    "stream",
+    "test"
+  ]
 }
