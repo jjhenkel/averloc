@@ -1,205 +1,0 @@
-"/nobackup/jjhenkel/workspace/averloc/scripts/build-image.sh" \
-	train-model-code2seq
-[0;37m[DBG]:[0m Building 'jjhenkel/averloc--train-model-code2seq:eb76d499e7629c765e4584f6fe4fc2f6d8b08930'...
-[37m[DBG]:[0m Sending build context to Docker daemon  275.1MB
-[37m[DBG]:[0m Step 1/8 : FROM tensorflow/tensorflow:1.15.0-gpu-py3
-[37m[DBG]:[0m  ---> e544497892a3
-[37m[DBG]:[0m Step 2/8 : RUN apt-get install -y nvidia-modprobe
-[37m[DBG]:[0m  ---> Using cache
-[37m[DBG]:[0m  ---> ccfd4720c262
-[37m[DBG]:[0m Step 3/8 : RUN pip3 install requests rouge
-[37m[DBG]:[0m  ---> Using cache
-[37m[DBG]:[0m  ---> 3e86abfd8ad6
-[37m[DBG]:[0m Step 4/8 : ENV NVIDIA_VISIBLE_DEVICES all
-[37m[DBG]:[0m  ---> Using cache
-[37m[DBG]:[0m  ---> 4ee1cb7125dc
-[37m[DBG]:[0m Step 5/8 : ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
-[37m[DBG]:[0m  ---> Using cache
-[37m[DBG]:[0m  ---> 2828b11f9585
-[37m[DBG]:[0m Step 6/8 : COPY vendor/code2seq /code2seq
-[37m[DBG]:[0m  ---> Using cache
-[37m[DBG]:[0m  ---> bf2de46aaf7e
-[37m[DBG]:[0m Step 7/8 : COPY task/ /app/
-[37m[DBG]:[0m  ---> Using cache
-[37m[DBG]:[0m  ---> d2dc45d6fe11
-[37m[DBG]:[0m Step 8/8 : ENTRYPOINT [ "/app/entrypoint.sh" ]
-[37m[DBG]:[0m  ---> Using cache
-[37m[DBG]:[0m  ---> 52375c7618b1
-[37m[DBG]:[0m Successfully built 52375c7618b1
-[37m[DBG]:[0m Successfully tagged jjhenkel/averloc--train-model-code2seq:eb76d499e7629c765e4584f6fe4fc2f6d8b08930
-[0;37m[DBG]:[0m   + Image built!
-+ python3 /code2seq/code2seq.py --load /app/models/java-large-model/model_iter52.release --test /mnt/inputs/data.test.c2s
-+ tail -n3
-WARNING:tensorflow:From /code2seq/code2seq.py:29: The name tf.set_random_seed is deprecated. Please use tf.compat.v1.set_random_seed instead.
-
-WARNING:tensorflow:From /code2seq/model.py:20: The name tf.Session is deprecated. Please use tf.compat.v1.Session instead.
-
-2020-01-17 19:24:57.546056: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcuda.so.1
-2020-01-17 19:24:57.546117: E tensorflow/stream_executor/cuda/cuda_driver.cc:318] failed call to cuInit: UNKNOWN ERROR (-1)
-2020-01-17 19:24:57.546155: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (4ce408ee9d4f): /proc/driver/nvidia/version does not exist
-2020-01-17 19:24:57.546781: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: FMA
-2020-01-17 19:24:57.562486: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2300085000 Hz
-2020-01-17 19:24:57.568344: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x4f0c480 initialized for platform Host (this does not guarantee that XLA will be used). Devices:
-2020-01-17 19:24:57.568394: I tensorflow/compiler/xla/service/service.cc:176]   StreamExecutor device (0): Host, Default Version
-WARNING:tensorflow:
-The TensorFlow contrib module will not be included in TensorFlow 2.0.
-For more information, please see:
-  * https://github.com/tensorflow/community/blob/master/rfcs/20180907-contrib-sunset.md
-  * https://github.com/tensorflow/addons
-  * https://github.com/tensorflow/io (for I/O related ops)
-If you depend on functionality not listed there, please file an issue.
-
-WARNING:tensorflow:From /code2seq/reader.py:188: map_and_batch (from tensorflow.python.data.experimental.ops.batching) is deprecated and will be removed in a future version.
-Instructions for updating:
-Use `tf.data.Dataset.map(map_func, num_parallel_calls)` followed by `tf.data.Dataset.batch(batch_size, drop_remainder)`. Static tf.data optimizations will take care of using the fused implementation.
-WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow_core/python/autograph/converters/directives.py:119: The name tf.random_shuffle is deprecated. Please use tf.random.shuffle instead.
-
-WARNING:tensorflow:From /code2seq/reader.py:92: calling string_split (from tensorflow.python.ops.ragged.ragged_string_ops) with delimiter is deprecated and will be removed in a future version.
-Instructions for updating:
-delimiter is deprecated, please use sep instead.
-WARNING:tensorflow:From /code2seq/reader.py:101: to_int64 (from tensorflow.python.ops.math_ops) is deprecated and will be removed in a future version.
-Instructions for updating:
-Use `tf.cast` instead.
-WARNING:tensorflow:From /code2seq/reader.py:108: where (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.
-Instructions for updating:
-Use tf.where in 2.0, which has the same broadcast rule as np.where
-WARNING:tensorflow:From /code2seq/reader.py:159: to_float (from tensorflow.python.ops.math_ops) is deprecated and will be removed in a future version.
-Instructions for updating:
-Use `tf.cast` instead.
-WARNING:tensorflow:From /code2seq/reader.py:190: DatasetV1.make_initializable_iterator (from tensorflow.python.data.ops.dataset_ops) is deprecated and will be removed in a future version.
-Instructions for updating:
-Use `for ... in dataset:` to iterate over a dataset. If using `tf.estimator`, return the `Dataset` object directly from your input function. As a last resort, you can use `tf.compat.v1.data.make_initializable_iterator(dataset)`.
-WARNING:tensorflow:From /code2seq/model.py:553: The name tf.variable_scope is deprecated. Please use tf.compat.v1.variable_scope instead.
-
-WARNING:tensorflow:From /code2seq/model.py:554: The name tf.get_variable is deprecated. Please use tf.compat.v1.get_variable instead.
-
-WARNING:tensorflow:From /code2seq/model.py:480: LSTMCell.__init__ (from tensorflow.python.ops.rnn_cell_impl) is deprecated and will be removed in a future version.
-Instructions for updating:
-This class is equivalent as tf.keras.layers.LSTMCell, and will be replaced by that in Tensorflow 2.0.
-WARNING:tensorflow:From /code2seq/model.py:492: bidirectional_dynamic_rnn (from tensorflow.python.ops.rnn) is deprecated and will be removed in a future version.
-Instructions for updating:
-Please use `keras.layers.Bidirectional(keras.layers.RNN(cell))`, which is equivalent to this API
-WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow_core/python/ops/rnn.py:464: dynamic_rnn (from tensorflow.python.ops.rnn) is deprecated and will be removed in a future version.
-Instructions for updating:
-Please use `keras.layers.RNN(cell)`, which is equivalent to this API
-WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow_core/python/ops/rnn_cell_impl.py:958: Layer.add_variable (from tensorflow.python.keras.engine.base_layer) is deprecated and will be removed in a future version.
-Instructions for updating:
-Please use `layer.add_weight` method instead.
-WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow_core/python/ops/rnn_cell_impl.py:962: calling Zeros.__init__ (from tensorflow.python.ops.init_ops) with dtype is deprecated and will be removed in a future version.
-Instructions for updating:
-Call initializer instance with the dtype argument instead of passing it to the constructor
-WARNING:tensorflow:From /code2seq/model.py:539: dense (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
-Instructions for updating:
-Use keras.layers.Dense instead.
-WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow_core/python/layers/core.py:187: Layer.apply (from tensorflow.python.keras.engine.base_layer) is deprecated and will be removed in a future version.
-Instructions for updating:
-Please use `layer.__call__` method instead.
-WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow_core/python/util/deprecation.py:507: calling count_nonzero (from tensorflow.python.ops.math_ops) with axis is deprecated and will be removed in a future version.
-Instructions for updating:
-reduction_indices is deprecated, use axis instead
-WARNING:tensorflow:From /code2seq/model.py:406: MultiRNNCell.__init__ (from tensorflow.python.ops.rnn_cell_impl) is deprecated and will be removed in a future version.
-Instructions for updating:
-This class is equivalent as tf.keras.layers.StackedRNNCells, and will be replaced by that in Tensorflow 2.0.
-WARNING:tensorflow:From /code2seq/model.py:411: The name tf.nn.rnn_cell.LSTMStateTuple is deprecated. Please use tf.compat.v1.nn.rnn_cell.LSTMStateTuple instead.
-
-WARNING:tensorflow:From /code2seq/model.py:413: The name tf.layers.Dense is deprecated. Please use tf.compat.v1.layers.Dense instead.
-
-WARNING:tensorflow:From /code2seq/model.py:156: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
-
-WARNING:tensorflow:From /code2seq/model.py:707: The name tf.global_variables_initializer is deprecated. Please use tf.compat.v1.global_variables_initializer instead.
-
-WARNING:tensorflow:From /code2seq/model.py:707: The name tf.local_variables_initializer is deprecated. Please use tf.compat.v1.local_variables_initializer instead.
-
-WARNING:tensorflow:From /code2seq/model.py:707: The name tf.tables_initializer is deprecated. Please use tf.compat.v1.tables_initializer instead.
-
-Accuracy: 0.1553217378856202
-Precision: 0.5551940891045435, recall: 0.4306672369546621, F1: 0.4850659986511225
-Rouge:  {'rouge-1': {'f': 0.4781202925798788, 'p': 0.5521012313860192, 'r': 0.45230785148095365}, 'rouge-2': {'f': 0.17709234447505184, 'p': 0.20207498090874437, 'r': 0.16999973604891983}, 'rouge-l': {'f': 0.44239037377553053, 'p': 0.5436628961435608, 'r': 0.4452811036090597}}
-+ '[' -f /mnt/inputs/data.baseline.c2s ']'
-+ python3 /code2seq/code2seq.py --load /app/models/java-large-model/model_iter52.release --test /mnt/inputs/data.baseline.c2s
-+ tail -n3
-WARNING:tensorflow:From /code2seq/code2seq.py:29: The name tf.set_random_seed is deprecated. Please use tf.compat.v1.set_random_seed instead.
-
-WARNING:tensorflow:From /code2seq/model.py:20: The name tf.Session is deprecated. Please use tf.compat.v1.Session instead.
-
-2020-01-17 19:27:59.434723: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcuda.so.1
-2020-01-17 19:27:59.434787: E tensorflow/stream_executor/cuda/cuda_driver.cc:318] failed call to cuInit: UNKNOWN ERROR (-1)
-2020-01-17 19:27:59.434824: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (4ce408ee9d4f): /proc/driver/nvidia/version does not exist
-2020-01-17 19:27:59.435404: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: FMA
-2020-01-17 19:27:59.452083: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2300085000 Hz
-2020-01-17 19:27:59.457886: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x3ddda00 initialized for platform Host (this does not guarantee that XLA will be used). Devices:
-2020-01-17 19:27:59.457948: I tensorflow/compiler/xla/service/service.cc:176]   StreamExecutor device (0): Host, Default Version
-WARNING:tensorflow:
-The TensorFlow contrib module will not be included in TensorFlow 2.0.
-For more information, please see:
-  * https://github.com/tensorflow/community/blob/master/rfcs/20180907-contrib-sunset.md
-  * https://github.com/tensorflow/addons
-  * https://github.com/tensorflow/io (for I/O related ops)
-If you depend on functionality not listed there, please file an issue.
-
-WARNING:tensorflow:From /code2seq/reader.py:188: map_and_batch (from tensorflow.python.data.experimental.ops.batching) is deprecated and will be removed in a future version.
-Instructions for updating:
-Use `tf.data.Dataset.map(map_func, num_parallel_calls)` followed by `tf.data.Dataset.batch(batch_size, drop_remainder)`. Static tf.data optimizations will take care of using the fused implementation.
-WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow_core/python/autograph/converters/directives.py:119: The name tf.random_shuffle is deprecated. Please use tf.random.shuffle instead.
-
-WARNING:tensorflow:From /code2seq/reader.py:92: calling string_split (from tensorflow.python.ops.ragged.ragged_string_ops) with delimiter is deprecated and will be removed in a future version.
-Instructions for updating:
-delimiter is deprecated, please use sep instead.
-WARNING:tensorflow:From /code2seq/reader.py:101: to_int64 (from tensorflow.python.ops.math_ops) is deprecated and will be removed in a future version.
-Instructions for updating:
-Use `tf.cast` instead.
-WARNING:tensorflow:From /code2seq/reader.py:108: where (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.
-Instructions for updating:
-Use tf.where in 2.0, which has the same broadcast rule as np.where
-WARNING:tensorflow:From /code2seq/reader.py:159: to_float (from tensorflow.python.ops.math_ops) is deprecated and will be removed in a future version.
-Instructions for updating:
-Use `tf.cast` instead.
-WARNING:tensorflow:From /code2seq/reader.py:190: DatasetV1.make_initializable_iterator (from tensorflow.python.data.ops.dataset_ops) is deprecated and will be removed in a future version.
-Instructions for updating:
-Use `for ... in dataset:` to iterate over a dataset. If using `tf.estimator`, return the `Dataset` object directly from your input function. As a last resort, you can use `tf.compat.v1.data.make_initializable_iterator(dataset)`.
-WARNING:tensorflow:From /code2seq/model.py:553: The name tf.variable_scope is deprecated. Please use tf.compat.v1.variable_scope instead.
-
-WARNING:tensorflow:From /code2seq/model.py:554: The name tf.get_variable is deprecated. Please use tf.compat.v1.get_variable instead.
-
-WARNING:tensorflow:From /code2seq/model.py:480: LSTMCell.__init__ (from tensorflow.python.ops.rnn_cell_impl) is deprecated and will be removed in a future version.
-Instructions for updating:
-This class is equivalent as tf.keras.layers.LSTMCell, and will be replaced by that in Tensorflow 2.0.
-WARNING:tensorflow:From /code2seq/model.py:492: bidirectional_dynamic_rnn (from tensorflow.python.ops.rnn) is deprecated and will be removed in a future version.
-Instructions for updating:
-Please use `keras.layers.Bidirectional(keras.layers.RNN(cell))`, which is equivalent to this API
-WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow_core/python/ops/rnn.py:464: dynamic_rnn (from tensorflow.python.ops.rnn) is deprecated and will be removed in a future version.
-Instructions for updating:
-Please use `keras.layers.RNN(cell)`, which is equivalent to this API
-WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow_core/python/ops/rnn_cell_impl.py:958: Layer.add_variable (from tensorflow.python.keras.engine.base_layer) is deprecated and will be removed in a future version.
-Instructions for updating:
-Please use `layer.add_weight` method instead.
-WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow_core/python/ops/rnn_cell_impl.py:962: calling Zeros.__init__ (from tensorflow.python.ops.init_ops) with dtype is deprecated and will be removed in a future version.
-Instructions for updating:
-Call initializer instance with the dtype argument instead of passing it to the constructor
-WARNING:tensorflow:From /code2seq/model.py:539: dense (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
-Instructions for updating:
-Use keras.layers.Dense instead.
-WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow_core/python/layers/core.py:187: Layer.apply (from tensorflow.python.keras.engine.base_layer) is deprecated and will be removed in a future version.
-Instructions for updating:
-Please use `layer.__call__` method instead.
-WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow_core/python/util/deprecation.py:507: calling count_nonzero (from tensorflow.python.ops.math_ops) with axis is deprecated and will be removed in a future version.
-Instructions for updating:
-reduction_indices is deprecated, use axis instead
-WARNING:tensorflow:From /code2seq/model.py:406: MultiRNNCell.__init__ (from tensorflow.python.ops.rnn_cell_impl) is deprecated and will be removed in a future version.
-Instructions for updating:
-This class is equivalent as tf.keras.layers.StackedRNNCells, and will be replaced by that in Tensorflow 2.0.
-WARNING:tensorflow:From /code2seq/model.py:411: The name tf.nn.rnn_cell.LSTMStateTuple is deprecated. Please use tf.compat.v1.nn.rnn_cell.LSTMStateTuple instead.
-
-WARNING:tensorflow:From /code2seq/model.py:413: The name tf.layers.Dense is deprecated. Please use tf.compat.v1.layers.Dense instead.
-
-WARNING:tensorflow:From /code2seq/model.py:156: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
-
-WARNING:tensorflow:From /code2seq/model.py:707: The name tf.global_variables_initializer is deprecated. Please use tf.compat.v1.global_variables_initializer instead.
-
-WARNING:tensorflow:From /code2seq/model.py:707: The name tf.local_variables_initializer is deprecated. Please use tf.compat.v1.local_variables_initializer instead.
-
-WARNING:tensorflow:From /code2seq/model.py:707: The name tf.tables_initializer is deprecated. Please use tf.compat.v1.tables_initializer instead.
-
-Accuracy: 0.1624794216591511
-Precision: 0.5704473989077067, recall: 0.4412982246500512, F1: 0.4976298755985466
-Rouge:  {'rouge-1': {'f': 0.4898519137269099, 'p': 0.5651844956799797, 'r': 0.4632636153526091}, 'rouge-2': {'f': 0.1849696110406479, 'p': 0.20967587951692276, 'r': 0.1779162100012742}, 'rouge-l': {'f': 0.4534730979142968, 'p': 0.5562878896367326, 'r': 0.4559101294189999}}

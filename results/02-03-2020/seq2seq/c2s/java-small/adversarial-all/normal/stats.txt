@@ -1,8 +1,0 @@
-{"data_path": "/inputs.tsv", "expt_dir": "/models/lstm", "load_checkpoint": "Best_F1", "batch_size": 128, "output_dir": "/mnt/outputs", "src_field_name": "src", "save": true, "attributions": false}
-precision: 51.020
-recall: 29.813
-f1: 37.634
-exact_match: 10.845
-word-level accuracy: 26.744
-Loss: 1.078
-accuracy (torch): 27.174
