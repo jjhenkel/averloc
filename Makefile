@@ -1039,7 +1039,6 @@ apply-targeting-seq2seq-c2s-java-small: check-gpu check-models-in build-image-ap
 	@IMAGE_NAME="$(shell whoami)/averloc--apply-targeting-seq2seq:$(shell git rev-parse HEAD)"
 	@$(call echo_debug,"Applying semi-targeting to targeted/c2s/java-small...")
 	docker run -it --rm \
-		--gpus="${GPU}" \
 		-v "${ROOT_DIR}/tasks/apply-targeting-seq2seq:/app" \
 		-v "${ROOT_DIR}/models/pytorch-seq2seq:/model" \
 		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
