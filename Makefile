@@ -58,29 +58,132 @@ define run_dataset_ast_paths_preprocessing
 endef
 
 define adversarial_mode_setup
-	if [ "$${ADVERSARIAL_MODE}" = "all" ]; then
+	if [ "$${ADVERSARIAL_MODE}" = "depth-1" ]; then
 		export TRANSFORMS="
-			transforms.RenameParameters \
-			transforms.RenameFields \
-			transforms.RenameLocalVariables \
-			transforms.ShuffleParameters \
-			transforms.ShuffleLocalVariables \
-			transforms.ReplaceTrueFalse \
-			transforms.InsertPrintStatements \
-			transforms.All
+			transforms.Seq(RenameParameters) \
+			transforms.Seq(RenameFields) \
+			transforms.Seq(RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse) \
+			transforms.Seq(InsertPrintStatements)
 		"
-		export DIR_PART="all-attacks"
-	elif [ "$${ADVERSARIAL_MODE}" = "one-step" ]; then
+		export DIR_PART="depth-1"
+	elif [ "$${ADVERSARIAL_MODE}" = "depth-2" ]; then
 		export TRANSFORMS="
-			transforms.RenameParameters \
-			transforms.RenameFields \
-			transforms.RenameLocalVariables \
-			transforms.ShuffleParameters \
-			transforms.ShuffleLocalVariables \
-			transforms.ReplaceTrueFalse \
-			transforms.InsertPrintStatements
+			transforms.Seq(RenameParameters) \
+			transforms.Seq(RenameFields) \
+			transforms.Seq(RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse) \
+			transforms.Seq(InsertPrintStatements) \
+			transforms.Seq(InsertPrintStatements,RenameFields) \
+			transforms.Seq(InsertPrintStatements,RenameLocalVariables) \
+			transforms.Seq(InsertPrintStatements,RenameParameters) \
+			transforms.Seq(RenameFields,RenameLocalVariables) \
+			transforms.Seq(RenameFields,RenameParameters) \
+			transforms.Seq(RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields) \
+			transforms.Seq(ReplaceTrueFalse,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,RenameParameters) 
 		"
-		export DIR_PART="just-one-step-attacks"
+		export DIR_PART="depth-2"
+	elif [ "$${ADVERSARIAL_MODE}" = "depth-3" ]; then
+		export TRANSFORMS="
+			transforms.Seq(RenameParameters) \
+			transforms.Seq(RenameFields) \
+			transforms.Seq(RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse) \
+			transforms.Seq(InsertPrintStatements) \
+			transforms.Seq(InsertPrintStatements,RenameFields) \
+			transforms.Seq(InsertPrintStatements,RenameLocalVariables) \
+			transforms.Seq(InsertPrintStatements,RenameParameters) \
+			transforms.Seq(RenameFields,RenameLocalVariables) \
+			transforms.Seq(RenameFields,RenameParameters) \
+			transforms.Seq(RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields) \
+			transforms.Seq(ReplaceTrueFalse,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,RenameParameters) \
+			transforms.Seq(InsertPrintStatements,RenameFields,RenameLocalVariables) \
+			transforms.Seq(InsertPrintStatements,RenameFields,RenameParameters) \
+			transforms.Seq(InsertPrintStatements,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(RenameFields,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,RenameLocalVariables,RenameParameters)
+		"
+		export DIR_PART="depth-3"
+	elif [ "$${ADVERSARIAL_MODE}" = "depth-4" ]; then
+		export TRANSFORMS="
+			transforms.Seq(RenameParameters) \
+			transforms.Seq(RenameFields) \
+			transforms.Seq(RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse) \
+			transforms.Seq(InsertPrintStatements) \
+			transforms.Seq(InsertPrintStatements,RenameFields) \
+			transforms.Seq(InsertPrintStatements,RenameLocalVariables) \
+			transforms.Seq(InsertPrintStatements,RenameParameters) \
+			transforms.Seq(RenameFields,RenameLocalVariables) \
+			transforms.Seq(RenameFields,RenameParameters) \
+			transforms.Seq(RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields) \
+			transforms.Seq(ReplaceTrueFalse,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,RenameParameters) \
+			transforms.Seq(InsertPrintStatements,RenameFields,RenameLocalVariables) \
+			transforms.Seq(InsertPrintStatements,RenameFields,RenameParameters) \
+			transforms.Seq(InsertPrintStatements,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(RenameFields,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(InsertPrintStatements,RenameFields,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables,RenameParameters)
+		"
+		export DIR_PART="depth-4"
+	elif [ "$${ADVERSARIAL_MODE}" = "depth-5" ]; then
+		export TRANSFORMS="
+			transforms.Seq(RenameParameters) \
+			transforms.Seq(RenameFields) \
+			transforms.Seq(RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse) \
+			transforms.Seq(InsertPrintStatements) \
+			transforms.Seq(InsertPrintStatements,RenameFields) \
+			transforms.Seq(InsertPrintStatements,RenameLocalVariables) \
+			transforms.Seq(InsertPrintStatements,RenameParameters) \
+			transforms.Seq(RenameFields,RenameLocalVariables) \
+			transforms.Seq(RenameFields,RenameParameters) \
+			transforms.Seq(RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields) \
+			transforms.Seq(ReplaceTrueFalse,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,RenameParameters) \
+			transforms.Seq(InsertPrintStatements,RenameFields,RenameLocalVariables) \
+			transforms.Seq(InsertPrintStatements,RenameFields,RenameParameters) \
+			transforms.Seq(InsertPrintStatements,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(RenameFields,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(InsertPrintStatements,RenameFields,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameLocalVariables) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables,RenameParameters) \
+			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameLocalVariables,RenameParameters)
+		"
+		export DIR_PART="depth-5"
 	else
 		echo -e "\033[0;31m[ERR]:\033[0m Adversarial mode := $${ADVERSARIAL_MODE} is unsupported"
 		exit 1
@@ -133,6 +236,11 @@ submodules: ## (MISC) Ensures that submodules are setup.
 
 #######################################################################################################################
 #######################################################################################################################
+
+.PHONY: build-image-apply-targeting-seq2seq
+build-image-apply-targeting-seq2seq: submodules ## Build tasks/apply-targeting-seq2seq <!PRIVATE>
+	@"${ROOT_DIR}/scripts/build-model-image.sh" \
+		apply-targeting-seq2seq
 
 .PHONY: build-image-astor-apply-transforms
 build-image-astor-apply-transforms: submodules ## Builds our baseline generator docker image  <!PRIVATE>
@@ -450,15 +558,26 @@ extract-tokens: build-image-preprocess-dataset-tokens | $(ETOK_DEPS) ## (DS-3) G
 #######################################################################################################################
 #######################################################################################################################
 
+ALL_TRANSFORMS:="transforms.Identity"
+ALL_TRANSFORMS+="transforms.AddDeadCode"
+ALL_TRANSFORMS+="transforms.All"
+ALL_TRANSFORMS+="transforms.InsertPrintStatements"
+ALL_TRANSFORMS+="transforms.RenameFields"
+ALL_TRANSFORMS+="transforms.RenameLocalVariables"
+ALL_TRANSFORMS+="transforms.RenameParameters"
+ALL_TRANSFORMS+="transforms.ReplaceTrueFalse"
+ALL_TRANSFORMS+="transforms.UnrollWhiles"
+ALL_TRANSFORMS+="transforms.WrapTryCatch"
+
 datasets/transformed/preprocessed/ast-paths/c2s/java-small: ## <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/c2s/java-small/transforms.Identity' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
-	@for transform in All Identity InsertPrintStatements RenameFields RenameLocalVariables RenameParameters ReplaceTrueFalse ShuffleLocalVariables ShuffleParameters; do 
+	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
 			-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
-			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.$${transform}:/mnt/inputs" \
-			-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-small/transforms.$${transform}:/mnt/outputs" \
+			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-small/$${transform}:/mnt/outputs" \
 			"$${IMAGE_NAME}" java
 	done
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
@@ -467,11 +586,11 @@ datasets/transformed/preprocessed/ast-paths/c2s/java-med: ## <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/c2s/java-med/transforms.Identity' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
-	@for transform in All Identity InsertPrintStatements RenameFields RenameLocalVariables RenameParameters ReplaceTrueFalse ShuffleLocalVariables ShuffleParameters; do 
+	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
 			-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
-			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-med/transforms.$${transform}:/mnt/inputs" \
-			-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-med/transforms.$${transform}:/mnt/outputs" \
+			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-med/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-med/$${transform}:/mnt/outputs" \
 			"$${IMAGE_NAME}" java
 	done
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
@@ -480,11 +599,11 @@ datasets/transformed/preprocessed/ast-paths/csn/java: ## <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/csn/java/transforms.Identity' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
-	@for transform in All Identity InsertPrintStatements RenameFields RenameLocalVariables RenameParameters ReplaceTrueFalse ShuffleLocalVariables ShuffleParameters; do 
+	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
 			-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
-			-v "${ROOT_DIR}/datasets/transformed/normalized/csn/java/transforms.$${transform}:/mnt/inputs" \
-			-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/csn/java/transforms.$${transform}:/mnt/outputs" \
+			-v "${ROOT_DIR}/datasets/transformed/normalized/csn/java/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/csn/java/$${transform}:/mnt/outputs" \
 			"$${IMAGE_NAME}" java
 	done
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
@@ -493,11 +612,11 @@ datasets/transformed/preprocessed/ast-paths/csn/python: ## <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/csn/python/transforms.Identity' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
-	@for transform in All Identity InsertPrintStatements RenameFields RenameLocalVariables RenameParameters ReplaceTrueFalse ShuffleLocalVariables ShuffleParameters; do 
+	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
 			-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
-			-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python/transforms.$${transform}:/mnt/inputs" \
-			-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/csn/python/transforms.$${transform}:/mnt/outputs" \
+			-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/csn/python/$${transform}:/mnt/outputs" \
 			"$${IMAGE_NAME}" python
 	done
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
@@ -506,11 +625,11 @@ datasets/transformed/preprocessed/ast-paths/sri/py150: ## <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/sri/py150/transforms.Identity' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
-	@for transform in All Identity InsertPrintStatements RenameFields RenameLocalVariables RenameParameters ReplaceTrueFalse ShuffleLocalVariables ShuffleParameters; do 
+	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
 			-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
-			-v "${ROOT_DIR}/datasets/transformed/normalized/sri/py150/transforms.$${transform}:/mnt/inputs" \
-			-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/sri/py150/transforms.$${transform}:/mnt/outputs" \
+			-v "${ROOT_DIR}/datasets/transformed/normalized/sri/py150/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/sri/py150/$${transform}:/mnt/outputs" \
 			"$${IMAGE_NAME}" python
 	done
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
@@ -531,10 +650,10 @@ datasets/transformed/preprocessed/tokens/c2s/java-small: ## Generate a preproces
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/c2s/java-small' (using 'tokens' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
-	@for transform in All Identity InsertPrintStatements RenameFields RenameLocalVariables RenameParameters ReplaceTrueFalse ShuffleLocalVariables ShuffleParameters; do 
+	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
-			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/transforms.$${transform}:/mnt/inputs" \
-			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/c2s/java-small/transforms.$${transform}:/mnt/outputs" \
+			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/c2s/java-small/$${transform}:/mnt/outputs" \
 			"$${IMAGE_NAME}"
 	done
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
@@ -543,10 +662,10 @@ datasets/transformed/preprocessed/tokens/c2s/java-med: ## Generate a preprocesse
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/c2s/java-med' (using 'tokens' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
-	@for transform in All Identity InsertPrintStatements RenameFields RenameLocalVariables RenameParameters ReplaceTrueFalse ShuffleLocalVariables ShuffleParameters; do 
+	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
-			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-med/transforms.$${transform}:/mnt/inputs" \
-			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/c2s/java-med/transforms.$${transform}:/mnt/outputs" \
+			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-med/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/c2s/java-med/$${transform}:/mnt/outputs" \
 			"$${IMAGE_NAME}"
 	done
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
@@ -555,10 +674,10 @@ datasets/transformed/preprocessed/tokens/csn/java: ## Generate a preprocessed (r
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/csn/java' (using 'tokens' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
-	@for transform in All Identity InsertPrintStatements RenameFields RenameLocalVariables RenameParameters ReplaceTrueFalse ShuffleLocalVariables ShuffleParameters; do 
+	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
-			-v "${ROOT_DIR}/datasets/transformed/normalized/csn/java/transforms.$${transform}:/mnt/inputs" \
-			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/java/transforms.$${transform}:/mnt/outputs" \
+			-v "${ROOT_DIR}/datasets/transformed/normalized/csn/java/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/java/$${transform}:/mnt/outputs" \
 			"$${IMAGE_NAME}"
 	done
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
@@ -567,10 +686,10 @@ datasets/transformed/preprocessed/tokens/csn/python: ## Generate a preprocessed 
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/csn/python' (using 'tokens' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
-	@for transform in All Identity InsertPrintStatements RenameFields RenameLocalVariables RenameParameters ReplaceTrueFalse ShuffleLocalVariables ShuffleParameters; do 
+	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
-			-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python/transforms.$${transform}:/mnt/inputs" \
-			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/python/transforms.$${transform}:/mnt/outputs" \
+			-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/python/$${transform}:/mnt/outputs" \
 			"$${IMAGE_NAME}"
 	done
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
@@ -579,16 +698,16 @@ datasets/transformed/preprocessed/tokens/sri/py150: ## Generate a preprocessed (
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/tokens/sri/py150' (using 'tokens' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
-	@for transform in All Identity InsertPrintStatements RenameFields RenameLocalVariables RenameParameters ReplaceTrueFalse ShuffleLocalVariables ShuffleParameters; do 
+	@for transform in ${ALL_TRANSFORMS}; do 
 		docker run -it --rm \
-			-v "${ROOT_DIR}/datasets/transformed/normalized/sri/py150/transforms.$${transform}:/mnt/inputs" \
-			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/sri/py150/transforms.$${transform}:/mnt/outputs" \
+			-v "${ROOT_DIR}/datasets/transformed/normalized/sri/py150/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/sri/py150/$${transform}:/mnt/outputs" \
 			"$${IMAGE_NAME}"
 	done
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
 
 ETT_DEPS := datasets/transformed/preprocessed/tokens/c2s/java-small
-ETT_DEPS += datasets/transformed/preprocessed/tokens/c2s/java-med
+# ETT_DEPS += datasets/transformed/preprocessed/tokens/c2s/java-med
 ETT_DEPS += datasets/transformed/preprocessed/tokens/csn/java
 ETT_DEPS += datasets/transformed/preprocessed/tokens/csn/python
 ETT_DEPS += datasets/transformed/preprocessed/tokens/sri/py150
@@ -815,14 +934,13 @@ extract-adv-dataset-ast-paths-sri-py150: | check-adversarial-mode build-image-ex
 #######################################################################################################################
 
 .PHONY: extract-adv-dataset-tokens-c2s-java-small 
-extract-adv-dataset-tokens-c2s-java-small: | check-adversarial-mode build-image-extract-adv-dataset-tokens
-	@$(call adversarial_mode_setup)
+extract-adv-dataset-tokens-c2s-java-small: | build-image-extract-adv-dataset-tokens
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-tokens:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
 		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/c2s/java-small:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/adversarial/$${DIR_PART}/tokens/c2s/java-small:/mnt/outputs" \
-		"$${IMAGE_NAME}" $${TRANSFORMS}
+		-v "${ROOT_DIR}/datasets/adversarial/targeting/tokens/c2s/java-small:/mnt/outputs" \
+		"$${IMAGE_NAME}" ${ALL_TRANSFORMS}
 
 .PHONY: extract-adv-dataset-tokens-c2s-java-med
 extract-adv-dataset-tokens-c2s-java-med: | check-adversarial-mode build-image-extract-adv-dataset-tokens
@@ -932,6 +1050,22 @@ apply-transforms-sri-py150: build-image-astor-apply-transforms ## (DS-4) Apply o
 		-v "${ROOT_DIR}/tasks/astor-apply-transforms:/app" \
 		-v "${ROOT_DIR}/datasets/transformed/normalized/sri/py150:/mnt/outputs" \
 		"$${IMAGE_NAME}"
+
+#######################################################################################################################
+#######################################################################################################################
+
+.PHONY: apply-targeting-seq2seq-c2s-java-small
+apply-targeting-seq2seq-c2s-java-small: check-gpu check-models-in build-image-apply-targeting-seq2seq ## (TARG-1) Apply semi-targeting to c2s/java-small (tokens) dataset
+	@IMAGE_NAME="$(shell whoami)/averloc--apply-targeting-seq2seq:$(shell git rev-parse HEAD)"
+	@$(call echo_debug,"Applying semi-targeting to targeted/c2s/java-small...")
+	docker run -it --rm \
+		-v "${ROOT_DIR}/tasks/apply-targeting-seq2seq:/app" \
+		-v "${ROOT_DIR}/models/pytorch-seq2seq:/model" \
+		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
+		-v "${ROOT_DIR}/datasets/adversarial/targeting/tokens/c2s/java-small:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/adversarial/targeted/tokens/c2s/java-small:/mnt/outputs" \
+		"$${IMAGE_NAME}"
+
 
 #######################################################################################################################
 #######################################################################################################################

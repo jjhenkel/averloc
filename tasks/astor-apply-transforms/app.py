@@ -331,7 +331,7 @@ def t_insert_print_statements(the_ast, wordbank, min_insertions=2, max_insertion
         0,
         ast.Expr(
           ast.Call(
-            func=ast.Name("print"),
+            func=ast.Name(id="print", ctx=ast.Load()),
             args=[ast.Str(literal)],
             keywords=[]
           )
@@ -341,7 +341,7 @@ def t_insert_print_statements(the_ast, wordbank, min_insertions=2, max_insertion
       the_ast.body[0].body.append(
         ast.Expr(
           ast.Call(
-            func=ast.Name("print"),
+            func=ast.Name(id="print", ctx=ast.Load()),
             args=[ast.Str(literal)],
             keywords=[]
           )
@@ -388,6 +388,19 @@ def t_all(the_ast, wordbank):
   return changed, s5
 
 
+class t_seq(object):
+  def __init__(self, transforms):
+    self.transforms = transforms
+  def __call__(self, the_ast, wordbank):
+    did_change = False
+    cur_ast = the_ast
+    for t in self.transforms:
+      changed, cur_ast = t(cur_ast, wordbank) 
+      if changed:
+        did_change = True
+    return did_change, cur_ast
+
+
 def t_identity(the_ast, wordbank):
   return True, the_ast
 
@@ -401,8 +414,8 @@ def process(item):
     )
     return changed, split, t_name, the_hash, astor.to_source(result) 
   except Exception as ex:
-    # import traceback
-    # traceback.print_exc()
+    import traceback
+    traceback.print_exc()
     return False, split, t_name, the_hash, og_code
 
 
@@ -422,43 +435,135 @@ if __name__ == "__main__":
       t_identity
     ),
     (
-      'transforms.All',
-      t_all
+      'transforms.Seq(RenameFields)',
+      t_seq([t_rename_fields])
     ),
     (
-      'transforms.ReplaceTrueFalse',
-      t_replace_true_false
+      'transforms.Seq(RenameParameters)',
+      t_seq([t_rename_parameters])
     ),
     (
-      'transforms.InsertPrintStatements',
-      t_insert_print_statements
+      'transforms.Seq(ReplaceTrueFalse)',
+      t_seq([t_replace_true_false])
     ),
     (
-      'transforms.RenameLocalVariables',
-      t_rename_local_variables
+      'transforms.Seq(RenameLocalVariables)',
+      t_seq([t_rename_local_variables])
     ),
     (
-      'transforms.RenameFields',
-      t_rename_fields
+      'transforms.Seq(InsertPrintStatements)',
+      t_seq([t_insert_print_statements])
     ),
     (
-      'transforms.RenameParameters',
-      t_rename_parameters
+      'transforms.Seq(RenameFields,RenameParameters)',
+      t_seq([t_rename_fields,t_rename_parameters])
     ),
     (
-      'transforms.ShuffleParameters',
-      t_shuffle_parameters
+      'transforms.Seq(ReplaceTrueFalse,RenameFields)',
+      t_seq([t_replace_true_false,t_rename_fields])
     ),
     (
-      'transforms.ShuffleLocalVariables',
-      t_shuffle_local_variables
+      'transforms.Seq(RenameFields,RenameLocalVariables)',
+      t_seq([t_rename_fields,t_rename_local_variables])
+    ),
+    (
+      'transforms.Seq(ReplaceTrueFalse,RenameParameters)',
+      t_seq([t_replace_true_false,t_rename_parameters])
+    ),
+    (
+      'transforms.Seq(InsertPrintStatements,RenameFields)',
+      t_seq([t_insert_print_statements,t_rename_fields])
+    ),
+    (
+      'transforms.Seq(RenameLocalVariables,RenameParameters)',
+      t_seq([t_rename_local_variables,t_rename_parameters])
+    ),
+    (
+      'transforms.Seq(ReplaceTrueFalse,RenameLocalVariables)',
+      t_seq([t_replace_true_false,t_rename_local_variables])
+    ),
+    (
+      'transforms.Seq(InsertPrintStatements,RenameParameters)',
+      t_seq([t_insert_print_statements,t_rename_parameters])
+    ),
+    (
+      'transforms.Seq(ReplaceTrueFalse,InsertPrintStatements)',
+      t_seq([t_replace_true_false,t_insert_print_statements])
+    ),
+    (
+      'transforms.Seq(InsertPrintStatements,RenameLocalVariables)',
+      t_seq([t_insert_print_statements,t_rename_local_variables])
+    ),
+    (
+      'transforms.Seq(ReplaceTrueFalse,RenameFields,RenameParameters)',
+      t_seq([t_replace_true_false,t_rename_fields,t_rename_parameters])
+    ),
+    (
+      'transforms.Seq(RenameFields,RenameLocalVariables,RenameParameters)',
+      t_seq([t_rename_fields,t_rename_local_variables,t_rename_parameters])
+    ),
+    (
+      'transforms.Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables)',
+      t_seq([t_replace_true_false,t_rename_fields,t_rename_local_variables])
+    ),
+    (
+      'transforms.Seq(InsertPrintStatements,RenameFields,RenameParameters)',
+      t_seq([t_insert_print_statements,t_rename_fields,t_rename_parameters])
+    ),
+    (
+      'transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields)',
+      t_seq([t_replace_true_false,t_insert_print_statements,t_rename_fields])
+    ),
+    (
+      'transforms.Seq(ReplaceTrueFalse,RenameLocalVariables,RenameParameters)',
+      t_seq([t_replace_true_false,t_rename_local_variables,t_rename_parameters])
+    ),
+    (
+      'transforms.Seq(InsertPrintStatements,RenameFields,RenameLocalVariables)',
+      t_seq([t_insert_print_statements,t_rename_fields,t_rename_local_variables])
+    ),
+    (
+      'transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameParameters)',
+      t_seq([t_replace_true_false,t_insert_print_statements,t_rename_parameters])
+    ),
+    (
+      'transforms.Seq(InsertPrintStatements,RenameLocalVariables,RenameParameters)',
+      t_seq([t_insert_print_statements,t_rename_local_variables,t_rename_parameters])
+    ),
+    (
+      'transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables)',
+      t_seq([t_replace_true_false,t_insert_print_statements,t_rename_local_variables])
+    ),
+    (
+      'transforms.Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables,RenameParameters)',
+      t_seq([t_replace_true_false,t_rename_fields,t_rename_local_variables,t_rename_parameters])
+    ),
+    (
+      'transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameParameters)',
+      t_seq([t_replace_true_false,t_insert_print_statements,t_rename_fields,t_rename_parameters])
+    ),
+    (
+      'transforms.Seq(InsertPrintStatements,RenameFields,RenameLocalVariables,RenameParameters)',
+      t_seq([t_insert_print_statements,t_rename_fields,t_rename_local_variables,t_rename_parameters])
+    ),
+    (
+      'transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameLocalVariables)',
+      t_seq([t_replace_true_false,t_insert_print_statements,t_rename_fields,t_rename_local_variables])
+    ),
+    (
+      'transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables,RenameParameters)',
+      t_seq([t_replace_true_false,t_insert_print_statements,t_rename_local_variables,t_rename_parameters])
+    ),
+    (
+      'transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameLocalVariables,RenameParameters)',
+      t_seq([t_replace_true_false,t_insert_print_statements,t_rename_fields,t_rename_local_variables,t_rename_parameters])
     )
   ]
 
   print("  + Will apply {} transforms".format(len(transforms)))
 
   print("  + Loading tasks...")
-  for split in ['test', 'train', 'valid']:
+  for split in ['test']:
     for line in gzip.open('/mnt/inputs/{}.jsonl.gz'.format(split)):
       as_json = json.loads(line)
       the_code = as_json['source_code']

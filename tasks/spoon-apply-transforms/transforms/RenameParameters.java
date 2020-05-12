@@ -26,6 +26,7 @@ public class RenameParameters extends Renamer<CtParameter> {
         // Get setup for renaming
         setDefs(getChildrenOfType(method, CtParameter.class));
         setSubtokens(topTargetSubtokens);
+        setPrefix("RP");
         
         // Select some percentage of things to rename
         takePercentage(RENAME_PERCENT);

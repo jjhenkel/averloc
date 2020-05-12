@@ -22,6 +22,7 @@ public class ShuffleLocalVariables extends Renamer<CtLocalVariable> {
         // Get setup for renaming
         setDefs(getChildrenOfType(method, CtLocalVariable.class));
         setSubtokens(topTargetSubtokens);
+        setPrefix("SLV");
         
         // Select some percentage of things to rename
         takePercentage(RENAME_PERCENT);

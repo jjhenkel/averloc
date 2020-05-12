@@ -32,18 +32,18 @@ public class InsertPrintStatements extends AverlocTransformer {
     ) + MIN_INSERTIONS;
 
     for (int i = 0; i < numInsertions; i++) {
-      int literalLength = rand.nextInt(
-        (LITERAL_MAX_LENGTH - LITERAL_MIN_LENGTH) + 1
-      ) + LITERAL_MIN_LENGTH;
+      // int literalLength = rand.nextInt(
+      //   (LITERAL_MAX_LENGTH - LITERAL_MIN_LENGTH) + 1
+      // ) + LITERAL_MIN_LENGTH;
 
-      Collections.shuffle(topTargetSubtokens);
+      // Collections.shuffle(topTargetSubtokens);
 
-      String literal = camelCased(
-        topTargetSubtokens.subList(0, literalLength)
-      );
+      // String literal = camelCased(
+      //   topTargetSubtokens.subList(0, literalLength)
+      // );
 
       CtCodeSnippetStatement snippet = getFactory().Core().createCodeSnippetStatement();
-      snippet.setValue(String.format("System.out.println(\"%s\")", literal));
+      snippet.setValue(String.format("System.out.println(\"REPLACE_ME_IPS_%s\")", Integer.toString(i+1)));
 
       // Insert randomly begin/end
       if (rand.nextBoolean()) {

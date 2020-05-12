@@ -2,6 +2,7 @@
   "files.watcherExclude": {
     "datasets/**": true
   },
+  "python.formatting.provider": "black",
   "cSpell.ignoreWords": [
     "aix",
     "check",
