@@ -267,6 +267,11 @@ build-image-download-csn-dataset: submodules ## Builds tasks/download-csn-datase
 	@"${ROOT_DIR}/scripts/build-image.sh" \
 		download-csn-dataset
 
+.PHONY: build-image-download-onedrive-dataset
+build-image-download-onedrive-dataset: submodules ## Builds tasks/download-onedrive-dataset <!PRIVATE>
+	@"${ROOT_DIR}/scripts/build-image.sh" \
+		download-onedrive-dataset
+
 .PHONY: build-image-extract-adv-dataset-c2s
 build-image-extract-adv-dataset-c2s: submodules ## Builds our adversarial dataset extractor (representation: ast-paths). <!PRIVATE>
 	@"${ROOT_DIR}/scripts/build-model-image.sh" \
@@ -330,18 +335,38 @@ build-image-train-model-seq2seq: submodules ## Build tasks/train-model-seq2seq <
 #######################################################################################################################
 #######################################################################################################################
 
-datasets/raw/c2s/java-small: ## Download code2seq's Java small dataset (non-preprocessed sources) <!PRIVATE>
+.PHONY: check-dataset
+check-dataset: ## Ensures DATASET="<blah>" parameter is present. <!PRIVATE>
+ifndef DATASET
+	$(error DATASET is a required parameter for this target.)
+endif
+
+.PHONY: requires-confirmation
+requires-confirmation: ## Forces user to confirm action. <!PRIVATE>
+	@docker run -it --rm \
+		-v "${ROOT_DIR}/$${DATASET}:/mnt" \
+		-v "${ROOT_DIR}/scripts:/scripts" \
+		debian:stretch \
+		  bash /scripts/list-files-before-delete.sh
+	@echo -n "Are you sure you want to remove these files: [y/N] " \
+		&& read ANSWER \
+		&& [ $${ANSWER:-N} = y ]
+
+.PHONY: clear-dataset
+danger-clear-dataset: check-dataset requires-confirmation ## (DANGER) Removes the datset specified by DATASET="datasets/<name>".
+	docker run -it --rm \
+		-v "${ROOT_DIR}/$${DATASET}:/mnt" \
+		debian:stretch \
+		  bash -c 'rm -rf /mnt/c2s/* /mnt/csn/* /mnt/sri/*'
+
+#######################################################################################################################
+#######################################################################################################################
+
+datasets/raw/c2s/java-small: ## Downloads code2seq's Java small dataset (non-preprocessed sources) <!PRIVATE>
 	@IMAGE_NAME="$(shell whoami)/averloc--download-c2s-dataset:$(shell git rev-parse HEAD)"
 	docker run -it --rm \
 		-v "${ROOT_DIR}/datasets/raw/c2s/java-small:/mnt" \
 		-e DATASET_URL=https://s3.amazonaws.com/code2seq/datasets/java-small.tar.gz \
-		"$${IMAGE_NAME}"
-
-datasets/raw/c2s/java-med: ## Downloads code2seq's Java medium dataset (non-preprocessed sources) <!PRIVATE>
-	@IMAGE_NAME="$(shell whoami)/averloc--download-c2s-dataset:$(shell git rev-parse HEAD)"
-	docker run -it --rm \
-		-v "${ROOT_DIR}/datasets/raw/c2s/java-med:/mnt" \
-		-e DATASET_URL=https://s3.amazonaws.com/code2seq/datasets/java-med.tar.gz \
 		"$${IMAGE_NAME}"
 
 datasets/raw/csn/java: ## Downloads CodeSearchNet's Java data (GitHub's code search dataset) <!PRIVATE>
@@ -358,13 +383,22 @@ datasets/raw/csn/python: ## Downloads CodeSearchNet's Python data (GitHub's code
 		-e DATASET_URL=https://s3.amazonaws.com/code-search-net/CodeSearchNet/v2/python.zip \
 		"$${IMAGE_NAME}"
 
+datasets/raw/sri/py150: ## Downloads SRI Lab's py150k dataset (our semi-preprocessed version on One Drive) <!PRIVATE>
+	@IMAGE_NAME="$(shell whoami)/averloc--download-onedrive-dataset:$(shell git rev-parse HEAD)"
+	docker run -it --rm \
+		-v "${ROOT_DIR}/datasets/raw/sri/py150:/mnt" \
+		-e TEST_FILE_URL='https://onedrive.live.com/download?cid=2F634444193E8221&resid=2F634444193E8221%2182214&authkey=AOQXaY9GP1OUK-4' \
+		-e TRAIN_FILE_URL='https://onedrive.live.com/download?cid=2F634444193E8221&resid=2F634444193E8221%2182215&authkey=ACnuAlzcKJ_tBQI' \
+		-e VALID_FILE_URL='https://onedrive.live.com/download?cid=2F634444193E8221&resid=2F634444193E8221%2182213&authkey=ABAUlzP9kkM_3f0' \
+		"$${IMAGE_NAME}"
+
 DD_DEPS := datasets/raw/c2s/java-small
-DD_DEPS += datasets/raw/c2s/java-med
 DD_DEPS += datasets/raw/csn/java
 DD_DEPS += datasets/raw/csn/python
+DD_DEPS += datasets/raw/sri/py150
 
 .PHONY: download-datasets
-download-datasets: build-image-download-csn-dataset build-image-download-c2s-dataset | $(DD_DEPS) ## (DS-1) Downloads all prerequisite datasets
+download-datasets: build-image-download-csn-dataset build-image-download-c2s-dataset build-image-download-onedrive-dataset | $(DD_DEPS) ## (DS-1) Downloads all prerequisite datasets
 	@$(call echo_info,"Downloaded all datasets to './datasets/raw/' directory.")
 
 #######################################################################################################################
