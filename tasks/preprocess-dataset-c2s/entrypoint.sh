@@ -2,9 +2,9 @@
 
 MAX_DATA_CONTEXTS=1000
 MAX_CONTEXTS=200
-SUBTOKEN_VOCAB_SIZE=27567
-TARGET_VOCAB_SIZE=6328
-NUM_THREADS=64
+SUBTOKEN_VOCAB_SIZE=15000 # Standardize with our seq2seq model
+TARGET_VOCAB_SIZE=5000 # Standardize with our seq2seq model 
+NUM_THREADS=$(nproc)
 PYTHON=python3
 
 mkdir -p /mnt/outputs
@@ -79,9 +79,12 @@ elif [ "${1}" == "python" ]; then
   fi
 
   # Python extractor
-  SEED=239
   python3 /code2seq/Python150kExtractor/extract.py \
+    --n_jobs="$(nproc)" \
+    --seed="12345" \
     --data_dir=/staging/step1 \
+    --max_path_width=2 \
+    --max_path_length=8 \
     --output_dir=/staging/step2
 
   # Modified preprocess
