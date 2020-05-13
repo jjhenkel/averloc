@@ -467,16 +467,6 @@ datasets/preprocessed/ast-paths/c2s/java-small: ## Generate a preprocessed (repr
 		"$${IMAGE_NAME}" java
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
 
-datasets/preprocessed/ast-paths/c2s/java-med: ## Generate a preprocessed (representation: ast-paths) version of code2seq's Java med dataset <!PRIVATE>
-	@$(call echo_debug,"Finalizing dataset 'preprocessed/ast-paths/c2s/java-med' (using 'ast-paths' representation)...")
-	@$(call mkdir_cleanup_on_error,$@)
-	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
-	docker run -it --rm \
-		-v "${ROOT_DIR}/datasets/normalized/c2s/java-med:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/preprocessed/ast-paths/c2s/java-med:/mnt/outputs" \
-		"$${IMAGE_NAME}" java
-	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
-
 datasets/preprocessed/ast-paths/csn/java: ## Generate a preprocessed (representation: ast-paths) version of CodeSearchNet's Java dataset <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'preprocessed/ast-paths/csn/java' (using 'ast-paths' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
@@ -508,7 +498,6 @@ datasets/preprocessed/ast-paths/sri/py150: ## Generate a preprocessed (represent
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
 
 EAP_DEPS := datasets/preprocessed/ast-paths/c2s/java-small
-EAP_DEPS += datasets/preprocessed/ast-paths/c2s/java-med
 EAP_DEPS += datasets/preprocessed/ast-paths/csn/java
 EAP_DEPS += datasets/preprocessed/ast-paths/csn/python
 EAP_DEPS += datasets/preprocessed/ast-paths/sri/py150
@@ -526,16 +515,6 @@ datasets/preprocessed/tokens/c2s/java-small: ## Generate a preprocessed (represe
 	docker run -it --rm \
 		-v "${ROOT_DIR}/datasets/normalized/c2s/java-small:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/preprocessed/tokens/c2s/java-small:/mnt/outputs" \
-		"$${IMAGE_NAME}"
-	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
-
-datasets/preprocessed/tokens/c2s/java-med: ## Generate a preprocessed (representation: tokens) version of code2seq's java-med dataset <!PRIVATE>
-	@$(call echo_debug,"Finalizing dataset 'preprocessed/tokens/c2s/java-med' (using 'tokens' representation)...")
-	@$(call mkdir_cleanup_on_error,$@)
-	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
-	docker run -it --rm \
-		-v "${ROOT_DIR}/datasets/normalized/c2s/java-med:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/preprocessed/tokens/c2s/java-med:/mnt/outputs" \
 		"$${IMAGE_NAME}"
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
 
@@ -570,7 +549,6 @@ datasets/preprocessed/tokens/sri/py150: ## Generate a preprocessed (representati
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
 
 ETOK_DEPS := datasets/preprocessed/tokens/c2s/java-small
-ETOK_DEPS += datasets/preprocessed/tokens/c2s/java-med
 ETOK_DEPS += datasets/preprocessed/tokens/csn/java
 ETOK_DEPS += datasets/preprocessed/tokens/csn/python
 ETOK_DEPS += datasets/preprocessed/tokens/sri/py150
