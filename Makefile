@@ -411,7 +411,7 @@ datasets/normalized/c2s/java-small: ## Generate a normalized version of code2seq
 	docker run -it --rm \
 		-v "${ROOT_DIR}/datasets/raw/c2s/java-small:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/normalized/c2s/java-small:/mnt/outputs" \
-		"$${IMAGE_NAME}" java gz 70000 10000 20000
+		"$${IMAGE_NAME}" java gz 150000 10000 20000
 	@$(call echo_debug,"  + Normalization complete!")
 
 datasets/normalized/csn/java: ## Generates a normalized version of CodeSearchNet's Java dataset <!PRIVATE>
@@ -421,7 +421,7 @@ datasets/normalized/csn/java: ## Generates a normalized version of CodeSearchNet
 	docker run -it --rm \
 		-v "${ROOT_DIR}/datasets/raw/csn/java:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/normalized/csn/java:/mnt/outputs" \
-		"$${IMAGE_NAME}" java gz 70000 10000 20000
+		"$${IMAGE_NAME}" java gz 150000 10000 20000
 	@$(call echo_debug,"  + Normalization complete!")
 
 datasets/normalized/csn/python: ## Generates a normalized version of CodeSearchNet's Python dataset <!PRIVATE>
@@ -431,7 +431,7 @@ datasets/normalized/csn/python: ## Generates a normalized version of CodeSearchN
 	docker run -it --rm \
 		-v "${ROOT_DIR}/datasets/raw/csn/python:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/normalized/csn/python:/mnt/outputs" \
-		"$${IMAGE_NAME}" python gz 70000 10000 20000
+		"$${IMAGE_NAME}" python gz 150000 10000 20000
 	@$(call echo_debug,"  + Normalization complete!")
 
 datasets/normalized/sri/py150: ## Generates a normalized version of SRI Lab's py150k dataset <!PRIVATE>
@@ -441,7 +441,7 @@ datasets/normalized/sri/py150: ## Generates a normalized version of SRI Lab's py
 	docker run -it --rm \
 		-v "${ROOT_DIR}/datasets/raw/sri/py150:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/normalized/sri/py150:/mnt/outputs" \
-		"$${IMAGE_NAME}" python gz 70000 10000 20000
+		"$${IMAGE_NAME}" python gz 150000 10000 20000
 	@$(call echo_debug,"  + Normalization complete!")
 
 ND_DEPS := datasets/normalized/c2s/java-small
