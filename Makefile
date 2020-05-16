@@ -1004,18 +1004,7 @@ apply-transforms-c2s-java-small: build-image-spoon-apply-transforms ## (DS-4) Ap
 		-v "${ROOT_DIR}/datasets/normalized/c2s/java-small:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small:/mnt/outputs" \
 	  -v "${ROOT_DIR}/vendor/CodeSearchNet/function_parser/function_parser:/src/function-parser/function_parser" \
-		-v "${ROOT_DIR}/tasks/spoon-apply-transforms/Transforms.java:/app/Transforms.java" \
-		-v "${ROOT_DIR}/tasks/spoon-apply-transforms/transforms:/app/transforms" \
-		"$${IMAGE_NAME}"
-
-.PHONY: apply-transforms-c2s-java-med
-apply-transforms-c2s-java-med: build-image-spoon-apply-transforms ## (DS-4) Apply our suite of transforms to code2seq's java-med dataset.
-	@IMAGE_NAME="$(shell whoami)/averloc--spoon-apply-transforms:$(shell git rev-parse HEAD)"
-	docker run -it --rm \
-		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
-		-v "${ROOT_DIR}/datasets/normalized/c2s/java-med:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-med:/mnt/outputs" \
-	  -v "${ROOT_DIR}/vendor/CodeSearchNet/function_parser/function_parser:/src/function-parser/function_parser" \
+		-v "${ROOT_DIR}/tasks/spoon-apply-transforms/jars/spoon.jar:/app/spoon.jar" \
 		-v "${ROOT_DIR}/tasks/spoon-apply-transforms/Transforms.java:/app/Transforms.java" \
 		-v "${ROOT_DIR}/tasks/spoon-apply-transforms/transforms:/app/transforms" \
 		"$${IMAGE_NAME}"
@@ -1028,6 +1017,7 @@ apply-transforms-csn-java: build-image-spoon-apply-transforms ## (DS-4) Apply ou
 		-v "${ROOT_DIR}/datasets/normalized/csn/java:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/transformed/normalized/csn/java:/mnt/outputs" \
 	  -v "${ROOT_DIR}/vendor/CodeSearchNet/function_parser/function_parser:/src/function-parser/function_parser" \
+		-v "${ROOT_DIR}/tasks/spoon-apply-transforms/jars/spoon.jar:/app/spoon.jar" \
 		-v "${ROOT_DIR}/tasks/spoon-apply-transforms/Transforms.java:/app/Transforms.java" \
 		-v "${ROOT_DIR}/tasks/spoon-apply-transforms/transforms:/app/transforms" \
 		"$${IMAGE_NAME}"
