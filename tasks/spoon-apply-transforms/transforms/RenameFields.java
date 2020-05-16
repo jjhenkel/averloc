@@ -13,16 +13,8 @@ import java.io.IOException;
 import java.lang.Math;
 
 public class RenameFields extends Renamer<CtField> {
-  protected int NAME_MIN_LENGTH = 1;
-  protected int NAME_MAX_LENGTH = 5;
-  protected double RENAME_PERCENT = 1.0;
-  protected Boolean SHUFFLE_MODE = false;
-
-  public RenameFields(int nameMinLength, int nameMaxLength, double renamePercent, ArrayList<String> topTargetSubtokens) {
-      this.NAME_MIN_LENGTH = nameMinLength;
-      this.NAME_MAX_LENGTH = nameMaxLength;
-      this.RENAME_PERCENT = renamePercent;
-      this.setTopTargetSubtokens((ArrayList<String>)topTargetSubtokens.clone());
+  public RenameFields(int uid) {
+    this.setUID(this.UID);
   }
 
 	@Override
@@ -85,16 +77,13 @@ public class RenameFields extends Renamer<CtField> {
 
     // Get setup for renaming (use the fieldDecls we crafted earlier)
     setDefs(fieldDecls);
-    setSubtokens(topTargetSubtokens);
     setPrefix("RF");
     
-    // Select some percentage of things to rename
-    takePercentage(RENAME_PERCENT);
+    // Select a random field to rename
+    takeSingle();
 
     // Build new names and apply them (true ==> to skip decls)
-    applyRenaming(method, true, generateRenaming(
-        method, SHUFFLE_MODE, NAME_MIN_LENGTH, NAME_MAX_LENGTH
-    ));
+    applyTargetedRenaming(method, true);
 
     // Cleanup: remove fields from WRAPPER class
     for (CtField<String> generatedField : fieldDecls) {

@@ -19,9 +19,9 @@ import java.lang.Math;
 
 public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
   protected boolean debug = false;
-  protected boolean useReplacementTokens = true;
 
   protected String prefix = "R";
+  protected int UID = 0;
 
   protected ArrayList<T> theDefs;
   protected ArrayList<T> targetDefs;
@@ -39,6 +39,10 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
 
   protected void setPrefix(String pref) {
     prefix = pref;
+  }
+
+  protected void setUID(int uid) {
+    this.UID = uid;
   }
 
   protected void setDefs(ArrayList<T> defs) {
@@ -66,6 +70,32 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
       System.out.println(String.format(
         "[RENAMER] - Recieved a corpus of %s frequent subtokens for random name building.",
         subtokenBank.size()
+      ));
+    }
+  }
+
+  protected void takeSingle() {
+    Collections.shuffle(theDefs);
+
+    int toTake = theDefs.size() > 0 ? 1 : 0;
+
+    if (toTake <= 0) {
+      if (debug) {
+        System.out.println("[RENAMER] - Note: zero defs selected for transform.");
+      }
+      return;
+    }
+
+    targetDefs = new ArrayList<T>(theDefs.subList(0, 1));
+    namesOfTargetDefs = new ArrayList<String>();
+
+    for (T targetDef : targetDefs) {
+      namesOfTargetDefs.add(targetDef.getSimpleName());
+    }
+
+    if (debug) {
+      System.out.println(String.format(
+        "[RENAMER] - Selected %s defs.", toTake
       ));
     }
   }
@@ -180,14 +210,6 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
       }
     }
 
-    if (useReplacementTokens) {
-      int index = 1;
-      for (T key : renames.keySet()) {
-        renames.put(key, "REPLACE_ME_" + prefix + "_" + Integer.toString(index));
-        index += 1; 
-      }
-    }
-
     if (debug) {
       System.out.println("[RENAMER] - Generated renaming:");
       for (Map.Entry<T,String> item : renames.entrySet()) {
@@ -208,6 +230,16 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
     } else {
       return String.format("%s", position.getLine());
     }
+  }
+
+  protected void applyTargetedRenaming(CtExecutable method, boolean skipDecls) {
+    IdentityHashMap<T, String> renames = new IdentityHashMap<T, String>();
+    
+    for (T target : targetDefs) {
+      renames.put(target, "REPLACE_ME_" + prefix + "_" + Integer.toString(this.UID));
+    }
+
+    applyRenaming(method, skipDecls, renames);
   }
 
   protected void applyRenaming(CtExecutable method, boolean skipDecls, IdentityHashMap<T, String> renames) {

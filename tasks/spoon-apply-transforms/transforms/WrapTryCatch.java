@@ -8,21 +8,14 @@ import java.util.*;
 import java.lang.Math;
 
 public class WrapTryCatch extends AverlocTransformer {
-  // Parameters to this renaming transform
-  protected double REPLACMENT_CHANCE = 1.0;
+  protected int UID = 0;
 
-  public WrapTryCatch(double replacementChance) {
-    this.REPLACMENT_CHANCE = replacementChance;
+  public WrapTryCatch(int uid) {
+    this.UID = uid;
   }
 
 	@Override
 	public void transform(CtExecutable method) {
-    Random rand = new Random();
-
-    if (rand.nextDouble() >= REPLACMENT_CHANCE) {
-      return;
-    }
-
     ArrayList<CtLiteral> literals = getChildrenOfType(
       method, CtLiteral.class
     );
@@ -31,10 +24,12 @@ public class WrapTryCatch extends AverlocTransformer {
 
     wrapper.addCatcher(
       getFactory().Code().createCtCatch(
-        "REPLACE_ME_WTC_1",
+        "REPLACE_ME_WTC_" + Integer.toString(this.UID),
         java.lang.Exception.class,
         getFactory().Code().createCtBlock(
-          getFactory().Code().createCtThrow("REPLACE_ME_WTC_1")
+          getFactory().Code().createCtThrow(
+            "REPLACE_ME_WTC_" + Integer.toString(this.UID)
+          )
         )
       )
     );

@@ -8,11 +8,11 @@ import java.util.*;
 import java.lang.Math;
 
 public class UnrollWhiles extends AverlocTransformer {
-  // Parameters to this renaming transform
-  protected int UNROLL_STEPS = 2;
+  protected int UNROLL_STEPS = 1;
+  protected int UID = 0;
 
-  public UnrollWhiles(int unrollSteps) {
-    this.UNROLL_STEPS = unrollSteps;
+  public UnrollWhiles(int uid) {
+    this.UID = uid;
   }
 
 	@Override
@@ -20,32 +20,37 @@ public class UnrollWhiles extends AverlocTransformer {
     ArrayList<CtWhile> whiles = getChildrenOfType(
       method, CtWhile.class
     );
+    
+    whiles.removeIf(
+      x -> x.getBody() == null || x.getLoopingExpression() == null
+    );
 
-    for (CtWhile theWhile : whiles) {
-      if (theWhile.getBody() == null || theWhile.getLoopingExpression() == null) {
-        continue;
-      }
-
-      CtStatement whileBody = theWhile.getBody();
-      CtStatement lastBody = theWhile;
-
-      for (int i = 0; i < this.UNROLL_STEPS; i++) {
-        CtIf wrapperIf = getFactory().Core().createIf();
-
-        wrapperIf.setCondition(theWhile.getLoopingExpression().clone());
-
-        CtBlock temp = getFactory().Core().createBlock();
-        temp.addStatement(whileBody.clone());
-        temp.addStatement(lastBody.clone());
-
-        wrapperIf.setThenStatement(temp);
-
-        lastBody = wrapperIf.clone();
-      }
-
-      theWhile.replace(lastBody);
-      
-      this.setChanged(method);
+    if (whiles.size() <= 0) {
+      return;
     }
+
+    Collections.shuffle(whiles);
+    CtWhile target = whiles.get(0);
+
+    CtStatement whileBody = target.getBody();
+    CtStatement lastBody = target;
+
+    for (int i = 0; i < this.UNROLL_STEPS; i++) {
+      CtIf wrapperIf = getFactory().Core().createIf();
+
+      wrapperIf.setCondition(target.getLoopingExpression().clone());
+
+      CtBlock temp = getFactory().Core().createBlock();
+      temp.addStatement(whileBody.clone());
+      temp.addStatement(lastBody.clone());
+
+      wrapperIf.setThenStatement(temp);
+
+      lastBody = wrapperIf.clone();
+    }
+
+    target.replace(lastBody);
+    
+    this.setChanged(method);
 	}
 }

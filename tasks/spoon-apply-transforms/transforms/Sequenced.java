@@ -5,10 +5,10 @@ import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.*;
 
-public class All extends AverlocTransformer {
+public class Sequenced extends AverlocTransformer {
   ArrayList<AverlocTransformer> subTransformers;
 
-  public All(ArrayList<AverlocTransformer> subTransformers, String name) {
+  public Sequenced(ArrayList<AverlocTransformer> subTransformers, String name) {
     this.subTransformers = subTransformers;
     this.name = name;
   }

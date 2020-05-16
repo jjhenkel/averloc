@@ -8,38 +8,36 @@ import java.util.*;
 import java.lang.Math;
 
 public class ReplaceTrueFalse extends AverlocTransformer {
-  // Parameters to this renaming transform
-  protected double REPLACMENT_CHANCE = 1.0;
+  protected int UID = 0;
 
-  public ReplaceTrueFalse(double replacementChance) {
-    this.REPLACMENT_CHANCE = replacementChance;
+  public ReplaceTrueFalse(int uid) {
+    this.UID = uid;
   }
 
 	@Override
 	public void transform(CtExecutable method) {
-    Random rand = new Random();
-
-    if (rand.nextDouble() >= REPLACMENT_CHANCE) {
-      return;
-    }
-
     ArrayList<CtLiteral> literals = getChildrenOfType(
       method, CtLiteral.class
     );
+    
+    literals.removeIf(
+      x -> x.getValue() == null || !(x.getValue() instanceof Boolean)
+    );
 
-    for (CtLiteral literal : literals) {
-      if (literal.getValue() != null && literal.getValue() instanceof Boolean) {
-        // int randomLiteral = rand.nextBoolean() ? 0 : 1;
-
-        CtBinaryOperator<Boolean> replacement = getFactory().Code().createBinaryOperator(
-          getFactory().Code().createLiteral("REPLACE_ME_RTF_1"), 
-          getFactory().Code().createLiteral("REPLACE_ME_RTF_1"), 
-          ((Boolean)literal.getValue()) ? BinaryOperatorKind.EQ : BinaryOperatorKind.NE
-        );
-
-        literal.replace(replacement);
-        this.setChanged(method);
-      }
+    if (literals.size() <= 0) {
+      return;
     }
+
+    Collections.shuffle(literals);
+    CtLiteral target = literals.get(0);
+
+    CtBinaryOperator<Boolean> replacement = getFactory().Code().createBinaryOperator(
+      getFactory().Code().createLiteral("REPLACE_ME_RTF_" + Integer.toString(this.UID)), 
+      getFactory().Code().createLiteral("REPLACE_ME_RTF_" + Integer.toString(this.UID)), 
+      ((Boolean)target.getValue()) ? BinaryOperatorKind.EQ : BinaryOperatorKind.NE
+    );
+
+    target.replace(replacement);
+    this.setChanged(method);
 	}
 }

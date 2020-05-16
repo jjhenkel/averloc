@@ -4,3 +4,6 @@
 [submodule "vendor/CodeSearchNet"]
 	path = vendor/CodeSearchNet
 	url = https://github.com/jjhenkel/CodeSearchNet
+[submodule "vendor/spoon"]
+	path = vendor/spoon
+	url = https://github.com/jjhenkel/spoon
