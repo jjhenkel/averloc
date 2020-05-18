@@ -17,7 +17,6 @@ public class RenameParameters extends Renamer<CtParameter> {
         
         // Get setup for renaming
         setDefs(getChildrenOfType(method, CtParameter.class));
-        setPrefix("RP");
         
         takeSingle();
 

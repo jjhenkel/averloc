@@ -20,7 +20,6 @@ import java.lang.Math;
 public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
   protected boolean debug = false;
 
-  protected String prefix = "R";
   protected int UID = 0;
 
   protected ArrayList<T> theDefs;
@@ -35,10 +34,6 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
     targetDefs = new ArrayList<T>();
     namesOfDefs = new ArrayList<String>();
     namesOfTargetDefs = new ArrayList<String>();
-  }
-
-  protected void setPrefix(String pref) {
-    prefix = pref;
   }
 
   protected void setUID(int uid) {
@@ -236,7 +231,7 @@ public class Renamer<T extends CtNamedElement> extends AverlocTransformer {
     IdentityHashMap<T, String> renames = new IdentityHashMap<T, String>();
     
     for (T target : targetDefs) {
-      renames.put(target, "REPLACE_ME_" + prefix + "_" + Integer.toString(this.UID));
+      renames.put(target, "REPLACEME" + Integer.toString(this.UID));
     }
 
     applyRenaming(method, skipDecls, renames);

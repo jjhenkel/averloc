@@ -21,7 +21,7 @@ public class InsertPrintStatements extends AverlocTransformer {
     
     CtCodeSnippetStatement snippet = getFactory().Core().createCodeSnippetStatement();
     snippet.setValue(String.format(
-      "System.out.println(\"REPLACE_ME_IPS_%s\")",
+      "System.out.println(\"REPLACEME%s\")",
       Integer.toString(this.UID)
     ));
 

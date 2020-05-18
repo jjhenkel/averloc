@@ -21,7 +21,7 @@ public class AddDeadCode extends AverlocTransformer {
     
     CtCodeSnippetStatement snippet = getFactory().Core().createCodeSnippetStatement();
     snippet.setValue(String.format(
-      "if (false) { int REPLACE_ME_ADC_%s = 1; }",
+      "if (false) { int REPLACEME%s = 1; }",
       Integer.toString(this.UID)
     ));
 

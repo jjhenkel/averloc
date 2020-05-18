@@ -37,10 +37,16 @@ class TransformFileTask implements Runnable {
 
 	String split;
 	ArrayList<VirtualFile> inputs;
+	boolean doDepthK;
+	int K;
+	int NUM_SAMPLES; 
 
-	TransformFileTask(String split, ArrayList<VirtualFile> inputs) {
+	TransformFileTask(String split, ArrayList<VirtualFile> inputs, boolean depthK, int k, int numSamples) {
 		this.split = split;
 		this.inputs = inputs;
+		this.doDepthK = depthK;
+		this.K = k;
+		this.NUM_SAMPLES = numSamples;
 	}
 
 	private Launcher buildLauncher(AverlocTransformer transformer) {
@@ -97,15 +103,11 @@ class TransformFileTask implements Runnable {
 
 		transformers.add(new Identity());
 
-		boolean doDepthK = System.getenv("DEPTH_K") != null;
     Random rand = new Random();
 
 		if (doDepthK) {
-			int K = Integer.parseInt(System.getenv("DEPTH_K"));
-			int SAMPLES = Integer.parseInt(System.getenv("SAMPLES"));
-
-			// Take SAMPLES many sequences of DEPTH_K length
-			for (int s = 0; s < SAMPLES; s++) {
+			// Take NUM_SAMPLES many sequences of DEPTH length
+			for (int s = 0; s < NUM_SAMPLES; s++) {
 				ArrayList<AverlocTransformer> subset = new ArrayList<AverlocTransformer>();
 				
 				// Random, allow duplciates, do depth K
@@ -115,19 +117,19 @@ class TransformFileTask implements Runnable {
 					if (choice == 0){
 						subset.add(new AddDeadCode(i));
 					} else if (choice == 1) {
-						transformers.add(new WrapTryCatch(i));
+						subset.add(new WrapTryCatch(i));
 					} else if (choice == 2) {
-						transformers.add(new UnrollWhiles(i));
+						subset.add(new UnrollWhiles(i));
 					} else if (choice == 3) {
-						transformers.add(new InsertPrintStatements(i));
+						subset.add(new InsertPrintStatements(i));
 					} else if (choice == 4) {
-						transformers.add(new RenameFields(i));
+						subset.add(new RenameFields(i));
 					} else if (choice == 5) {
-						transformers.add(new RenameLocalVariables(i));
+						subset.add(new RenameLocalVariables(i));
 					} else if (choice == 6) {
-						transformers.add(new RenameParameters(i));
+						subset.add(new RenameParameters(i));
 					} else if (choice == 7) {
-						transformers.add(new ReplaceTrueFalse(i));
+						subset.add(new ReplaceTrueFalse(i));
 					}
 				}
 
@@ -148,7 +150,7 @@ class TransformFileTask implements Runnable {
 			transformers.add(new ReplaceTrueFalse(1));
 		}
 
-		// System.out.println(String.format("     + Have %s tranforms.", transformers.size()));
+		System.out.println(String.format("     + Have %s tranforms.", transformers.size()));
 
 		ArrayList<String> failures = new ArrayList<String>();
 		for (AverlocTransformer transformer : transformers) {
@@ -224,12 +226,11 @@ public class Transforms {
     return parts;
   }
 
-	private static ArrayList<Callable<Void>> makeTasks(String split) {
+	private static ArrayList<Callable<Void>> makeTasks(String split, String maybeDepth, String numSamples) {
 		try {
 			// Return list of tasks
 			ArrayList<Callable<Void>> tasks = new ArrayList<Callable<Void>>();
 		
-
 			// The file this thread will read from
 			InputStream fileStream = new FileInputStream(String.format(
 				"/mnt/inputs/%s.jsonl.gz",
@@ -261,7 +262,13 @@ public class Transforms {
 			}
 
 			for (ArrayList<VirtualFile> chunk : chopped(inputs, 3000)) {
-				tasks.add(toCallable(new TransformFileTask(split, chunk)));
+				tasks.add(toCallable(new TransformFileTask(
+					split,
+					chunk,
+					maybeDepth != null,
+					maybeDepth != null ? Integer.parseInt(maybeDepth) : 1,
+					numSamples != null ? Integer.parseInt(numSamples) : 1
+				)));
 			}
 
 			return tasks;
@@ -280,18 +287,18 @@ public class Transforms {
 			if (System.getenv("AVERLOC_JUST_TEST").equalsIgnoreCase("true")) {
 				System.out.println("Populating tasks...");
 				System.out.println("   - Adding from test split...");
-				allTasks.addAll(Transforms.makeTasks("test"));
+				allTasks.addAll(Transforms.makeTasks("test", System.getenv("DEPTH"), System.getenv("NUM_SAMPLES")));
 				System.out.println(String.format("     + Now have %s tasks...", allTasks.size()));
 			} else {
 				System.out.println("Populating tasks...");
 				System.out.println("   - Adding from test split...");
-				allTasks.addAll(Transforms.makeTasks("test"));
+				allTasks.addAll(Transforms.makeTasks("test", System.getenv("DEPTH"), System.getenv("NUM_SAMPLES")));
 				System.out.println(String.format("     + Now have %s tasks...", allTasks.size()));
 				System.out.println("   - Adding from train split...");
-				allTasks.addAll(Transforms.makeTasks("train"));
+				allTasks.addAll(Transforms.makeTasks("train", System.getenv("DEPTH"), System.getenv("NUM_SAMPLES")));
 				System.out.println(String.format("     + Now have %s tasks...", allTasks.size()));
 				System.out.println("   - Adding from valid split...");
-				allTasks.addAll(Transforms.makeTasks("valid"));
+				allTasks.addAll(Transforms.makeTasks("valid", System.getenv("DEPTH"), System.getenv("NUM_SAMPLES")));
 				System.out.println(String.format("     + Now have %s tasks...", allTasks.size()));
 			}
 

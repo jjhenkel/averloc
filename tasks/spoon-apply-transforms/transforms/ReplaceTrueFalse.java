@@ -32,8 +32,8 @@ public class ReplaceTrueFalse extends AverlocTransformer {
     CtLiteral target = literals.get(0);
 
     CtBinaryOperator<Boolean> replacement = getFactory().Code().createBinaryOperator(
-      getFactory().Code().createLiteral("REPLACE_ME_RTF_" + Integer.toString(this.UID)), 
-      getFactory().Code().createLiteral("REPLACE_ME_RTF_" + Integer.toString(this.UID)), 
+      getFactory().Code().createLiteral("REPLACEME" + Integer.toString(this.UID)), 
+      getFactory().Code().createLiteral("REPLACEME" + Integer.toString(this.UID)), 
       ((Boolean)target.getValue()) ? BinaryOperatorKind.EQ : BinaryOperatorKind.NE
     );
 

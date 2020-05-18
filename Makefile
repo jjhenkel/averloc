@@ -561,7 +561,6 @@ extract-tokens: build-image-preprocess-dataset-tokens | $(ETOK_DEPS) ## (DS-3) G
 
 ALL_TRANSFORMS:="transforms.Identity"
 ALL_TRANSFORMS+="transforms.AddDeadCode"
-ALL_TRANSFORMS+="transforms.All"
 ALL_TRANSFORMS+="transforms.InsertPrintStatements"
 ALL_TRANSFORMS+="transforms.RenameFields"
 ALL_TRANSFORMS+="transforms.RenameLocalVariables"
@@ -579,19 +578,6 @@ datasets/transformed/preprocessed/ast-paths/c2s/java-small: ## <!PRIVATE>
 			-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
 			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small/$${transform}:/mnt/inputs" \
 			-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-small/$${transform}:/mnt/outputs" \
-			"$${IMAGE_NAME}" java
-	done
-	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
-
-datasets/transformed/preprocessed/ast-paths/c2s/java-med: ## <!PRIVATE>
-	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/c2s/java-med/transforms.Identity' (using 'ast-paths' representation)...")
-	@$(call mkdir_cleanup_on_error,$@)
-	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-c2s:$(shell git rev-parse HEAD)"
-	@for transform in ${ALL_TRANSFORMS}; do 
-		docker run -it --rm \
-			-v "${ROOT_DIR}/vendor/code2seq:/code2seq" \
-			-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-med/$${transform}:/mnt/inputs" \
-			-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-med/$${transform}:/mnt/outputs" \
 			"$${IMAGE_NAME}" java
 	done
 	@$(call echo_debug,"  + Finalizing (using 'ast-paths' representation) complete!")
@@ -639,7 +625,6 @@ ETAP_DEPS := datasets/transformed/preprocessed/ast-paths/c2s/java-small
 ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/csn/java
 ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/csn/python
 ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/sri/py150
-ETAP_DEPS += datasets/transformed/preprocessed/ast-paths/c2s/java-med
 
 extract-transformed-ast-paths: build-image-preprocess-dataset-c2s | $(ETAP_DEPS) ## (DS-6) Extract preprocessed representations (ast-paths) from our transfromed (normalized) datasets 
 	@$(call echo_info,"AST Paths (code2seq style) preprocessed representations extracted (for transformed datasets)!")
@@ -877,40 +862,27 @@ ifndef ADVERSARIAL_MODE
 endif
 
 .PHONY: extract-adv-dataset-ast-paths-c2s-java-small
-extract-adv-dataset-ast-paths-c2s-java-small: | check-adversarial-mode build-image-extract-adv-dataset-c2s
-	@$(call adversarial_mode_setup)
+extract-adv-dataset-ast-paths-c2s-java-small: | build-image-extract-adv-dataset-c2s
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-c2s:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
 		-v "${ROOT_DIR}/tasks/extract-adv-dataset-c2s:/app" \
 		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-small:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/adversarial/$${DIR_PART}/ast-paths/c2s/java-small:/mnt/outputs" \
-		"$${IMAGE_NAME}"  $${TRANSFORMS}
-
-.PHONY: extract-adv-dataset-ast-paths-c2s-java-med
-extract-adv-dataset-ast-paths-c2s-java-med: | check-adversarial-mode build-image-extract-adv-dataset-c2s
-	@$(call adversarial_mode_setup)
-	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-c2s:$(shell git rev-parse HEAD)"
-	DOCKER_API_VERSION=1.40 docker run -it --rm \
-		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
-		-v "${ROOT_DIR}/tasks/extract-adv-dataset-c2s:/app" \
-		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-med:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/adversarial/$${DIR_PART}/ast-paths/c2s/java-med:/mnt/outputs" \
-		"$${IMAGE_NAME}"  $${TRANSFORMS}
+		-v "${ROOT_DIR}/datasets/adversarial/depth-1/ast-paths/c2s/java-small:/mnt/outputs" \
+		"$${IMAGE_NAME}"  ${ALL_TRANSFORMS}
 
 .PHONY: extract-adv-dataset-ast-paths-csn-java
-extract-adv-dataset-ast-paths-csn-java: | check-adversarial-mode build-image-extract-adv-dataset-c2s
-	@$(call adversarial_mode_setup)
+extract-adv-dataset-ast-paths-csn-java:
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-c2s:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
 		-v "${ROOT_DIR}/tasks/extract-adv-dataset-c2s:/app" \
 		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/csn/java:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/adversarial/$${DIR_PART}/ast-paths/csn/java:/mnt/outputs" \
-		"$${IMAGE_NAME}"  $${TRANSFORMS}
+		-v "${ROOT_DIR}/datasets/adversarial/depth-1/ast-paths/csn/java:/mnt/outputs" \
+		"$${IMAGE_NAME}"  ${ALL_TRANSFORMS}
 
 .PHONY: extract-adv-dataset-ast-paths-csn-python
-extract-adv-dataset-ast-paths-csn-python: | check-adversarial-mode build-image-extract-adv-dataset-c2s
+extract-adv-dataset-ast-paths-csn-python: | build-image-extract-adv-dataset-c2s
 	@$(call adversarial_mode_setup)
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-c2s:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
@@ -918,10 +890,10 @@ extract-adv-dataset-ast-paths-csn-python: | check-adversarial-mode build-image-e
 		-v "${ROOT_DIR}/tasks/extract-adv-dataset-c2s:/app" \
 		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/csn/python:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/adversarial/$${DIR_PART}/ast-paths/csn/python:/mnt/outputs" \
-		"$${IMAGE_NAME}"  $${TRANSFORMS}
+		"$${IMAGE_NAME}"  ${ALL_TRANSFORMS}
 
 .PHONY: extract-adv-dataset-ast-paths-sri-py150
-extract-adv-dataset-ast-paths-sri-py150: | check-adversarial-mode build-image-extract-adv-dataset-c2s
+extract-adv-dataset-ast-paths-sri-py150: | build-image-extract-adv-dataset-c2s
 	@$(call adversarial_mode_setup)
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-c2s:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
@@ -929,7 +901,7 @@ extract-adv-dataset-ast-paths-sri-py150: | check-adversarial-mode build-image-ex
 		-v "${ROOT_DIR}/tasks/extract-adv-dataset-c2s:/app" \
 		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/sri/py150:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/adversarial/$${DIR_PART}/ast-paths/sri/py150:/mnt/outputs" \
-		"$${IMAGE_NAME}"  $${TRANSFORMS}
+		"$${IMAGE_NAME}"  ${ALL_TRANSFORMS}
 
 #######################################################################################################################
 #######################################################################################################################
@@ -1000,6 +972,8 @@ extract-adv-datasets-tokens: $(EADT_DEPS) ## (DS-7) Extract preprocessed adversa
 apply-transforms-c2s-java-small: build-image-spoon-apply-transforms ## (DS-4) Apply our suite of transforms to code2seq's java-small dataset.
 	@IMAGE_NAME="$(shell whoami)/averloc--spoon-apply-transforms:$(shell git rev-parse HEAD)"
 	docker run -it --rm \
+		-e DEPTH="$${DEPTH}" \
+		-e NUM_SAMPLES="$${NUM_SAMPLES}" \
 		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
 		-v "${ROOT_DIR}/datasets/normalized/c2s/java-small:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/transformed/normalized/c2s/java-small:/mnt/outputs" \
@@ -1013,6 +987,8 @@ apply-transforms-c2s-java-small: build-image-spoon-apply-transforms ## (DS-4) Ap
 apply-transforms-csn-java: build-image-spoon-apply-transforms ## (DS-4) Apply our suite of transforms to CodeSearchNet's java dataset.
 	@IMAGE_NAME="$(shell whoami)/averloc--spoon-apply-transforms:$(shell git rev-parse HEAD)"
 	docker run -it --rm \
+		-e DEPTH="$${DEPTH}" \
+		-e NUM_SAMPLES="$${NUM_SAMPLES}" \
 		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
 		-v "${ROOT_DIR}/datasets/normalized/csn/java:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/transformed/normalized/csn/java:/mnt/outputs" \
@@ -1027,6 +1003,9 @@ apply-transforms-csn-python: build-image-astor-apply-transforms ## (DS-4) Apply 
 	@IMAGE_NAME="$(shell whoami)/averloc--astor-apply-transforms:$(shell git rev-parse HEAD)"
 	@$(call echo_debug,"Testing astor on normalized csn/python files...")
 	docker run -it --rm \
+		-e DEPTH="$${DEPTH}" \
+		-e NUM_SAMPLES="$${NUM_SAMPLES}" \
+		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
 		-v "${ROOT_DIR}/datasets/normalized/csn/python:/mnt/inputs" \
 		-v "${ROOT_DIR}/tasks/astor-apply-transforms:/app" \
 		-v "${ROOT_DIR}/datasets/transformed/normalized/csn/python:/mnt/outputs" \
@@ -1037,6 +1016,9 @@ apply-transforms-sri-py150: build-image-astor-apply-transforms ## (DS-4) Apply o
 	@IMAGE_NAME="$(shell whoami)/averloc--astor-apply-transforms:$(shell git rev-parse HEAD)"
 	@$(call echo_debug,"Testing astor on normalized sri/py150 files...")
 	docker run -it --rm \
+		-e DEPTH="$${DEPTH}" \
+		-e NUM_SAMPLES="$${NUM_SAMPLES}" \
+		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
 		-v "${ROOT_DIR}/datasets/normalized/sri/py150:/mnt/inputs" \
 		-v "${ROOT_DIR}/tasks/astor-apply-transforms:/app" \
 		-v "${ROOT_DIR}/datasets/transformed/normalized/sri/py150:/mnt/outputs" \

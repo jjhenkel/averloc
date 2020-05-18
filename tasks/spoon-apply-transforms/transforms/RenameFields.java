@@ -77,7 +77,6 @@ public class RenameFields extends Renamer<CtField> {
 
     // Get setup for renaming (use the fieldDecls we crafted earlier)
     setDefs(fieldDecls);
-    setPrefix("RF");
     
     // Select a random field to rename
     takeSingle();

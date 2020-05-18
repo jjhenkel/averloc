@@ -17,7 +17,6 @@ public class RenameLocalVariables extends Renamer<CtLocalVariable> {
 
         // Get setup for renaming
         setDefs(getChildrenOfType(method, CtLocalVariable.class));
-        setPrefix("RLV");
         
         takeSingle();
 

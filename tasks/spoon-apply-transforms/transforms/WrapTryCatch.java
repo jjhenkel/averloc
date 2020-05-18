@@ -24,11 +24,11 @@ public class WrapTryCatch extends AverlocTransformer {
 
     wrapper.addCatcher(
       getFactory().Code().createCtCatch(
-        "REPLACE_ME_WTC_" + Integer.toString(this.UID),
+        "REPLACEME" + Integer.toString(this.UID),
         java.lang.Exception.class,
         getFactory().Code().createCtBlock(
           getFactory().Code().createCtThrow(
-            "REPLACE_ME_WTC_" + Integer.toString(this.UID)
+            "REPLACEME" + Integer.toString(this.UID)
           )
         )
       )
