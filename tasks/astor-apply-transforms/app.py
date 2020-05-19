@@ -8,6 +8,7 @@ import copy
 import tqdm
 import astor
 import random
+import itertools
 import multiprocessing
 
 
@@ -159,35 +160,7 @@ PY_2_BUILTINS = [
 ]
 
 
-def derange(defs):
-  def swap(lst, s1, s2):
-    tmp = lst[s1]
-    lst[s1] = lst[s2]
-    lst[s2] = tmp
-
-  og_names = list(defs.keys())
-  just_names = list(defs.keys())
-  for a in range(1, len(just_names)):
-    b = random.choice(range(0, a))
-    swap(just_names, a, b)
-  
-  renames = {}
-  for i in range(0, len(just_names)):
-    renames[just_names[i]] = og_names[i]
-  
-  return renames
-
-def generate_renaming(wordbank, defs, min_name_len, max_name_len):
-  renames = {}
-  for the_def in defs.keys():
-    subtokens_len = random.randint(min_name_len, max_name_len)
-    renames[the_def] = '_'.join(
-      random.sample(wordbank, subtokens_len)
-    )
-  return renames
-
-
-def t_rename_fields(the_ast, wordbank, select_percantage=1.0, min_name_len=1, max_name_len=5):
+def t_rename_fields(the_ast, uid=1):
   changed = False
 
   # Going to need parent info
@@ -204,32 +177,27 @@ def t_rename_fields(the_ast, wordbank, select_percantage=1.0, min_name_len=1, ma
         if node.parent.attr not in [ c.attr for c in candidates ]:
           candidates.append(node.parent)
 
-  selections = random.sample(
-    candidates, int(float(len(candidates)) * select_percantage)
-  )
+  if len(candidates) == 0:
+    return False, the_ast
 
-  field_references = {}
-  for selected in selections:
-    field_references[selected.attr] = selected
-
-  renames = generate_renaming(wordbank, field_references, min_name_len, max_name_len)
+  selected = random.choice(candidates)
 
   to_rename = []
   for node in ast.walk(the_ast):
     if isinstance(node, ast.Name) and node.id == 'self':
-      if isinstance(node.parent, ast.Attribute) and node.parent.attr in renames:
+      if isinstance(node.parent, ast.Attribute) and node.parent.attr == selected.attr:
         if isinstance(node.parent.parent, ast.Call) and node.parent.parent.func == node.parent:
           continue
         to_rename.append(node.parent)
 
   for node in to_rename:
     changed = True
-    node.attr = renames[node.attr]
+    node.attr = 'REPLACEME' + str(uid)
 
   return changed, the_ast
 
 
-def t_rename_parameters(the_ast, wordbank, shuffle=False, select_percantage=1.0, min_name_len=1, max_name_len=5):
+def t_rename_parameters(the_ast, uid=1):
   changed = False
   candidates = []
   for node in ast.walk(the_ast):
@@ -238,20 +206,12 @@ def t_rename_parameters(the_ast, wordbank, shuffle=False, select_percantage=1.0,
         # print(node.arg, node.lineno)
         candidates.append(node)
 
-  selections = random.sample(
-    candidates, int(float(len(candidates)) * select_percantage)
-  )
-
-  parameter_defs = {}
-  for selected in selections:
-    parameter_defs[selected.arg] = selected
-
-  if shuffle and len(parameter_defs) < 2:
+  if len(candidates) == 0:
     return False, the_ast
 
-  renames = generate_renaming(
-    wordbank, parameter_defs, min_name_len, max_name_len
-  ) if not shuffle else derange(parameter_defs)
+  selected = random.choice(candidates)
+  parameter_defs = {}
+  parameter_defs[selected.arg] = selected
 
   to_rename = []
   for node in ast.walk(the_ast):
@@ -263,14 +223,14 @@ def t_rename_parameters(the_ast, wordbank, shuffle=False, select_percantage=1.0,
   for node in to_rename:
     changed = True
     if hasattr(node, 'arg'):
-      node.arg = renames[node.arg]
+      node.arg = 'REPLACEME' + str(uid)
     else:
-      node.id = renames[node.id]
+      node.id = 'REPLACEME' + str(uid)
 
   return changed, the_ast
 
 
-def t_rename_local_variables(the_ast, wordbank, shuffle=False, select_percantage=0.8, min_name_len=1, max_name_len=5):
+def t_rename_local_variables(the_ast, uid=1):
   changed = False
   candidates = []
   for node in ast.walk(the_ast):
@@ -279,20 +239,13 @@ def t_rename_local_variables(the_ast, wordbank, shuffle=False, select_percantage
         # print(node.id, node.lineno)
         candidates.append(node)
 
-  selections = random.sample(
-    candidates, int(float(len(candidates)) * select_percantage)
-  )
-
-  local_var_defs = {}
-  for selected in selections:
-    local_var_defs[selected.id] = selected
-
-  if shuffle and len(local_var_defs) < 2:
+  if len(candidates) == 0:
     return False, the_ast
 
-  renames = generate_renaming(
-    wordbank, local_var_defs, min_name_len, max_name_len
-  ) if not shuffle else derange(local_var_defs)
+
+  selected = random.choice(candidates)
+  local_var_defs = {}
+  local_var_defs[selected.id] = selected
 
   to_rename = []
   for node in ast.walk(the_ast):
@@ -301,283 +254,282 @@ def t_rename_local_variables(the_ast, wordbank, shuffle=False, select_percantage
   
   for node in to_rename:
     changed = True
-    node.id = renames[node.id]
+    node.id = 'REPLACEME' + str(uid)
 
   return changed, the_ast
 
 
-def t_shuffle_parameters(the_ast, wordbank):
-  return t_rename_parameters(the_ast, wordbank, True)
-
-
-def t_shuffle_local_variables(the_ast, wordbank):
-  return t_rename_local_variables(the_ast, wordbank, True)
-
-
-def t_insert_print_statements(the_ast, wordbank, min_insertions=2, max_insertions=6, literal_min_len=2, literal_max_len=7):
+def t_unroll_whiles(the_ast, uid=1):
+  if len(the_ast.body) == 0 or not isinstance(the_ast.body[0], ast.FunctionDef):
+    return False, the_ast
   
+  class UnrollWhiles(ast.NodeTransformer):
+    def __init__(self, selection):
+      self.selection = selection
+      self.count = 0
+      self.done = False
+      super().__init__()
+
+    def visit_While(self, node):
+      if self.done:
+        return node
+      if self.count != self.selection:
+        self.count += 1
+        return node
+      self.done = True
+      return  ast.If(
+        test=node.test,
+        body=node.body + [ node ],
+        orelse=[]
+      )
+
+  changed = False
+  count = 0
+  
+  for node in ast.walk(the_ast):
+    if isinstance(node, ast.While):
+      changed = True
+      count += 1
+
+  if count == 0:
+    return False, the_ast
+ 
+  return changed, UnrollWhiles(random.randint(0, count - 1)).visit(the_ast)
+
+
+def t_wrap_try_catch(the_ast, uid=1):
   if len(the_ast.body) == 0 or not isinstance(the_ast.body[0], ast.FunctionDef):
     return False, the_ast
 
-  num_done = 0
-  while num_done < random.randint(min_insertions, max_insertions):
-    subtokens_len = random.randint(literal_min_len, literal_max_len)
-    literal = '_'.join(
-      random.sample(wordbank, subtokens_len)
-    )
-  
-    if bool(random.getrandbits(1)):
-      the_ast.body[0].body.insert(
-        0,
-        ast.Expr(
-          ast.Call(
-            func=ast.Name(id="print", ctx=ast.Load()),
-            args=[ast.Str(literal)],
-            keywords=[]
-          )
-        )
-      )
-    else:
-      the_ast.body[0].body.append(
-        ast.Expr(
-          ast.Call(
-            func=ast.Name(id="print", ctx=ast.Load()),
-            args=[ast.Str(literal)],
-            keywords=[]
-          )
-        )
-      )
-    
-    num_done += 1
-      
+  temp = ast.Try(
+    body = the_ast.body[0].body,
+    handlers=[ast.ExceptHandler(
+      type=ast.Name(id='Exception', ctx=ast.Load()),
+      name='REPLACME' + str(uid),
+      body=[ast.Raise()]
+    )],
+    orelse=[],
+    finalbody=[]
+  )
+
+  the_ast.body[0].body = [temp]
+
   return True, the_ast
 
 
-def t_replace_true_false(the_ast, wordbank):
+def t_add_dead_code(the_ast, uid=1):
+  if len(the_ast.body) == 0 or not isinstance(the_ast.body[0], ast.FunctionDef):
+    return False, the_ast
+
+  if bool(random.getrandbits(1)):
+    the_ast.body[0].body.insert(
+      0,
+      ast.If(
+        test=ast.Name(id="False", ctx=ast.Load()),
+        body=[ 
+          ast.Assign(
+            targets=[ast.Name(id="REPLACME" + str(uid), ctx=ast.Store())],
+            value=ast.Num(n=1)
+          )
+        ],
+        orelse=[]
+      )
+    )
+  else:
+    the_ast.body[0].body.append(
+      ast.If(
+        test=ast.Name(id="False", ctx=ast.Load()),
+        body=[ 
+          ast.Assign(
+            targets=[ast.Name(id="REPLACME" + str(uid), ctx=ast.Store())],
+            value=ast.Num(n=1)
+          )
+        ],
+        orelse=[]
+      )
+    )
+  
+  return True, the_ast
+
+
+def t_insert_print_statements(the_ast, uid=1):
+  if len(the_ast.body) == 0 or not isinstance(the_ast.body[0], ast.FunctionDef):
+    return False, the_ast
+
+  if bool(random.getrandbits(1)):
+    the_ast.body[0].body.insert(
+      0,
+      ast.Expr(
+        ast.Call(
+          func=ast.Name(id="print", ctx=ast.Load()),
+          args=[ast.Str("REPLACEME" + str(uid))],
+          keywords=[]
+        )
+      )
+    )
+  else:
+    the_ast.body[0].body.append(
+      ast.Expr(
+        ast.Call(
+          func=ast.Name(id="print", ctx=ast.Load()),
+          args=[ast.Str("REPLACEME" + str(uid))],
+          keywords=[]
+        )
+      )
+    )
+  
+  return True, the_ast
+
+
+def t_replace_true_false(the_ast, uid=1):
   class ReplaceTrueFalse(ast.NodeTransformer):
+    def __init__(self, selection):
+      self.selection = selection
+      self.count = 0
+      self.done = False
+      super().__init__()
+
     def visit_NameConstant(self, node):
+      if self.done:
+        return node
       if node.value != True and node.value != False:
         return node
-      rand_int = random.choice([0, 1])
+      if self.count != self.selection:
+        self.count += 1
+        return node
+      self.done = True
       return ast.Compare(
-        left=ast.Num(n=rand_int),
+        left=ast.Str("REPLACEME" + str(uid)),
         ops=[ast.Eq() if node.value == True else ast.NotEq()],
-        comparators=[ast.Num(n=rand_int)]
+        comparators=[ast.Str("REPLACEME" + str(uid))]
       ) 
 
   changed = False
+  count = 0
   
   for node in ast.walk(the_ast):
     if isinstance(node, ast.NameConstant) and node.value == True:
       changed = True
+      count += 1
     elif isinstance(node, ast.NameConstant) and node.value == False:
       changed = True
+      count += 1
+
+  if count == 0:
+    return False, the_ast
  
-  return changed, ReplaceTrueFalse().visit(the_ast)
-
-
-def t_all(the_ast, wordbank):
-  changed1, s1 = t_rename_local_variables(the_ast, wordbank, False)
-  changed2, s2 = t_rename_parameters(s1, wordbank, False)
-  changed3, s3 = t_rename_fields(s2, wordbank)
-  changed4, s4 = t_replace_true_false(s3, wordbank)
-  changed5, s5 = t_insert_print_statements(s4, wordbank)
-
-  changed = changed1 or changed2 or changed3 or changed4 or changed5
-
-  return changed, s5
+  return changed, ReplaceTrueFalse(random.randint(0, count - 1)).visit(the_ast)
 
 
 class t_seq(object):
   def __init__(self, transforms):
     self.transforms = transforms
-  def __call__(self, the_ast, wordbank):
+  def __call__(self, the_ast):
     did_change = False
     cur_ast = the_ast
-    for t in self.transforms:
-      changed, cur_ast = t(cur_ast, wordbank) 
+    for i,t in enumerate(self.transforms):
+      changed, cur_ast = t(cur_ast, i+1) 
       if changed:
         did_change = True
     return did_change, cur_ast
 
 
-def t_identity(the_ast, wordbank):
+def t_identity(the_ast):
   return True, the_ast
 
 
 def process(item):
-  (split, t_name, the_hash, og_code, transformer, wordbank) = item
-
-  try:
-    changed, result = transformer(
-      ast.parse(og_code), wordbank
-    )
-    return changed, split, t_name, the_hash, astor.to_source(result) 
-  except Exception as ex:
-    import traceback
-    traceback.print_exc()
-    return False, split, t_name, the_hash, og_code
-
-
-if __name__ == "__main__":
-  print("Starting transform:")
-  pool = multiprocessing.Pool()
-
-  WORDBANK = []
-  with open('/app/wordbank.txt') as wordf:
-    WORDBANK = list(filter(None, [ x.strip() for x in wordf.readlines() ]))
-
-  tasks = []
+  (split, the_hash, og_code) = item
 
   transforms = [
     (
       'transforms.Identity',
       t_identity
-    ),
-    (
-      'transforms.Seq(RenameFields)',
-      t_seq([t_rename_fields])
-    ),
-    (
-      'transforms.Seq(RenameParameters)',
-      t_seq([t_rename_parameters])
-    ),
-    (
-      'transforms.Seq(ReplaceTrueFalse)',
-      t_seq([t_replace_true_false])
-    ),
-    (
-      'transforms.Seq(RenameLocalVariables)',
-      t_seq([t_rename_local_variables])
-    ),
-    (
-      'transforms.Seq(InsertPrintStatements)',
-      t_seq([t_insert_print_statements])
-    ),
-    (
-      'transforms.Seq(RenameFields,RenameParameters)',
-      t_seq([t_rename_fields,t_rename_parameters])
-    ),
-    (
-      'transforms.Seq(ReplaceTrueFalse,RenameFields)',
-      t_seq([t_replace_true_false,t_rename_fields])
-    ),
-    (
-      'transforms.Seq(RenameFields,RenameLocalVariables)',
-      t_seq([t_rename_fields,t_rename_local_variables])
-    ),
-    (
-      'transforms.Seq(ReplaceTrueFalse,RenameParameters)',
-      t_seq([t_replace_true_false,t_rename_parameters])
-    ),
-    (
-      'transforms.Seq(InsertPrintStatements,RenameFields)',
-      t_seq([t_insert_print_statements,t_rename_fields])
-    ),
-    (
-      'transforms.Seq(RenameLocalVariables,RenameParameters)',
-      t_seq([t_rename_local_variables,t_rename_parameters])
-    ),
-    (
-      'transforms.Seq(ReplaceTrueFalse,RenameLocalVariables)',
-      t_seq([t_replace_true_false,t_rename_local_variables])
-    ),
-    (
-      'transforms.Seq(InsertPrintStatements,RenameParameters)',
-      t_seq([t_insert_print_statements,t_rename_parameters])
-    ),
-    (
-      'transforms.Seq(ReplaceTrueFalse,InsertPrintStatements)',
-      t_seq([t_replace_true_false,t_insert_print_statements])
-    ),
-    (
-      'transforms.Seq(InsertPrintStatements,RenameLocalVariables)',
-      t_seq([t_insert_print_statements,t_rename_local_variables])
-    ),
-    (
-      'transforms.Seq(ReplaceTrueFalse,RenameFields,RenameParameters)',
-      t_seq([t_replace_true_false,t_rename_fields,t_rename_parameters])
-    ),
-    (
-      'transforms.Seq(RenameFields,RenameLocalVariables,RenameParameters)',
-      t_seq([t_rename_fields,t_rename_local_variables,t_rename_parameters])
-    ),
-    (
-      'transforms.Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables)',
-      t_seq([t_replace_true_false,t_rename_fields,t_rename_local_variables])
-    ),
-    (
-      'transforms.Seq(InsertPrintStatements,RenameFields,RenameParameters)',
-      t_seq([t_insert_print_statements,t_rename_fields,t_rename_parameters])
-    ),
-    (
-      'transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields)',
-      t_seq([t_replace_true_false,t_insert_print_statements,t_rename_fields])
-    ),
-    (
-      'transforms.Seq(ReplaceTrueFalse,RenameLocalVariables,RenameParameters)',
-      t_seq([t_replace_true_false,t_rename_local_variables,t_rename_parameters])
-    ),
-    (
-      'transforms.Seq(InsertPrintStatements,RenameFields,RenameLocalVariables)',
-      t_seq([t_insert_print_statements,t_rename_fields,t_rename_local_variables])
-    ),
-    (
-      'transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameParameters)',
-      t_seq([t_replace_true_false,t_insert_print_statements,t_rename_parameters])
-    ),
-    (
-      'transforms.Seq(InsertPrintStatements,RenameLocalVariables,RenameParameters)',
-      t_seq([t_insert_print_statements,t_rename_local_variables,t_rename_parameters])
-    ),
-    (
-      'transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables)',
-      t_seq([t_replace_true_false,t_insert_print_statements,t_rename_local_variables])
-    ),
-    (
-      'transforms.Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables,RenameParameters)',
-      t_seq([t_replace_true_false,t_rename_fields,t_rename_local_variables,t_rename_parameters])
-    ),
-    (
-      'transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameParameters)',
-      t_seq([t_replace_true_false,t_insert_print_statements,t_rename_fields,t_rename_parameters])
-    ),
-    (
-      'transforms.Seq(InsertPrintStatements,RenameFields,RenameLocalVariables,RenameParameters)',
-      t_seq([t_insert_print_statements,t_rename_fields,t_rename_local_variables,t_rename_parameters])
-    ),
-    (
-      'transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameLocalVariables)',
-      t_seq([t_replace_true_false,t_insert_print_statements,t_rename_fields,t_rename_local_variables])
-    ),
-    (
-      'transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables,RenameParameters)',
-      t_seq([t_replace_true_false,t_insert_print_statements,t_rename_local_variables,t_rename_parameters])
-    ),
-    (
-      'transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameLocalVariables,RenameParameters)',
-      t_seq([t_replace_true_false,t_insert_print_statements,t_rename_fields,t_rename_local_variables,t_rename_parameters])
     )
   ]
 
-  print("  + Will apply {} transforms".format(len(transforms)))
+  doDepthK = 'DEPTH' in os.environ and len(os.environ['DEPTH']) > 0
+  if doDepthK:
+    assert 'NUM_SAMPLES' in os.environ and len(os.environ['NUM_SAMPLES']) > 0
+    DEPTH = int(os.environ['DEPTH'])
+    NUM_SAMPLES = int(os.environ['NUM_SAMPLES'])
+
+    for s in range(NUM_SAMPLES):
+      the_seq = []
+      for _ in range(DEPTH):
+        rand_int = random.randint(1, 8)
+        if rand_int == 1:
+          the_seq.append(t_replace_true_false)
+        elif rand_int == 2:
+          the_seq.append(t_rename_local_variables)
+        elif rand_int == 3:
+          the_seq.append(t_rename_parameters)
+        elif rand_int == 4:
+          the_seq.append(t_rename_fields)
+        elif rand_int == 5:
+          the_seq.append(t_insert_print_statements)
+        elif rand_int == 6:
+          the_seq.append(t_add_dead_code)
+        elif rand_int == 7:
+          the_seq.append(t_unroll_whiles)
+        elif rand_int == 8:
+          the_seq.append(t_wrap_try_catch)
+    
+      transforms.append(('depth-{}-sample-{}'.format(DEPTH, s+1), t_seq(the_seq)))
+  else:
+    transforms.append(('transforms.ReplaceTrueFalse',  t_replace_true_false))
+    transforms.append(('transforms.RenameLocalVariables',  t_rename_local_variables))
+    transforms.append(('transforms.RenameParameters', t_rename_parameters))
+    transforms.append(('transforms.RenameFields', t_rename_fields))
+    transforms.append(('transforms.InsertPrintStatements', t_insert_print_statements))
+    transforms.append(('transforms.AddDeadCode', t_add_dead_code))
+    transforms.append(('transforms.UnrollWhiles', t_unroll_whiles))
+    transforms.append(('transforms.WrapTryCatch', t_wrap_try_catch))
+
+  results = []
+  for t_name, t_func in transforms:
+    try:
+      changed, result = t_func(
+        ast.parse(og_code)
+      )
+      results.append((changed, split, t_name, the_hash, astor.to_source(result))) 
+    except Exception as ex:
+      import traceback
+      traceback.print_exc()
+      results.append((False, split, t_name, the_hash, og_code))
+  return results
+
+
+if __name__ == "__main__":
+  print("Starting transform:")
+  pool = multiprocessing.Pool(1)
+
+  tasks = []
 
   print("  + Loading tasks...")
-  for split in ['test']:
+  splits = ['test', 'train', 'valid']
+  if "AVERLOC_JUST_TEST" in os.environ and os.environ['AVERLOC_JUST_TEST'].strip().lower().startswith('t'):
+    splits = ['test']
+
+  for split in splits:
     for line in gzip.open('/mnt/inputs/{}.jsonl.gz'.format(split)):
       as_json = json.loads(line)
       the_code = as_json['source_code']
-      for t_name, t_func in transforms:
-        os.makedirs('/mnt/raw-outputs/{}/{}'.format(t_name, split), exist_ok=True)
-        tasks.append((split, t_name, as_json['sha256_hash'], the_code, t_func, WORDBANK))
+      tasks.append((split, as_json['sha256_hash'], the_code))
+  
   print("    + Loaded {} transform tasks".format(len(tasks)))
-
-  results = pool.imap_unordered(process, tasks, 5000)
+  results = pool.imap_unordered(process, tasks, 3000)
 
   print("  + Transforming in parallel...")
-  for changed, split, t_name, the_hash, code in tqdm.tqdm(results, desc="    + Progress", total=len(tasks)):
+  names_covered = []
+  for changed, split, t_name, the_hash, code in itertools.chain.from_iterable(tqdm.tqdm(results, desc="    + Progress", total=len(tasks))):
     if not changed:
       continue
+  
+    if t_name not in names_covered:
+      names_covered.append(t_name)
+      os.makedirs('/mnt/raw-outputs/{}/{}'.format(t_name, split), exist_ok=True)
+
     with open('/mnt/raw-outputs/{}/{}/{}.java'.format(t_name, split, the_hash), 'w') as fout:
       fout.write('{}\n'.format(code))
 
