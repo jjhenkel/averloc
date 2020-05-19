@@ -261,13 +261,15 @@ public class Transforms {
 				));
 			}
 
+			boolean doDepthK = maybeDepth != null && maybeDepth != "" && maybeDepth.matches("\\d+");
+
 			for (ArrayList<VirtualFile> chunk : chopped(inputs, 3000)) {
 				tasks.add(toCallable(new TransformFileTask(
 					split,
 					chunk,
-					maybeDepth != null,
-					maybeDepth != null ? Integer.parseInt(maybeDepth) : 1,
-					numSamples != null ? Integer.parseInt(numSamples) : 1
+					doDepthK,
+					doDepthK ? Integer.parseInt(maybeDepth) : 1,
+					doDepthK ? Integer.parseInt(numSamples) : 1
 				)));
 			}
 
