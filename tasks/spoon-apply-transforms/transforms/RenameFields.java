@@ -14,7 +14,7 @@ import java.lang.Math;
 
 public class RenameFields extends Renamer<CtField> {
   public RenameFields(int uid) {
-    this.setUID(this.UID);
+    this.setUID(uid);
   }
 
 	@Override
