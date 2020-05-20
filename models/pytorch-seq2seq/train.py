@@ -90,27 +90,16 @@ replace_tokens = ["@R_%d@"%x for x in range(1,opt.num_replace_tokens+1)]
 print('Number of replace tokens in source vocab:', opt.num_replace_tokens)
 logging.info('Number of replace tokens in source vocab: %d'%opt.num_replace_tokens)
 
-# params = {
-#             'n_layers': 1,
-#             'hidden_size': 128, 
-#             'src_vocab_size': 5000, 
-#             'tgt_vocab_size': 5000, 
-#             'max_len': 50, 
-#             'rnn_cell':'gru',
-#             'batch_size': 64, 
-#             'num_epochs': 50
-#             }
-
 params = {
-            'n_layers': 2,
-            'hidden_size': 512, 
-            'src_vocab_size': 15000, 
-            'tgt_vocab_size': 5000, 
-            'max_len': 128, 
-            'rnn_cell':'lstm',
-            'batch_size': opt.batch_size, 
-            'num_epochs': opt.epochs
-        }
+    'n_layers': 2,
+    'hidden_size': 512, 
+    'src_vocab_size': 15000, 
+    'tgt_vocab_size': 5000, 
+    'max_len': 128, 
+    'rnn_cell':'lstm',
+    'batch_size': opt.batch_size, 
+    'num_epochs': opt.epochs
+}
 
 logging.info(params)
 

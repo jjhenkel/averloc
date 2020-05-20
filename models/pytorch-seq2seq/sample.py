@@ -61,27 +61,16 @@ logging.basicConfig(format=LOG_FORMAT, level=getattr(logging, opt.log_level.uppe
 
 logging.info(vars(opt))
 
-# params = {
-#             'n_layers': 1,
-#             'hidden_size': 128, 
-#             'src_vocab_size': 5000, 
-#             'tgt_vocab_size': 5000, 
-#             'max_len': 50, 
-#             'rnn_cell':'gru',
-#             'batch_size': 64, 
-#             'num_epochs': 50
-#             }
-
 params = {
-            'n_layers': 1,
-            'hidden_size': 256, 
-            'src_vocab_size': 50000, 
-            'tgt_vocab_size': 50000, 
-            'max_len': 50, 
-            'rnn_cell':'gru',
-            'batch_size': 64, 
-            'num_epochs': 30
-            }
+    'n_layers': 1,
+    'hidden_size': 256, 
+    'src_vocab_size': 15000, 
+    'tgt_vocab_size': 5000, 
+    'max_len': 50, 
+    'rnn_cell':'gru',
+    'batch_size': 64, 
+    'num_epochs': 30
+}
 
 logging.info(params)
 
