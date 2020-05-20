@@ -75,8 +75,8 @@ logging.info(vars(opt))
 params = {
             'n_layers': 1,
             'hidden_size': 256, 
-            'src_vocab_size': 15000, 
-            'tgt_vocab_size': 5000, 
+            'src_vocab_size': 50000, 
+            'tgt_vocab_size': 50000, 
             'max_len': 50, 
             'rnn_cell':'gru',
             'batch_size': 64, 

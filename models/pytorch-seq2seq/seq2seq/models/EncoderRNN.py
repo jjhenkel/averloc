@@ -1,8 +1,25 @@
 import torch.nn as nn
+from torch.autograd import Variable
+import torch 
 
 from .baseRNN import BaseRNN
 
-from torch.autograd import Variable
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+class Embedding(nn.Module):
+    def __init__(self, input_dim, embedding_dim):
+        super().__init__()
+        self.input_dim = input_dim
+        self.embedding_dim = embedding_dim
+        self.param = nn.Parameter(torch.randn(input_dim, embedding_dim))
+
+    def __repr__(self):
+        return "Embedding(%d,%d)"%(self.input_dim, self.embedding_dim)
+
+    def forward(self, x):
+        return torch.matmul(x, self.param)
+
+
 
 class EncoderRNN(BaseRNN):
     r"""
@@ -46,15 +63,35 @@ class EncoderRNN(BaseRNN):
         super(EncoderRNN, self).__init__(vocab_size, max_len, hidden_size,
                 input_dropout_p, dropout_p, n_layers, rnn_cell)
 
+        self.vocab_size = vocab_size
+
         self.variable_lengths = variable_lengths
-        self.embedding = nn.Embedding(vocab_size, hidden_size)
-        if embedding is not None:
-            self.embedding.weight = nn.Parameter(embedding)
-        self.embedding.weight.requires_grad = update_embedding
+        
+        # self.embedding = nn.Embedding(vocab_size, hidden_size)
+        # if embedding is not None:
+        #     self.embedding.weight = nn.Parameter(embedding)
+        # self.embedding.weight.requires_grad = update_embedding
+
+        # self.embedding = Embedding(vocab_size, hidden_size)
+        # print('Custom Embedding Layer')
+
+
+        self.embedding = nn.Linear(vocab_size, hidden_size, bias=False)
+        # change initial weights to normal[0,1] or whatever is required
+        self.embedding.weight.data = torch.randn_like(self.embedding.weight) 
+
+        print('Custom Linear Embedding Layer')
+
+
         self.rnn = self.rnn_cell(hidden_size, hidden_size, n_layers,
                                  batch_first=True, bidirectional=bidirectional, dropout=dropout_p)
 
-    def forward(self, input_var, input_lengths=None, embedded=None):
+
+    def convert_to_onehot(self, inp):
+        return torch.zeros(inp.size(0), inp.size(1), self.vocab_size, device=device).scatter_(2, inp.unsqueeze(2), 1.)
+
+
+    def forward(self, input_var, input_lengths=None, embedded=None, already_one_hot=False):
         """
         Applies a multi-layer RNN to an input sequence.
 
@@ -67,7 +104,13 @@ class EncoderRNN(BaseRNN):
             - **output** (batch, seq_len, hidden_size): variable containing the encoded features of the input sequence
             - **hidden** (num_layers * num_directions, batch, hidden_size): variable containing the features in the hidden state h
         """
+        
         if embedded is None:
+            if not already_one_hot:
+                input_var = self.convert_to_onehot(input_var)
+
+            self.input_onehot = input_var
+
             embedded = self.embedding(input_var)
             embedded = self.input_dropout(embedded) 
             if self.variable_lengths:

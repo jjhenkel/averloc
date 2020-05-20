@@ -29,7 +29,7 @@ def parse_args():
                         help='Path to test data')
     parser.add_argument('--expt_dir', action='store', dest='expt_dir', default='./experiment',
                         help='Path to experiment directory. If load_checkpoint is True, then path to checkpoint directory has to be provided')
-    parser.add_argument('--load_checkpoint', action='store', dest='load_checkpoint',
+    parser.add_argument('--load_checkpoint', action='store', dest='load_checkpoint', default='Best_F1',
                         help='The name of the checkpoint to load, usually an encoded time string')
     parser.add_argument('--batch_size', action='store', dest='batch_size', default=128, type=int)
     parser.add_argument('--output_dir', action='store', dest='output_dir', default=None)
@@ -42,6 +42,36 @@ def parse_args():
     return opt
 
 
+def load_data(data_path, 
+            fields=(SourceField(), TargetField(), SourceField(), torchtext.data.Field(sequential=False, use_vocab=False)), 
+            filter_func=lambda x: True):
+    src, tgt, src_adv, idx_field = fields
+
+    fields_inp = []
+    with open(data_path, 'r') as f:
+        first_line = f.readline()
+        cols = first_line[:-1].split('\t')
+        for col in cols:
+            if col=='src':
+                fields_inp.append(('src', src))
+            elif col=='tgt':
+                fields_inp.append(('tgt', tgt))
+            elif col=='index':
+                fields_inp.append(('index', idx_field))
+            else:
+                fields_inp.append((col, src_adv))
+
+    data = torchtext.data.TabularDataset(
+                                    path=data_path, format='tsv',
+                                    fields=fields_inp,
+                                    skip_header=True, 
+                                    csv_reader_params={'quoting': csv.QUOTE_NONE}, 
+                                    filter_pred=filter_func
+                                    )
+
+    return data, fields_inp, src, tgt, src_adv, idx_field
+
+
 def load_model_data_evaluator(expt_dir, model_name, data_path, batch_size=128):
     checkpoint_path = os.path.join(expt_dir, Checkpoint.CHECKPOINT_DIR_NAME, model_name)
     checkpoint = Checkpoint.load(checkpoint_path)
@@ -49,17 +79,11 @@ def load_model_data_evaluator(expt_dir, model_name, data_path, batch_size=128):
     input_vocab = checkpoint.input_vocab
     output_vocab = checkpoint.output_vocab
 
-    src = SourceField()
-    tgt = TargetField()
-
-    dev = torchtext.data.TabularDataset(
-        path=data_path, format='tsv',
-        fields=[('src', src), ('tgt', tgt)], 
-        csv_reader_params={'quoting': csv.QUOTE_NONE}
-        )
+    dev, fields_inp, src, tgt, src_adv, idx_field = load_data(data_path)
 
     src.vocab = input_vocab
     tgt.vocab = output_vocab
+    src_adv.vocab = input_vocab
 
     weight = torch.ones(len(tgt.vocab))
     pad = tgt.vocab.stoi[tgt.pad_token]
@@ -68,7 +92,7 @@ def load_model_data_evaluator(expt_dir, model_name, data_path, batch_size=128):
         loss.cuda()
     evaluator = Evaluator(loss=loss, batch_size=batch_size)
 
-    return model, dev, evaluator
+    return model, dev, evaluator, fields_inp
 
 
 def calc_attributions(model, data, output_fname):
@@ -101,6 +125,8 @@ def evaluate_model(evaluator, model, data, save=False, output_dir=None, output_f
         calc_attributions(model, data, output_fname) 
 
     for m in d['metrics']:
+        if m=='f1':
+            print('---------------', end=' ')
         print('%s: %.3f'%(m,d['metrics'][m]))
 
     if save:
@@ -116,8 +142,6 @@ def evaluate_model(evaluator, model, data, save=False, output_dir=None, output_f
             for m in d['metrics']:
                 f.write('%s: %.3f\n'%(m,d['metrics'][m]))
 
-        
-
         print('Output files written')
 
 
@@ -125,19 +149,26 @@ def evaluate_model(evaluator, model, data, save=False, output_dir=None, output_f
 
 if __name__=="__main__":
     opt = parse_args()
-    if opt.load_checkpoint == 'all':
-        models = ['Best_Acc', 'Best_F1', 'Latest']
+    print(opt)
+    model_name = opt.load_checkpoint
+
+    print(opt.expt_dir, model_name)
+    output_fname = model_name.lower()
+
+    if opt.output_dir is None:
+        opt.output_dir = opt.expt_dir
+
+    model, data, evaluator, fields_inp = load_model_data_evaluator(opt.expt_dir, model_name, opt.data_path, opt.batch_size)
+    if opt.src_field_name == 'all':
+        exclude = ['tgt', 'index', 'transforms.Identity']
+        print('Running evaluation on all fields except',exclude)
+        print('Running evaluation on:', [x[0] for x in fields_inp if x[0] not in exclude])
+        for field_name, _ in fields_inp:
+            if field_name in exclude:
+                continue
+            print('Evaluating Field:', field_name)
+            evaluate_model(evaluator, model, data, opt.save, opt.output_dir, output_fname, field_name, opt.attributions)
     else:
-        models = [opt.load_checkpoint]
-
-    for model_name in models:
-        print(opt.expt_dir, model_name)
-        output_fname = model_name.lower()
-
-        if opt.output_dir is None:
-            opt.output_dir = opt.expt_dir
-
-        model, data, evaluator = load_model_data_evaluator(opt.expt_dir, model_name, opt.data_path, opt.batch_size)
         evaluate_model(evaluator, model, data, opt.save, opt.output_dir, output_fname, opt.src_field_name, opt.attributions)
 
 

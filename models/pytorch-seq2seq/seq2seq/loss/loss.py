@@ -75,10 +75,10 @@ class Loss(object):
     def cuda(self):
         self.criterion.cuda()
 
-    def backward(self):
+    def backward(self, retain_graph=False):
         if type(self.acc_loss) is int:
             raise ValueError("No loss to back propagate.")
-        self.acc_loss.backward()
+        self.acc_loss.backward(retain_graph=retain_graph)
 
 class NLLLoss(Loss):
     """ Batch averaged negative log-likelihood loss.
