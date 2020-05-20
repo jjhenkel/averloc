@@ -8,6 +8,7 @@ if __name__ == "__main__":
   csv.field_size_limit(sys.maxsize)
 
   ID_MAP = {}
+  TRANSFORMS = [ x.strip() for x in sys.argv[2:] if x.strip().lower() != 'transforms.Identity' ]
 
   print("Loading identity transform...")
   with open("/mnt/inputs/transforms.Identity/{}.tsv".format(sys.argv[1]), 'r') as identity_tsv:
@@ -22,7 +23,7 @@ if __name__ == "__main__":
 
   print("Loading transformed samples...")
   TRANSFORMED = {}
-  for transform_name in sys.argv[2:]:
+  for transform_name in TRANSFORMS:
     TRANSFORMED[transform_name] = {}
     with open("/mnt/inputs/{}/{}.tsv".format(transform_name, sys.argv[1]), 'r') as current_tsv:
       reader = csv.reader(
@@ -40,13 +41,13 @@ if __name__ == "__main__":
   with open("/mnt/outputs/{}.tsv".format(sys.argv[1]), "w") as out_f:
     out_f.write('src\ttgt\t{}\n'.format(
       '\t'.join([ 
-        '{}'.format(i) for i in sys.argv[2:]
+        '{}'.format(i) for i in TRANSFORMS
       ])
     ))
 
     for key in tqdm.tqdm(ID_MAP.keys(), desc="  + Progress"):
       row = [ ID_MAP[key][0], ID_MAP[key][1] ]
-      for transform_name in sys.argv[2:]:
+      for transform_name in TRANSFORMS:
         if key in TRANSFORMED[transform_name]:
           row.append(TRANSFORMED[transform_name][key])
         else:

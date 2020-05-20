@@ -8,6 +8,7 @@ import subprocess
 
 if __name__ == '__main__':
   ID_MAP = {}
+  TRANSFORMS = [ x.strip() for x in sys.argv[2:] if x.strip().lower() != 'transforms.Identity' ]
 
   print("Loading identity transform...")
   with open("/mnt/inputs/transforms.Identity/data.{}.c2s".format(sys.argv[1]), 'r') as identity:
@@ -19,7 +20,7 @@ if __name__ == '__main__':
 
   print("Loading transformed samples...")
   TRANSFORMED = {}
-  for transform_name in sys.argv[2:]:
+  for transform_name in TRANSFORMS:
     TRANSFORMED[transform_name] = {}
     with open("/mnt/inputs/{}/data.{}.c2s".format(transform_name, sys.argv[1]), 'r') as current:
       for line in current:
@@ -41,7 +42,7 @@ if __name__ == '__main__':
     )
 
   for key in tqdm.tqdm(ID_MAP.keys(), desc="  + Progress"):
-    for transform_name in sys.argv[2:]:
+    for transform_name in TRANSFORMS:
       if key in TRANSFORMED[transform_name]:
         OUT_MAPS[transform_name].write(TRANSFORMED[transform_name][key])
       else:
