@@ -57,139 +57,6 @@ define run_dataset_ast_paths_preprocessing
 	$(call echo_debug,"    + Done!")
 endef
 
-define adversarial_mode_setup
-	if [ "$${ADVERSARIAL_MODE}" = "depth-1" ]; then
-		export TRANSFORMS="
-			transforms.Seq(RenameParameters) \
-			transforms.Seq(RenameFields) \
-			transforms.Seq(RenameLocalVariables) \
-			transforms.Seq(ReplaceTrueFalse) \
-			transforms.Seq(InsertPrintStatements)
-		"
-		export DIR_PART="depth-1"
-	elif [ "$${ADVERSARIAL_MODE}" = "depth-2" ]; then
-		export TRANSFORMS="
-			transforms.Seq(RenameParameters) \
-			transforms.Seq(RenameFields) \
-			transforms.Seq(RenameLocalVariables) \
-			transforms.Seq(ReplaceTrueFalse) \
-			transforms.Seq(InsertPrintStatements) \
-			transforms.Seq(InsertPrintStatements,RenameFields) \
-			transforms.Seq(InsertPrintStatements,RenameLocalVariables) \
-			transforms.Seq(InsertPrintStatements,RenameParameters) \
-			transforms.Seq(RenameFields,RenameLocalVariables) \
-			transforms.Seq(RenameFields,RenameParameters) \
-			transforms.Seq(RenameLocalVariables,RenameParameters) \
-			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements) \
-			transforms.Seq(ReplaceTrueFalse,RenameFields) \
-			transforms.Seq(ReplaceTrueFalse,RenameLocalVariables) \
-			transforms.Seq(ReplaceTrueFalse,RenameParameters) 
-		"
-		export DIR_PART="depth-2"
-	elif [ "$${ADVERSARIAL_MODE}" = "depth-3" ]; then
-		export TRANSFORMS="
-			transforms.Seq(RenameParameters) \
-			transforms.Seq(RenameFields) \
-			transforms.Seq(RenameLocalVariables) \
-			transforms.Seq(ReplaceTrueFalse) \
-			transforms.Seq(InsertPrintStatements) \
-			transforms.Seq(InsertPrintStatements,RenameFields) \
-			transforms.Seq(InsertPrintStatements,RenameLocalVariables) \
-			transforms.Seq(InsertPrintStatements,RenameParameters) \
-			transforms.Seq(RenameFields,RenameLocalVariables) \
-			transforms.Seq(RenameFields,RenameParameters) \
-			transforms.Seq(RenameLocalVariables,RenameParameters) \
-			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements) \
-			transforms.Seq(ReplaceTrueFalse,RenameFields) \
-			transforms.Seq(ReplaceTrueFalse,RenameLocalVariables) \
-			transforms.Seq(ReplaceTrueFalse,RenameParameters) \
-			transforms.Seq(InsertPrintStatements,RenameFields,RenameLocalVariables) \
-			transforms.Seq(InsertPrintStatements,RenameFields,RenameParameters) \
-			transforms.Seq(InsertPrintStatements,RenameLocalVariables,RenameParameters) \
-			transforms.Seq(RenameFields,RenameLocalVariables,RenameParameters) \
-			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables) \
-			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameParameters) \
-			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields) \
-			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables) \
-			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameParameters) \
-			transforms.Seq(ReplaceTrueFalse,RenameLocalVariables,RenameParameters)
-		"
-		export DIR_PART="depth-3"
-	elif [ "$${ADVERSARIAL_MODE}" = "depth-4" ]; then
-		export TRANSFORMS="
-			transforms.Seq(RenameParameters) \
-			transforms.Seq(RenameFields) \
-			transforms.Seq(RenameLocalVariables) \
-			transforms.Seq(ReplaceTrueFalse) \
-			transforms.Seq(InsertPrintStatements) \
-			transforms.Seq(InsertPrintStatements,RenameFields) \
-			transforms.Seq(InsertPrintStatements,RenameLocalVariables) \
-			transforms.Seq(InsertPrintStatements,RenameParameters) \
-			transforms.Seq(RenameFields,RenameLocalVariables) \
-			transforms.Seq(RenameFields,RenameParameters) \
-			transforms.Seq(RenameLocalVariables,RenameParameters) \
-			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements) \
-			transforms.Seq(ReplaceTrueFalse,RenameFields) \
-			transforms.Seq(ReplaceTrueFalse,RenameLocalVariables) \
-			transforms.Seq(ReplaceTrueFalse,RenameParameters) \
-			transforms.Seq(InsertPrintStatements,RenameFields,RenameLocalVariables) \
-			transforms.Seq(InsertPrintStatements,RenameFields,RenameParameters) \
-			transforms.Seq(InsertPrintStatements,RenameLocalVariables,RenameParameters) \
-			transforms.Seq(RenameFields,RenameLocalVariables,RenameParameters) \
-			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables) \
-			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameParameters) \
-			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields) \
-			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables) \
-			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameParameters) \
-			transforms.Seq(ReplaceTrueFalse,RenameLocalVariables,RenameParameters) \
-			transforms.Seq(InsertPrintStatements,RenameFields,RenameLocalVariables,RenameParameters) \
-			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables,RenameParameters) \
-			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameLocalVariables) \
-			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameParameters) \
-			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables,RenameParameters)
-		"
-		export DIR_PART="depth-4"
-	elif [ "$${ADVERSARIAL_MODE}" = "depth-5" ]; then
-		export TRANSFORMS="
-			transforms.Seq(RenameParameters) \
-			transforms.Seq(RenameFields) \
-			transforms.Seq(RenameLocalVariables) \
-			transforms.Seq(ReplaceTrueFalse) \
-			transforms.Seq(InsertPrintStatements) \
-			transforms.Seq(InsertPrintStatements,RenameFields) \
-			transforms.Seq(InsertPrintStatements,RenameLocalVariables) \
-			transforms.Seq(InsertPrintStatements,RenameParameters) \
-			transforms.Seq(RenameFields,RenameLocalVariables) \
-			transforms.Seq(RenameFields,RenameParameters) \
-			transforms.Seq(RenameLocalVariables,RenameParameters) \
-			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements) \
-			transforms.Seq(ReplaceTrueFalse,RenameFields) \
-			transforms.Seq(ReplaceTrueFalse,RenameLocalVariables) \
-			transforms.Seq(ReplaceTrueFalse,RenameParameters) \
-			transforms.Seq(InsertPrintStatements,RenameFields,RenameLocalVariables) \
-			transforms.Seq(InsertPrintStatements,RenameFields,RenameParameters) \
-			transforms.Seq(InsertPrintStatements,RenameLocalVariables,RenameParameters) \
-			transforms.Seq(RenameFields,RenameLocalVariables,RenameParameters) \
-			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables) \
-			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameParameters) \
-			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields) \
-			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables) \
-			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameParameters) \
-			transforms.Seq(ReplaceTrueFalse,RenameLocalVariables,RenameParameters) \
-			transforms.Seq(InsertPrintStatements,RenameFields,RenameLocalVariables,RenameParameters) \
-			transforms.Seq(ReplaceTrueFalse,RenameFields,RenameLocalVariables,RenameParameters) \
-			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameLocalVariables) \
-			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameParameters) \
-			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameLocalVariables,RenameParameters) \
-			transforms.Seq(ReplaceTrueFalse,InsertPrintStatements,RenameFields,RenameLocalVariables,RenameParameters)
-		"
-		export DIR_PART="depth-5"
-	else
-		echo -e "\033[0;31m[ERR]:\033[0m Adversarial mode := $${ADVERSARIAL_MODE} is unsupported"
-		exit 1
-	fi
-endef
-
 export echo_debug
 export echo_info
 export echo_warn
@@ -197,7 +64,6 @@ export echo_error
 
 export mkdir_cleanup_on_error
 export run_dataset_ast_paths_preprocessing
-export adversarial_mode_setup
 
 .DEFAULT_GOAL := help
 
@@ -855,12 +721,6 @@ train-model-seq2seq: check-dataset-name check-gpu check-models-out build-image-t
 #######################################################################################################################
 #######################################################################################################################
 
-.PHONY: check-adversarial-mode
-check-adversarial-mode:
-ifndef ADVERSARIAL_MODE
-	$(error ADVERSARIAL_MODE is a required parameter for this target.)
-endif
-
 .PHONY: extract-adv-dataset-ast-paths-c2s-java-small
 extract-adv-dataset-ast-paths-c2s-java-small: | build-image-extract-adv-dataset-c2s
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-c2s:$(shell git rev-parse HEAD)"
@@ -883,7 +743,6 @@ extract-adv-dataset-ast-paths-csn-java:
 
 .PHONY: extract-adv-dataset-ast-paths-csn-python
 extract-adv-dataset-ast-paths-csn-python: | build-image-extract-adv-dataset-c2s
-	@$(call adversarial_mode_setup)
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-c2s:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
@@ -894,7 +753,6 @@ extract-adv-dataset-ast-paths-csn-python: | build-image-extract-adv-dataset-c2s
 
 .PHONY: extract-adv-dataset-ast-paths-sri-py150
 extract-adv-dataset-ast-paths-sri-py150: | build-image-extract-adv-dataset-c2s
-	@$(call adversarial_mode_setup)
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-c2s:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
@@ -915,19 +773,8 @@ extract-adv-dataset-tokens-c2s-java-small: | build-image-extract-adv-dataset-tok
 		-v "${ROOT_DIR}/datasets/adversarial/targeting/tokens/c2s/java-small:/mnt/outputs" \
 		"$${IMAGE_NAME}" ${ALL_TRANSFORMS}
 
-.PHONY: extract-adv-dataset-tokens-c2s-java-med
-extract-adv-dataset-tokens-c2s-java-med: | check-adversarial-mode build-image-extract-adv-dataset-tokens
-	@$(call adversarial_mode_setup)
-	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-tokens:$(shell git rev-parse HEAD)"
-	DOCKER_API_VERSION=1.40 docker run -it --rm \
-		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
-		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/c2s/java-med:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/adversarial/$${DIR_PART}/tokens/c2s/java-med:/mnt/outputs" \
-		"$${IMAGE_NAME}" $${TRANSFORMS}
-
 .PHONY: extract-adv-dataset-tokens-csn-java
 extract-adv-dataset-tokens-csn-java: | check-adversarial-mode build-image-extract-adv-dataset-tokens
-	@$(call adversarial_mode_setup)
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-tokens:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
@@ -937,7 +784,6 @@ extract-adv-dataset-tokens-csn-java: | check-adversarial-mode build-image-extrac
 
 .PHONY: extract-adv-dataset-tokens-csn-python
 extract-adv-dataset-tokens-csn-python: | check-adversarial-mode build-image-extract-adv-dataset-tokens
-	@$(call adversarial_mode_setup)
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-tokens:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
@@ -947,7 +793,6 @@ extract-adv-dataset-tokens-csn-python: | check-adversarial-mode build-image-extr
 
 .PHONY: extract-adv-dataset-tokens-sri-py150
 extract-adv-dataset-tokens-sri-py150: | check-adversarial-mode build-image-extract-adv-dataset-tokens
-	@$(call adversarial_mode_setup)
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-tokens:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
@@ -956,7 +801,6 @@ extract-adv-dataset-tokens-sri-py150: | check-adversarial-mode build-image-extra
 		"$${IMAGE_NAME}" $${TRANSFORMS}
 
 EADT_DEPS := extract-adv-dataset-tokens-c2s-java-small
-# EADT_DEPS += extract-adv-dataset-tokens-c2s-java-med
 EADT_DEPS += extract-adv-dataset-tokens-csn-java
 EADT_DEPS += extract-adv-dataset-tokens-csn-python
 EADT_DEPS += extract-adv-dataset-tokens-sri-py150
