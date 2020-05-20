@@ -276,10 +276,11 @@ def t_unroll_whiles(the_ast, uid=1):
       if self.count != self.selection:
         self.count += 1
         return node
+      
       self.done = True
-      return  ast.If(
+      return ast.While(
         test=node.test,
-        body=node.body + [ node ],
+        body=node.body + [ node, ast.Break() ],
         orelse=[]
       )
 
@@ -526,11 +527,11 @@ if __name__ == "__main__":
     if not changed:
       continue
   
-    if t_name not in names_covered:
-      names_covered.append(t_name)
+    if (t_name + split) not in names_covered:
+      names_covered.append(t_name + split)
       os.makedirs('/mnt/raw-outputs/{}/{}'.format(t_name, split), exist_ok=True)
 
-    with open('/mnt/raw-outputs/{}/{}/{}.java'.format(t_name, split, the_hash), 'w') as fout:
+    with open('/mnt/raw-outputs/{}/{}/{}.py'.format(t_name, split, the_hash), 'w') as fout:
       fout.write('{}\n'.format(code))
 
   print("  + Transforms complete!")

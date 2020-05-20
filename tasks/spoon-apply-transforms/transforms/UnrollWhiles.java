@@ -36,15 +36,16 @@ public class UnrollWhiles extends AverlocTransformer {
     CtStatement lastBody = target;
 
     for (int i = 0; i < this.UNROLL_STEPS; i++) {
-      CtIf wrapperIf = getFactory().Core().createIf();
+      CtWhile wrapperIf = getFactory().Core().createWhile();
 
-      wrapperIf.setCondition(target.getLoopingExpression().clone());
+      wrapperIf.setLoopingExpression(target.getLoopingExpression().clone());
 
       CtBlock temp = getFactory().Core().createBlock();
       temp.addStatement(whileBody.clone());
       temp.addStatement(lastBody.clone());
+      temp.addStatement(getFactory().Core().createBreak());
 
-      wrapperIf.setThenStatement(temp);
+      wrapperIf.setBody(temp);
 
       lastBody = wrapperIf.clone();
     }
