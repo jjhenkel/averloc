@@ -113,8 +113,8 @@ class NLLLoss(Loss):
         #     loss /= self.norm_term
         return loss
 
-    def eval_batch(self, outputs, target):
-        self.acc_loss += self.criterion(outputs, target)
+    def eval_batch(self, outputs, target, weight=1.0):
+        self.acc_loss += weight*self.criterion(outputs, target)
         self.norm_term += 1
 
 class Perplexity(NLLLoss):
@@ -134,8 +134,8 @@ class Perplexity(NLLLoss):
     def __init__(self, weight=None, mask=None):
         super(Perplexity, self).__init__(weight=weight, mask=mask, size_average=True)
 
-    def eval_batch(self, outputs, target):
-        self.acc_loss += self.criterion(outputs, target)
+    def eval_batch(self, outputs, target, weight=1.0):
+        self.acc_loss += lamb*self.criterion(outputs, target)
         if self.mask is None:
             self.norm_term += np.prod(target.size())
         else:

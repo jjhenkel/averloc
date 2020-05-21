@@ -98,9 +98,14 @@ class SupervisedAdversarialTrainer(object):
             return best_attack, best_loss, d
 
 
-    def _train_epoches(self, data, model, n_epochs, start_epoch, start_step,
-                       dev_data=None, teacher_forcing_ratio=0, attacks=None):
+    def _train_epoches(self, data, model, n_epochs, start_epoch, start_step, dev_data=None, teacher_forcing_ratio=0, attacks=None, lamb=0.0):
+        # Train adversarially with lamb*normal loss + (1-lamb)*adv_loss
+        # lamb should either be a float or a list of floats of length (n_epochs+1-start_epoch)
+
         log = self.logger
+
+        if isinstance(lamb, float):
+            lamb = [lamb]*n_epochs
 
         print_loss_total = 0  # Reset every print_every
         epoch_loss_total = 0  # Reset every epoch
@@ -142,7 +147,8 @@ class SupervisedAdversarialTrainer(object):
             best_acc = 0.0
 
         for epoch in range(start_epoch, n_epochs + 1):
-            log.debug("Epoch: %d, Step: %d" % (epoch, step))
+            lamb_epoch = lamb[epoch-start_epoch]
+            log.debug("Epoch: %d, Step: %d, Lambda: %.2f" % (epoch, step, lamb_epoch))
 
             batch_generator = batch_iterator.__iter__()
             # consuming seen batches from previous training
@@ -162,14 +168,40 @@ class SupervisedAdversarialTrainer(object):
                 # print(chosen_src_field_name, max_loss, d)
                 # exit()
 
+                self.loss.reset()
+
+                if lamb_epoch>0:
+                    # normal training term
+                    input_variables, input_lengths = getattr(batch, seq2seq.src_field_name)
+                    target_variables = getattr(batch, seq2seq.tgt_field_name)
+                    decoder_outputs, decoder_hidden, other = model(input_variable, input_lengths, target_variable, teacher_forcing_ratio=teacher_forcing_ratio)
+                    # Get loss
+                    
+                    for step, step_output in enumerate(decoder_outputs):
+                        batch_size = target_variable.size(0)
+                        self.loss.eval_batch(step_output.contiguous().view(batch_size, -1), target_variable[:, step + 1], weight=lamb_epoch)
+
+                # adversarial training term
                 input_variables, input_lengths = getattr(batch, chosen_src_field_name)
                 target_variables = getattr(batch, seq2seq.tgt_field_name)
+                decoder_outputs, decoder_hidden, other = model(input_variable, input_lengths, target_variable, teacher_forcing_ratio=teacher_forcing_ratio)
+                # Get loss
                 
-                loss = self._train_batch(input_variables, input_lengths.tolist(), target_variables, model, teacher_forcing_ratio)
+                for step, step_output in enumerate(decoder_outputs):
+                    batch_size = target_variable.size(0)
+                    self.loss.eval_batch(step_output.contiguous().view(batch_size, -1), target_variable[:, step + 1], weight=(1-lamb_epoch))
+
+                model.zero_grad()
+                self.loss.backward()
+                self.optimizer.step()
+
+                loss_adv = loss.get_loss()
+
+                # loss = self._train_batch(input_variables, input_lengths.tolist(), target_variables, model, teacher_forcing_ratio)
 
                 # Record average loss
-                print_loss_total += loss
-                epoch_loss_total += loss
+                print_loss_total += loss_adv
+                epoch_loss_total += loss_adv
 
                 if step % self.print_every == 0 and step_elapsed >= self.print_every:
                     print_loss_avg = print_loss_total / self.print_every
@@ -246,7 +278,7 @@ class SupervisedAdversarialTrainer(object):
 
     def train(self, model, data, num_epochs=5,
               resume=False, dev_data=None,
-              optimizer=None, teacher_forcing_ratio=0, load_checkpoint=None, attacks=None):
+              optimizer=None, teacher_forcing_ratio=0, load_checkpoint=None, attacks=None, lamb=0.5):
         """ Run training for a given model.
 
         Args:
@@ -293,6 +325,6 @@ class SupervisedAdversarialTrainer(object):
         self._train_epoches(data, model, num_epochs,
                             start_epoch, step, dev_data=dev_data,
                             teacher_forcing_ratio=teacher_forcing_ratio, 
-                            attacks=attacks)
+                            attacks=attacks, lamb=lamb)
 
         return model

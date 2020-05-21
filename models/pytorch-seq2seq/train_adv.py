@@ -191,10 +191,14 @@ t = SupervisedAdversarialTrainer(loss=loss, batch_size=params['batch_size'],
                       print_every=100, expt_dir=opt.expt_dir, tensorboard=True, 
                       batch_adv_loss=batch_adv_loss)
 
+
+# train with lamb*normal_loss + (1-lamb)*adv_loss
+lamb = 0.5
+
 seq2seq = t.train(seq2seq, train,
                   num_epochs=params['num_epochs'], dev_data=dev,
                   optimizer=optimizer,
                   teacher_forcing_ratio=0.5,
                   resume=opt.resume, 
                   load_checkpoint=opt.load_checkpoint, 
-                  attacks=attacks)
+                  attacks=attacks, lamb=lamb)
