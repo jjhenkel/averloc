@@ -105,7 +105,7 @@ class SupervisedAdversarialTrainer(object):
         log = self.logger
 
         if isinstance(lamb, float):
-            lamb = [lamb]*n_epochs
+            lamb = [lamb]*(n_epochs+1-start_epoch)
 
         print_loss_total = 0  # Reset every print_every
         epoch_loss_total = 0  # Reset every epoch
@@ -174,7 +174,7 @@ class SupervisedAdversarialTrainer(object):
                     # normal training term
                     input_variables, input_lengths = getattr(batch, seq2seq.src_field_name)
                     target_variables = getattr(batch, seq2seq.tgt_field_name)
-                    decoder_outputs, decoder_hidden, other = model(input_variable, input_lengths, target_variable, teacher_forcing_ratio=teacher_forcing_ratio)
+                    decoder_outputs, decoder_hidden, other = model(input_variables, input_lengths, target_variables, teacher_forcing_ratio=teacher_forcing_ratio)
                     # Get loss
                     
                     for step, step_output in enumerate(decoder_outputs):
@@ -184,7 +184,7 @@ class SupervisedAdversarialTrainer(object):
                 # adversarial training term
                 input_variables, input_lengths = getattr(batch, chosen_src_field_name)
                 target_variables = getattr(batch, seq2seq.tgt_field_name)
-                decoder_outputs, decoder_hidden, other = model(input_variable, input_lengths, target_variable, teacher_forcing_ratio=teacher_forcing_ratio)
+                decoder_outputs, decoder_hidden, other = model(input_variables, input_lengths, target_variables, teacher_forcing_ratio=teacher_forcing_ratio)
                 # Get loss
                 
                 for step, step_output in enumerate(decoder_outputs):
