@@ -3,6 +3,7 @@
 set -ex
 
 mkdir -p /mnt/outputs
+mkdir -p /staging
 
 TRAIN_FILE=/mnt/inputs/train.tsv
 VALID_FILE=/mnt/inputs/valid.tsv
@@ -17,6 +18,15 @@ fi
 
 if [ "${1}" = "--regular_training" ]; then
   shift
+  python /model/train.py \
+    --train_path "${TRAIN_FILE}" \
+    --dev_path "${VALID_FILE}" \
+    --expt_name lstm \
+    --expt_dir /mnt/outputs $@
+elif [ "${1}" = "--augmented_training" ]; then
+  shift
+  TRAIN_FILE=/staging/train.tsv
+  python /app/augment.py
   python /model/train.py \
     --train_path "${TRAIN_FILE}" \
     --dev_path "${VALID_FILE}" \

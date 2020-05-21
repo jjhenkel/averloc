@@ -145,7 +145,7 @@ build-image-extract-adv-dataset-c2s: submodules ## Builds our adversarial datase
 
 .PHONY: build-image-extract-adv-dataset-tokens
 build-image-extract-adv-dataset-tokens: submodules ## Builds our adversarial dataset extractor (representation: tokens). <!PRIVATE>
-	@"${ROOT_DIR}/scripts/build-image.sh" \
+	@"${ROOT_DIR}/scripts/build-model-image.sh" \
 		extract-adv-dataset-tokens
 
 .PHONY: build-image-generate-baselines
@@ -721,6 +721,18 @@ train-model-seq2seq: check-dataset-name check-gpu check-models-out build-image-t
 #######################################################################################################################
 #######################################################################################################################
 
+.PHONY: check-transforms
+check-transforms:
+ifndef TRANSFORMS
+	$(error TRANSFORMS (regex) is a required parameter for this target.)
+endif
+
+.PHONY: check-sort-name
+check-short-name:
+ifndef SHORT_NAME
+	$(error SHORT_NAME is a required parameter for this target.)
+endif
+
 .PHONY: extract-adv-dataset-ast-paths-c2s-java-small
 extract-adv-dataset-ast-paths-c2s-java-small: | build-image-extract-adv-dataset-c2s
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-c2s:$(shell git rev-parse HEAD)"
@@ -765,16 +777,19 @@ extract-adv-dataset-ast-paths-sri-py150: | build-image-extract-adv-dataset-c2s
 #######################################################################################################################
 
 .PHONY: extract-adv-dataset-tokens-c2s-java-small 
-extract-adv-dataset-tokens-c2s-java-small: | build-image-extract-adv-dataset-tokens
+extract-adv-dataset-tokens-c2s-java-small: | check-short-name check-transforms check-gpu check-models-in build-image-extract-adv-dataset-tokens
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-tokens:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		--gpus "device=$${GPU}" \
 		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
+		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
+		-v "${ROOT_DIR}/debug:/mnt/staging" \
 		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/c2s/java-small:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/adversarial/targeting/tokens/c2s/java-small:/mnt/outputs" \
-		"$${IMAGE_NAME}" ${ALL_TRANSFORMS}
+		-v "${ROOT_DIR}/datasets/adversarial/$${SHORT_NAME}/tokens/c2s/java-small:/mnt/outputs" \
+		"$${IMAGE_NAME}" $$(find "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/c2s/java-small" -type d | grep -Po "$${TRANSFORMS}")
 
 .PHONY: extract-adv-dataset-tokens-csn-java
-extract-adv-dataset-tokens-csn-java: | check-adversarial-mode build-image-extract-adv-dataset-tokens
+extract-adv-dataset-tokens-csn-java: | build-image-extract-adv-dataset-tokens
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-tokens:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
@@ -783,7 +798,7 @@ extract-adv-dataset-tokens-csn-java: | check-adversarial-mode build-image-extrac
 		"$${IMAGE_NAME}" $${TRANSFORMS}
 
 .PHONY: extract-adv-dataset-tokens-csn-python
-extract-adv-dataset-tokens-csn-python: | check-adversarial-mode build-image-extract-adv-dataset-tokens
+extract-adv-dataset-tokens-csn-python: | build-image-extract-adv-dataset-tokens
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-tokens:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
@@ -792,7 +807,7 @@ extract-adv-dataset-tokens-csn-python: | check-adversarial-mode build-image-extr
 		"$${IMAGE_NAME}" $${TRANSFORMS}
 
 .PHONY: extract-adv-dataset-tokens-sri-py150
-extract-adv-dataset-tokens-sri-py150: | check-adversarial-mode build-image-extract-adv-dataset-tokens
+extract-adv-dataset-tokens-sri-py150: | build-image-extract-adv-dataset-tokens
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-tokens:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \

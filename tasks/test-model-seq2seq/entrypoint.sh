@@ -28,7 +28,7 @@ else
     --load_checkpoint Best_F1 \
       $@
 
-  python /model/attack.py \
+  python /model/attack_batched.py \
     --data_path "${TEST_FILE}" \
     --expt_dir /models/lstm \
     --output_dir /mnt/outputs \

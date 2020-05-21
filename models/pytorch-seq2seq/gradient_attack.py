@@ -98,8 +98,14 @@ def load_model(expt_dir, model_name):
     return model, input_vocab, output_vocab
 
 def load_data(data_path, 
-	fields=(SourceField(), TargetField(), SourceField(), torchtext.data.Field(sequential=False, use_vocab=False)), 
-	filter_func=lambda x: True):
+	fields=(
+		SourceField(),
+		TargetField(),
+		SourceField(),
+		torchtext.data.Field(sequential=False, use_vocab=False)
+	), 
+	filter_func=lambda x: True
+):
 	src, tgt, src_adv, idx_field = fields
 
 	fields_inp = []
@@ -117,12 +123,13 @@ def load_data(data_path,
 				fields_inp.append((col, src_adv))
 
 	data = torchtext.data.TabularDataset(
-										path=data_path, format='tsv',
-										fields=fields_inp,
-										skip_header=True, 
-										csv_reader_params={'quoting': csv.QUOTE_NONE}, 
-										filter_pred=filter_func
-										)
+		path=data_path,
+		format='tsv',
+		fields=fields_inp,
+		skip_header=True, 
+		csv_reader_params={'quoting': csv.QUOTE_NONE}, 
+		filter_pred=filter_func
+	)
 
 	return data, fields_inp, src, tgt, src_adv, idx_field
 
@@ -214,14 +221,13 @@ def apply_gradient_attack(data, model, input_vocab, replace_tokens, field_name, 
 
 	batch_iterator = torchtext.data.BucketIterator(
 		dataset=data, batch_size=opt.batch_size,
-		sort=False, sort_within_batch=True,
+		sort=True, sort_within_batch=True,
 		sort_key=lambda x: len(x.src),
 		device=device, repeat=False
 		)
 	batch_generator = batch_iterator.__iter__()
-	c = 0
 
-	weight = torch.ones(len(tgt.vocab))
+	weight = torch.ones(len(tgt.vocab)).half()
 	pad = tgt.vocab.stoi[tgt.pad_token]
 	loss = Perplexity(weight, pad)
 	if torch.cuda.is_available():
@@ -235,8 +241,21 @@ def apply_gradient_attack(data, model, input_vocab, replace_tokens, field_name, 
 		input_variables, input_lengths = getattr(batch, field_name)
 		target_variables = getattr(batch, 'tgt')
 
+		# Do random attack if inputs are too long and will OOM under gradient attack
+		if max(getattr(batch, field_name)[1]) > 250:
+			rand_replacements = get_random_token_replacement(
+				input_variables.cpu().numpy(),
+				input_vocab,
+				indices.cpu().numpy(),
+				replace_tokens,
+				opt.distinct
+			)
+
+			d.update(rand_replacements)
+			continue
+
 		# convert input_variables to one_hot
-		input_onehot = Variable(convert_to_onehot(input_variables, vocab_size=len(input_vocab)), requires_grad=True)
+		input_onehot = Variable(convert_to_onehot(input_variables, vocab_size=len(input_vocab)), requires_grad=True).half()
 	  
 		# Forward propagation		
 		decoder_outputs, decoder_hidden, other = model(input_onehot, input_lengths, target_variables, already_one_hot=True)
@@ -262,12 +281,6 @@ def apply_gradient_attack(data, model, input_vocab, replace_tokens, field_name, 
 		grads = input_onehot.grad
 		del input_onehot
 
-		c+=1
-		if c==3:
-			pass
-			# break
-
-
 		best_replacements = get_best_token_replacement(input_variables.cpu().numpy(), grads.cpu().numpy(), 
 																	input_vocab, indices.cpu().numpy(), replace_tokens, opt.distinct)
 
@@ -284,7 +297,6 @@ def apply_random_attack(data, model, input_vocab, replace_tokens, field_name, op
 		sort_key=lambda x: len(x.src),
 		device=device, repeat=False)
 	batch_generator = batch_iterator.__iter__()
-	c = 0
 
 	d = {}
 
@@ -292,11 +304,6 @@ def apply_random_attack(data, model, input_vocab, replace_tokens, field_name, op
 		indices = getattr(batch, 'index')
 		input_variables, input_lengths = getattr(batch, field_name)
 		target_variables = getattr(batch, 'tgt')
-
-		c+=1
-		if c==3:
-			pass
-			# break
 
 		rand_replacements = get_random_token_replacement(input_variables.cpu().numpy(),
 																	input_vocab, indices.cpu().numpy(), replace_tokens, opt.distinct)
@@ -310,12 +317,14 @@ if __name__=="__main__":
 	opt = parse_args()
 	print(opt)
 
-	replace_tokens = ["@R_%d@"%x for x in range(1,opt.num_replacements+1)]
+	replace_tokens = ["@R_%d@"%x for x in range(0,opt.num_replacements+1)]
 	print('Replace tokens:', replace_tokens)
 
 	model, input_vocab, output_vocab = load_model(opt.expt_dir, opt.load_checkpoint)
 
-	data, fields_inp, src, tgt, src_adv, idx_field = load_data(opt.data_path, filter_func=lambda x: len(x.src)<250)
+	model.half()
+
+	data, fields_inp, src, tgt, src_adv, idx_field = load_data(opt.data_path)
 	src.vocab = input_vocab
 	tgt.vocab = output_vocab
 	src_adv.vocab = input_vocab

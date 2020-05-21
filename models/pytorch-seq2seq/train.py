@@ -86,7 +86,7 @@ logging.info(vars(opt))
 print('Folder name:', opt.expt_dir)
 
 
-replace_tokens = ["@R_%d@"%x for x in range(1,opt.num_replace_tokens+1)]
+replace_tokens = ["@R_%d@"%x for x in range(0,opt.num_replace_tokens+1)]
 print('Number of replace tokens in source vocab:', opt.num_replace_tokens)
 logging.info('Number of replace tokens in source vocab: %d'%opt.num_replace_tokens)
 

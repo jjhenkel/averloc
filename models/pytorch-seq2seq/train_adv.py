@@ -37,6 +37,7 @@ def parse_args():
     parser.add_argument('--expt_name', action='store', dest='expt_name',default=None)
     parser.add_argument('--regular_training', action='store_true', default=False)
     parser.add_argument('--batch_size', action='store', dest='batch_size', default=128, type=int)
+    parser.add_argument('--epochs', default=5, type=int)
 
     opt = parser.parse_args()
     return opt
@@ -99,7 +100,7 @@ params = {
     'max_len': 128, 
     'rnn_cell': 'lstm',
     'batch_size': opt.batch_size, 
-    'num_epochs': 8
+    'num_epochs': opt.epochs
 }
 
 logging.info(params)
