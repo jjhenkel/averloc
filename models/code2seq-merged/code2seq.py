@@ -3,13 +3,14 @@ from argparse import ArgumentParser
 from config import Config
 from interactive_predict import InteractivePredictor
 from model import Model
-import warnings
-warnings.filterwarnings("ignore")
 import os
+import warnings
+warnings.filterwarnings("ignore",category=FutureWarning)
 import tensorflow as tf
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 import logging
 logging.getLogger('tensorflow').disabled = True
+
 
 if __name__ == '__main__':
     parser = ArgumentParser()
@@ -59,7 +60,7 @@ if __name__ == '__main__':
         predictor = InteractivePredictor(config, model)
         predictor.predict()
     if args.adv_eval:
-        model.adv_eval()    
+        model.adv_eval_batched()    
     if args.release and args.load_path:
         model.evaluate(release=True)
     model.close_session()

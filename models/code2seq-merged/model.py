@@ -24,7 +24,7 @@ def format_pred(target):
     for tk in target:
         if not tk == '<PAD>':
             result += tk + " "
-    return result
+    return result[:-1]
     
 def format_attention(word_attention):
     result = ""
@@ -423,7 +423,7 @@ class Model:
     
     def adv_eval_batched(self):
         test_queues = []
-        print("\n\n",1)
+        print("\n\n")
     ################Build the eval graph to select the worst data###############
         eval_target_index = tf.placeholder(tf.int32, [None, None])
         eval_target_lengths = tf.placeholder(tf.int64, [None,])
@@ -470,13 +470,14 @@ class Model:
             eval_crossent = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=eval_target_index, logits=eval_logits)
             eval_target_words_nonzero = tf.sequence_mask(eval_target_lengths + 1,
                                                     maxlen=self.config.MAX_TARGET_PARTS + 1, dtype=tf.float32)
-            eval_graph_loss = tf.reduce_sum(eval_crossent * eval_target_words_nonzero) / tf.to_float(eval_batch_size)
+            eval_graph_loss = tf.reduce_sum(eval_crossent * eval_target_words_nonzero, axis=1)
+            # eval_graph_loss = tf.reduce_sum(eval_crossent * eval_target_words_nonzero) / tf.to_float(eval_batch_size)
             
             
             predicted_indices_op = eval_outputs.sample_id
             self.saver = tf.train.Saver(max_to_keep=10)
-            topk_values = tf.constant(1, shape=(1, 1), dtype=tf.float32)
-            predicted_indices_attention_weights = tf.squeeze(eval_final_states.alignment_history.stack(), 1)
+            # topk_values = tf.constant(1, shape=(1, 1), dtype=tf.float32)
+            # predicted_indices_attention_weights = tf.squeeze(eval_final_states.alignment_history.stack(), 1)
   
     ###############################end of build graph######################################
         for transf in range(self.config.TRANSFS):
@@ -493,55 +494,45 @@ class Model:
         path_prefix = '/mnt/outputs/' if "PATH_PREFIX" in os.environ else ''
         open("{}predicted_target".format(path_prefix), 'w').close()
         open("{}true_target".format(path_prefix), 'w').close()
-        open("{}attention_weights".format(path_prefix), 'w').close()
+        batch_num = 0 
         try:
             while True:
+                print('Next batch', batch_num)
                 worst_loss = 0.0
                 worst_tensors = None
                 for transf in range(self.config.TRANSFS):
+                    
+
                     test_input_tensors_data = test_queues[transf].get_output()
                     test_input_tensors = self.sess.run(test_input_tensors_data)
-                    test_curr_loss = self.sess.run(eval_graph_loss, feed_dict={eval_target_index: test_input_tensors[reader.TARGET_INDEX_KEY], eval_target_lengths: test_input_tensors[reader.TARGET_LENGTH_KEY], eval_path_source_indices: test_input_tensors[reader.PATH_SOURCE_INDICES_KEY], eval_node_indices: test_input_tensors[reader.NODE_INDICES_KEY], eval_path_target_indices: test_input_tensors[reader.PATH_TARGET_INDICES_KEY],  eval_valid_context_mask: test_input_tensors[reader.VALID_CONTEXT_MASK_KEY], eval_path_source_lengths: test_input_tensors[reader.PATH_SOURCE_LENGTHS_KEY], eval_path_lengths: test_input_tensors[reader.PATH_LENGTHS_KEY], eval_path_target_lengths: test_input_tensors[reader.PATH_TARGET_LENGTHS_KEY]})
-                    if test_curr_loss > worst_loss:
-                        worst_loss = test_curr_loss
-                        worst_tensors = test_input_tensors
-                        
-                predicted_indices, top_scores, attention_weights = self.sess.run([predicted_indices_op, topk_values, predicted_indices_attention_weights], feed_dict={eval_target_index: worst_tensors[reader.TARGET_INDEX_KEY], eval_target_lengths: worst_tensors[reader.TARGET_LENGTH_KEY], eval_path_source_indices: worst_tensors[reader.PATH_SOURCE_INDICES_KEY], eval_node_indices: worst_tensors[reader.NODE_INDICES_KEY], eval_path_target_indices: worst_tensors[reader.PATH_TARGET_INDICES_KEY],  eval_valid_context_mask: worst_tensors[reader.VALID_CONTEXT_MASK_KEY], eval_path_source_lengths: worst_tensors[reader.PATH_SOURCE_LENGTHS_KEY], eval_path_lengths: worst_tensors[reader.PATH_LENGTHS_KEY], eval_path_target_lengths: worst_tensors[reader.PATH_TARGET_LENGTHS_KEY]})
-                ####These are used to retrive the attention weights####
-                path_source_string = worst_tensors[reader.PATH_SOURCE_STRINGS_KEY]
-                path_strings = worst_tensors[reader.PATH_STRINGS_KEY]
-                path_target_string = worst_tensors[reader.PATH_TARGET_STRINGS_KEY]
-                path_source_string = path_source_string.reshape((-1))
-                path_strings = path_strings.reshape((-1))
-                path_target_string = path_target_string.reshape((-1))
+                    test_curr_loss, predicted_indices = self.sess.run([eval_graph_loss, predicted_indices_op], feed_dict={eval_target_index: test_input_tensors[reader.TARGET_INDEX_KEY], eval_target_lengths: test_input_tensors[reader.TARGET_LENGTH_KEY], eval_path_source_indices: test_input_tensors[reader.PATH_SOURCE_INDICES_KEY], eval_node_indices: test_input_tensors[reader.NODE_INDICES_KEY], eval_path_target_indices: test_input_tensors[reader.PATH_TARGET_INDICES_KEY],  eval_valid_context_mask: test_input_tensors[reader.VALID_CONTEXT_MASK_KEY], eval_path_source_lengths: test_input_tensors[reader.PATH_SOURCE_LENGTHS_KEY], eval_path_lengths: test_input_tensors[reader.PATH_LENGTHS_KEY], eval_path_target_lengths: test_input_tensors[reader.PATH_TARGET_LENGTHS_KEY]})
+                    path_target_strings = test_input_tensors[reader.PATH_TARGET_STRINGS_KEY]
+
+                    if transf==0:
+                        batch_size = test_curr_loss.shape[0]
+                        # list of lists: [worst_loss, true_target, predicted_target]
+                        list_of_worst = []
+                        for i in range(batch_size):
+                            target_string = format_orig(Common.binary_to_string(test_input_tensors[reader.TARGET_STRING_KEY][i]))
+                            predicted_string = format_pred([self.index_to_target[idx] for idx in predicted_indices[i]])
+                            list_of_worst.append([test_curr_loss[i], target_string, predicted_string])
+
+
+                    for i in range(batch_size):
+                        if test_curr_loss[i] > list_of_worst[i][0]:
+                            list_of_worst[i][0] = test_curr_loss[i]
+                            # if this assertion fails, then it means there is something wrong with the data alignment
+                            assert format_orig(Common.binary_to_string(test_input_tensors[reader.TARGET_STRING_KEY][i]))==list_of_worst[i][1]
+                            list_of_worst[i][2] = format_pred([self.index_to_target[idx] for idx in predicted_indices[i]])
+
+                    # print(list_of_worst)
                 
-                #####These are used in output predicted string#####
-                true_target = Common.binary_to_string(worst_tensors[reader.TARGET_STRING_KEY][0])
-                predicted_indices = np.squeeze(predicted_indices, axis=0)
-                top_scores = np.squeeze(top_scores, axis=0)
-                predicted_strings = [self.index_to_target[idx]
-                                     for idx in predicted_indices]
-                                     
-                attention_per_path = self.get_attention_per_path(path_source_string, path_strings, path_target_string, attention_weights)                     
-               
-                
-                result = [(true_target, predicted_strings, top_scores, attention_per_path)]
-                word_attention_pairs = [(word, attention) for word, attention in
-                                        zip(predicted_strings, attention_per_path) if
-                                        Common.legal_method_names_checker(word)]
-                
-                #print("true target {}".format(true_target))
-                #print("predicted target {}".format(predicted_strings))
-                true_target = format_orig(true_target)
-                predicted_target = format_pred(predicted_strings)
-                word_attention = format_attention(word_attention_pairs)
-                
-                with open('{}true_target'.format(path_prefix),'a+') as f:
-                    f.write(true_target+"\n")
-                with open("{}predicted_target".format(path_prefix), 'a+') as g:
-                    g.write(predicted_target +"\n")
-                with open("{}attention_weights".format(path_prefix), 'a+') as g:
-                    g.write(word_attention +"\n") 
+                with open('{}true_target'.format(path_prefix),'a+') as f, open("{}predicted_target".format(path_prefix), 'a+') as g:
+                    for _, true_target, predicted_target in list_of_worst:
+                        f.write(true_target+"\n")
+                        g.write(predicted_target +"\n")
+
+                batch_num += 1
                 
         except tf.errors.OutOfRangeError:
             return
