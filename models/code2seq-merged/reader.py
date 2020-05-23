@@ -25,7 +25,7 @@ class Reader:
     class_target_table = None
     class_node_table = None
 
-    def __init__(self, subtoken_to_index, target_to_index, node_to_index, config, is_evaluating=False, adv_training = False, adv_transf = 0, adv_testing = False, indexed=True):
+    def __init__(self, subtoken_to_index, target_to_index, node_to_index, config, is_evaluating=False, adv_training = False, adv_transf = 0, adv_testing = False, indexed=False):
         self.config = config
         self.adv_training = adv_training
         self.indexed = indexed

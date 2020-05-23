@@ -9,7 +9,6 @@ import logging
 logging.getLogger('tensorflow').disabled = True
 
 from config import Config
-from interactive_predict import InteractivePredictor
 from model import Model
 
 import os
@@ -40,7 +39,7 @@ if __name__ == '__main__':
 
     replace_tokens = ["@R_%d@"%i for i in range(1, args.num_replace_tokens+1)]
 
-    print('Running gradient %s attack'%('and random' if args.random else ''))
+    print('Running gradient %sattack'%('and random ' if args.random else ''))
 
     gradient_replacements, random_replacements = model.run_gradient_attack(replace_tokens, batch_size=args.batch_size, random=args.random)
 

@@ -15,4 +15,4 @@ python models/code2seq-merged/code2seq.py -t 3 -td sample_data -l backdoor1_0.01
 
 # gradient attack
 python models/code2seq-targeting/gradient_attack.py --data sample_indexed.c2s --load backdoor1_0.01/model_iter8 --output_json_path please_work.json
-# Mostly self explanatory?
+# Mostly self explanatory? The sample_indexed.c2s should have an index preceding each line
