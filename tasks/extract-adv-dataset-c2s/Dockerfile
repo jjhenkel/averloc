@@ -1,8 +1,13 @@
-FROM python:3.7-stretch
+FROM tensorflow/tensorflow:1.15.0-gpu-py3
 
-RUN pip install tqdm
+RUN apt-get install -y nvidia-modprobe
 
-COPY models/code2seq /model
+RUN pip3 install requests rouge tqdm pandas
+
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
+
+COPY models/code2seq-merged /model
 
 COPY task/ /app/
 

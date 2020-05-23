@@ -1,6 +1,7 @@
 import _pickle as pickle
 import os
 import time
+import random
 
 import numpy as np
 import shutil
@@ -148,7 +149,7 @@ class Model:
             except tf.errors.OutOfRangeError:
                 self.epochs_trained += self.config.SAVE_EVERY_EPOCHS
                 print('Finished %d epochs, number of batches evaluated: %d' % (self.config.SAVE_EVERY_EPOCHS, batch_num))
-                results, precision, recall, f1, rouge = self.evaluate()
+                results, precision, recall, f1 = self.evaluate()
                 if self.config.BEAM_WIDTH == 0:
                     print('Accuracy after %d epochs: %.5f' % (self.epochs_trained, results))
                 else:
@@ -163,7 +164,7 @@ class Model:
                     best_epoch = self.epochs_trained
                     epochs_no_improve = 0
                     self.save_model(self.sess, self.config.SAVE_PATH)
-                    print('New model saved, F1:', F1)
+                    print('New model saved, F1:', f1)
                 else:
                     epochs_no_improve += self.config.SAVE_EVERY_EPOCHS
                     if epochs_no_improve >= self.config.PATIENCE:
@@ -416,9 +417,15 @@ class Model:
     def trace(self, sum_loss, batch_num, multi_batch_start_time):
         multi_batch_elapsed = time.time() - multi_batch_start_time
         avg_loss = sum_loss / self.num_batches_to_log
-        print('Average loss at batch %d: %f, \tthroughput: %d samples/sec' % (batch_num, avg_loss,
-                                                                              self.config.BATCH_SIZE * self.num_batches_to_log * (self.config.TRANSFS+1) / (
-                                                                                  multi_batch_elapsed if multi_batch_elapsed > 0 else 1)))
+        print('Average loss at batch %d: %f, \tthroughput: %d samples/sec' % (
+            batch_num,
+            avg_loss,
+            self.config.BATCH_SIZE * self.num_batches_to_log * (
+                self.config.TRANSFS + 1 if self.config.TRANSFS is not None else 1
+            ) / (
+                multi_batch_elapsed if multi_batch_elapsed > 0 else 1
+            )
+        ))
 
     
     def adv_eval_batched(self):

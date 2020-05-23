@@ -8,7 +8,8 @@ import subprocess
 
 if __name__ == '__main__':
   ID_MAP = {}
-  TRANSFORMS = [ x.strip() for x in sys.argv[2:] if x.strip().lower() != 'transforms.Identity' ]
+  TRANSFORMS = [ x.strip() for x in sys.argv[2:] if x.strip().lower() != 'transforms.identity' ]
+  print(TRANSFORMS)
 
   print("Loading identity transform...")
   with open("/mnt/inputs/transforms.Identity/data.{}.c2s".format(sys.argv[1]), 'r') as identity:
@@ -33,19 +34,21 @@ if __name__ == '__main__':
     ))
 
   OUT_MAPS = {
-    'transforms.Identity': open('/mnt/outputs/data0.{}.c2s'.format(sys.argv[1]), 'w')
+    'transforms.Identity': open('/mnt/staging/data0.{}.c2s'.format(sys.argv[1]), 'w')
   }
 
   for i, transform_name in enumerate(TRANSFORMED.keys()):
     OUT_MAPS[transform_name] = open(
-      '/mnt/outputs/data{}.{}.c2s'.format(i+1, sys.argv[1]), 'w'
+      '/mnt/staging/data{}.{}.c2s'.format(i+1, sys.argv[1]), 'w'
     )
 
+  index = 0
   for key in tqdm.tqdm(ID_MAP.keys(), desc="  + Progress"):
     for transform_name in TRANSFORMS:
       if key in TRANSFORMED[transform_name]:
-        OUT_MAPS[transform_name].write(TRANSFORMED[transform_name][key])
+        OUT_MAPS[transform_name].write(str(index) + ' ' + TRANSFORMED[transform_name][key])
       else:
-        OUT_MAPS[transform_name].write(ID_MAP[key])
+        OUT_MAPS[transform_name].write(str(index) + ' ' + ID_MAP[key])
     OUT_MAPS['transforms.Identity'].write(ID_MAP[key])
+    index += 1
   print("  + Adversarial {}ing file generation complete!".format(sys.argv[1]))

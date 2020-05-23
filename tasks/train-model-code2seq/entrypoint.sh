@@ -18,19 +18,19 @@ fi
 
 if [ "${1}" = "--regular_training" ]; then
   shift
-  python3 -u /code2seqORIG/code2seq.py \
-    --data "${FOLDER}/data" \
-    --test "${FOLDER}/data.val.c2s" \
-    --save_prefix /mnt/outputs/model \
+  python3 -u /code2seq/code2seq.py \
+    -d "${FOLDER}/data" \
+    -te "${FOLDER}/data.val.c2s" \
+    -s /mnt/outputs/model \
     $@
 else
   T="${1}"
   shift
-  python3 -u /code2seqADVR/code2seq.py \
-    --data "${FOLDER}/data" \
-    --test "${FOLDER}/data.val.c2s" \
+  python3 -u /code2seq/code2seq.py \
+    -d "${FOLDER}/data" \
+    -te "${FOLDER}/data.val.c2s" \
     -td "${FOLDER}" \
     -t "${T}" \
-    --save_prefix /mnt/outputs/model \
+    -s /mnt/outputs/model \
     $@
 fi

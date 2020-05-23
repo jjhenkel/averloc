@@ -27,16 +27,16 @@ fi
 if [ "${1}" = "--no-attack" ]; then
   echo "Skipping attack.py"
   shift
-  python3 /code2seqORIG/code2seq.py \
+  python3 /code2seq/code2seq.py \
     --load ${SELECTED_MODEL} \
     --test ${FOLDER}/data.test.c2s
 else
   T="${1}"
   shift
-  python3 /code2seqADVR/code2seq.py \
+  python3 /code2seq/code2seq.py \
     --load ${SELECTED_MODEL} \
     -td ${FOLDER} \
     --adv_eval \
     -t "${T}" \
-    -bs 1
+    -bs 32
 fi

@@ -20,7 +20,7 @@ if __name__ == "__main__":
   csv.field_size_limit(sys.maxsize)
 
   ID_MAP = {}
-  TRANSFORMS = [ x.strip() for x in sys.argv[2:] if x.strip().lower() != 'transforms.Identity' ]
+  TRANSFORMS = [ x.strip() for x in sys.argv[2:] if x.strip().lower() != 'transforms.identity' ]
 
   print("Loading identity transform...")
   with open("/mnt/inputs/transforms.Identity/{}.tsv".format(sys.argv[1]), 'r') as identity_tsv:

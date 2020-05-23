@@ -46,8 +46,8 @@ if __name__ == '__main__':
 
     gradient_replacements, random_replacements = model.run_gradient_attack(replace_tokens, batch_size=args.batch_size, random=args.random)
 
-    json.dump(gradient_replacements, open(args.output_json_path, 'w'), indent=4)
-    print('Saved:', args.output_json_path)
+    json.dump(gradient_replacements, open(args.output_json_path[:-5] + "-gradient.json", 'w'), indent=4)
+    print('Saved:', args.output_json_path[:-5] + "-gradient.json")
 
     if args.random:
         output_json_path = args.output_json_path[:-5] + "-random.json"
