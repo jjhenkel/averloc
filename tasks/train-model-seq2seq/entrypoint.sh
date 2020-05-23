@@ -32,6 +32,15 @@ elif [ "${1}" = "--augmented_training" ]; then
     --dev_path "${VALID_FILE}" \
     --expt_name lstm \
     --expt_dir /mnt/outputs $@
+elif [ "${1}" = "--adv_fine_tune" ]; then
+  shift
+  python /model/train_adv.py \
+    --train_path "${TRAIN_FILE}" \
+    --dev_path "${VALID_FILE}" \
+    --expt_name lstm \
+    --resume \
+    --load_checkpoint Latest \
+    --expt_dir /mnt/outputs $@
 else
   python /model/train_adv.py \
     --train_path "${TRAIN_FILE}" \
@@ -39,5 +48,3 @@ else
     --expt_name lstm \
     --expt_dir /mnt/outputs $@
 fi
-
-# python train.py --train_path data/java-small/transforms.Identity/train.tsv --dev_path data/java-small/transforms.Identity/valid.tsv --expt_name java_small_identity  --resume --expt_dir experiment/java_small_identity --load_checkpoint Best_F1

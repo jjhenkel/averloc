@@ -18,21 +18,21 @@ if [ "${1}" = "--no-attack" ]; then
     --data_path "${TEST_FILE}" \
     --expt_dir /models/lstm \
     --output_dir /mnt/outputs \
-    --load_checkpoint Best_F1 \
+    --load_checkpoint "${CHECKPOINT}" \
       $@
 else
   python /model/evaluate.py \
     --data_path "${TEST_FILE}" \
     --expt_dir /models/lstm \
     --output_dir /mnt/outputs \
-    --load_checkpoint Best_F1 \
+    --load_checkpoint "${CHECKPOINT}" \
       $@
 
   python /model/attack_batched.py \
     --data_path "${TEST_FILE}" \
     --expt_dir /models/lstm \
     --output_dir /mnt/outputs \
-    --load_checkpoint Best_F1
+    --load_checkpoint "${CHECKPOINT}"
 fi
 
 if [ -f /mnt/inputs/baseline.tsv ]; then
@@ -42,7 +42,7 @@ if [ -f /mnt/inputs/baseline.tsv ]; then
     --data_path /baseline-fixed.tsv \
     --expt_dir /models/lstm \
     --output_dir /mnt/outputs \
-    --load_checkpoint Best_F1 \
+    --load_checkpoint "${CHECKPOINT}" \
     $@
 fi
 

@@ -146,9 +146,11 @@ class SupervisedAdversarialTrainer(object):
             best_f1 = 0.0
             best_acc = 0.0
 
+        lidx = 0
         for epoch in range(start_epoch, n_epochs + 1):
-            lamb_epoch = lamb[epoch-start_epoch]
-            log.debug("Epoch: %d, Step: %d, Lambda: %.2f" % (epoch, step, lamb_epoch))
+            lamb_epoch = lamb[lidx] if lidx < len(lamb) else lamb[-1]
+            lidx += 1
+            log.info("Epoch: %d, Step: %d, Lambda: %.2f" % (epoch, step, lamb_epoch))
 
             batch_generator = batch_iterator.__iter__()
             # consuming seen batches from previous training
@@ -177,9 +179,9 @@ class SupervisedAdversarialTrainer(object):
                     decoder_outputs, decoder_hidden, other = model(input_variables, input_lengths, target_variables, teacher_forcing_ratio=teacher_forcing_ratio)
                     # Get loss
                     
-                    for step, step_output in enumerate(decoder_outputs):
-                        batch_size = target_variable.size(0)
-                        self.loss.eval_batch(step_output.contiguous().view(batch_size, -1), target_variable[:, step + 1], weight=lamb_epoch)
+                    for step1, step_output in enumerate(decoder_outputs):
+                        batch_size = target_variables.size(0)
+                        self.loss.eval_batch(step_output.contiguous().view(batch_size, -1), target_variables[:, step1 + 1], weight=lamb_epoch)
 
                 # adversarial training term
                 input_variables, input_lengths = getattr(batch, chosen_src_field_name)
@@ -187,15 +189,15 @@ class SupervisedAdversarialTrainer(object):
                 decoder_outputs, decoder_hidden, other = model(input_variables, input_lengths, target_variables, teacher_forcing_ratio=teacher_forcing_ratio)
                 # Get loss
                 
-                for step, step_output in enumerate(decoder_outputs):
-                    batch_size = target_variable.size(0)
-                    self.loss.eval_batch(step_output.contiguous().view(batch_size, -1), target_variable[:, step + 1], weight=(1-lamb_epoch))
+                for step2, step_output in enumerate(decoder_outputs):
+                    batch_size = target_variables.size(0)
+                    self.loss.eval_batch(step_output.contiguous().view(batch_size, -1), target_variables[:, step2 + 1], weight=(1-lamb_epoch))
 
                 model.zero_grad()
                 self.loss.backward()
                 self.optimizer.step()
 
-                loss_adv = loss.get_loss()
+                loss_adv = self.loss.get_loss()
 
                 # loss = self._train_batch(input_variables, input_lengths.tolist(), target_variables, model, teacher_forcing_ratio)
 
@@ -266,13 +268,17 @@ class SupervisedAdversarialTrainer(object):
                 self.optimizer.update(epoch_loss_avg, epoch)
                 log.info(log_msg)
 
-            # Checkpoint(model=model,
-            #                    optimizer=self.optimizer,
-            #                    epoch=epoch, step=step,
-            #                    input_vocab=data.fields[seq2seq.src_field_name].vocab,
-            #                    output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir, name='Latest')
-            # log_msg = 'Latest Checkpoint saved, Epoch %d, %s' % (epoch, str(other_metrics))
-            # log.info(log_msg)
+            Checkpoint(
+                model=model,
+                optimizer=self.optimizer,
+                epoch=epoch,
+                step=step,
+                input_vocab=data.fields[seq2seq.src_field_name].vocab,
+                output_vocab=data.fields[seq2seq.tgt_field_name].vocab
+            ).save(self.expt_dir, name='Latest')
+            
+            log_msg = 'Latest Checkpoint saved, Epoch %d, %s' % (epoch, str(other_metrics))
+            log.info(log_msg)
             log.info(str(chosen_attack_counts))
 
 
@@ -322,7 +328,7 @@ class SupervisedAdversarialTrainer(object):
 
         self.logger.info("Optimizer: %s, Scheduler: %s" % (self.optimizer.optimizer, self.optimizer.scheduler))
 
-        self._train_epoches(data, model, num_epochs,
+        self._train_epoches(data, model, start_epoch + num_epochs if resume else num_epochs,
                             start_epoch, step, dev_data=dev_data,
                             teacher_forcing_ratio=teacher_forcing_ratio, 
                             attacks=attacks, lamb=lamb)

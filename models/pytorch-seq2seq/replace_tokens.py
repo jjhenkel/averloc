@@ -13,42 +13,34 @@ def parse_args():
 
 opt = parse_args()
 
-data = pd.read_csv(opt.source_data_path, sep='\t', index_col=0)
-
 mapping = json.load(open(opt.mapping_json))
 
-removed = []
-for index, row in data.iterrows():
-	delete = True
-	for col_name in mapping:
-		if str(index) in mapping[col_name]:
-			delete=False
-			break
-	if delete:
-		removed.append(index)
+data = pd.read_csv(opt.source_data_path, sep='\t', index_col=0)
 
-print('Original data size',len(data))
-data = data.drop(removed)
-print('%d indices were removed from set because no mapping data was found'%len(removed))
-print('New data size',len(data))
-# exit()
+with open(opt.source_data_path, 'r') as in_f:
+	with open(opt.dest_data_path, 'w') as dst_f:
+		colnames=None
+		for line in tqdm.tqdm(in_f):
+			if colnames is None:
+				colnames = line.strip().split('\t')
+				dst_f.write('\t'.join(colnames[1:]) + '\n')
+				continue
+			
+			parts = line.strip().split('\t')
+			index = parts[0]
+			rest = [ (colnames[i+4], parts[i+4] ) for i in range(len(parts) - 5) ]
 
-for index, row in tqdm.tqdm(data.iterrows(), total=len(data)):
-	# print(data.loc[index])
-	for col_name, v in row.items():
-		if col_name not in mapping:
-			continue
-		if str(index) not in mapping[col_name]:
-			if data[col_name][index].find("@R_")!=-1:
-				print('Missing index %d for column name %s, but it appears to have replaceable tokens'%(index, col_name))
-			continue
-		for repl_tok in mapping[col_name][str(index)]:
-			data[col_name][index] = data[col_name][index].replace(repl_tok, mapping[col_name][str(index)][repl_tok])
-
-	# print(data.loc[index])
-	# print('-'*50)
-
-	# break
-
-data.to_csv(opt.dest_data_path, sep='\t')
-print('Output file written', opt.dest_data_path)
+			new_parts = [ ]
+			for i, sample in enumerate(parts[1:]):
+				col = i + 1
+				new_part = sample
+				if colnames[col] == 'src' or colnames[col] == 'tgt' or colnames[col] == 'transforms.Identity':
+					new_parts.append(new_part)
+					continue
+				if index not in mapping[colnames[col]]:
+					new_parts.append(new_part)
+					continue
+				for repl_tok in mapping[colnames[col]][index]:
+					new_part = new_part.replace(repl_tok, mapping[colnames[col]][index][repl_tok])
+				new_parts.append(new_part)
+			dst_f.write('\t'.join(new_parts) + '\n')

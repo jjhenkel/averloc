@@ -2,6 +2,9 @@
 datasets/backups
 trained-models/
 ig-results/
+debug/
+*log*.txt
+*run*.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
