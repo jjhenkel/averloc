@@ -8,6 +8,11 @@ mkdir -p /mnt/outputs/random-targeting
 
 echo "[Step 1/2] Preparing data..."
 
+FLAGS="--distinct"
+if [ "${NO_RANDOM}" != "true" ]; then
+  FLAGS="--random --distinct"
+fi
+
 if [ "${AVERLOC_JUST_TEST}" != "true" ]; then
     python3 /app/app.py train $@
 
@@ -15,7 +20,10 @@ if [ "${AVERLOC_JUST_TEST}" != "true" ]; then
     cp /mnt/outputs/random-targeting/valid.tsv /mnt/outputs/gradient-targeting/valid.tsv
 fi
 
-python3 /app/app.py test $@
+
+if [ "${NO_TEST}" != "true" ]; then
+  python3 /app/app.py test $@
+fi
 
 echo "  + Done!"
 
@@ -25,36 +33,42 @@ if [ "${AVERLOC_JUST_TEST}" != "true" ]; then
     time python3 /model/gradient_attack.py \
     --data_path /mnt/staging/train.tsv \
     --expt_dir /models/lstm \
-    --load_checkpoint Best_F1 \
-    --random --distinct \
-    --save_path /mnt/staging/targets-train.json
+    --load_checkpoint "${CHECKPOINT}" \
+    --save_path /mnt/staging/targets-train.json \
+    ${FLAGS}
 
     python3 /model/replace_tokens.py \
     --source_data_path /mnt/staging/train.tsv \
     --dest_data_path /mnt/outputs/gradient-targeting/train.tsv \
     --mapping_json /mnt/staging/targets-train-gradient.json
 
+  if [ "${NO_RANDOM}" != "true" ]; then
     python3 /model/replace_tokens.py \
     --source_data_path /mnt/staging/train.tsv \
     --dest_data_path /mnt/outputs/random-targeting/train.tsv \
     --mapping_json /mnt/staging/targets-train-random.json
+  fi
 fi
 
-time python3 /model/gradient_attack.py \
-  --data_path /mnt/staging/test.tsv \
-  --expt_dir /models/lstm \
-  --load_checkpoint Best_F1 \
-  --save_path /mnt/staging/targets-test.json \
-  --random --distinct
+if [ "${NO_TEST}" != "true" ]; then
+  time python3 /model/gradient_attack.py \
+    --data_path /mnt/staging/test.tsv \
+    --expt_dir /models/lstm \
+    --load_checkpoint "${CHECKPOINT}" \
+    --save_path /mnt/staging/targets-test.json \
+    ${FLAGS}
 
-python3 /model/replace_tokens.py \
-  --source_data_path /mnt/staging/test.tsv \
-  --dest_data_path /mnt/outputs/gradient-targeting/test.tsv \
-  --mapping_json /mnt/staging/targets-test-gradient.json
+  python3 /model/replace_tokens.py \
+    --source_data_path /mnt/staging/test.tsv \
+    --dest_data_path /mnt/outputs/gradient-targeting/test.tsv \
+    --mapping_json /mnt/staging/targets-test-gradient.json
 
-python3 /model/replace_tokens.py \
-  --source_data_path /mnt/staging/test.tsv \
-  --dest_data_path /mnt/outputs/random-targeting/test.tsv \
-  --mapping_json /mnt/staging/targets-test-random.json
+  if [ "${NO_RANDOM}" != "true" ]; then
+    python3 /model/replace_tokens.py \
+      --source_data_path /mnt/staging/test.tsv \
+      --dest_data_path /mnt/outputs/random-targeting/test.tsv \
+      --mapping_json /mnt/staging/targets-test-random.json
+  fi
+fi
 
 echo "  + Done!"

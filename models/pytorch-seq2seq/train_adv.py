@@ -2,7 +2,9 @@ import os
 import argparse
 import logging
 import time
+import sys
 import csv
+import numpy as np
 
 import torch
 from torch.optim.lr_scheduler import StepLR
@@ -38,6 +40,8 @@ def parse_args():
     parser.add_argument('--regular_training', action='store_true', default=False)
     parser.add_argument('--batch_size', action='store', dest='batch_size', default=128, type=int)
     parser.add_argument('--epochs', default=5, type=int)
+    parser.add_argument('--num_replace_tokens', default=50, type=int)
+    parser.add_argument('--lamb', default=0.5, type=float)
 
     opt = parser.parse_args()
     return opt
@@ -78,17 +82,26 @@ def load_data(data_path,
 
 opt = parse_args()
 
-if not opt.resume:
-    expt_name = time.strftime('%Y_%m_%d_%H_%M_%S', time.localtime()) if opt.expt_name is None else opt.expt_name
-    opt.expt_dir = os.path.join(opt.expt_dir, expt_name)
-    if not os.path.exists(opt.expt_dir):
-        os.makedirs(opt.expt_dir)
+expt_name = time.strftime('%Y_%m_%d_%H_%M_%S', time.localtime()) if opt.expt_name is None else opt.expt_name
+opt.expt_dir = os.path.join(opt.expt_dir, expt_name)
+if not os.path.exists(opt.expt_dir):
+    os.makedirs(opt.expt_dir)
 
 print('Folder name:', opt.expt_dir)
 
 LOG_FORMAT = '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
-logging.basicConfig(format=LOG_FORMAT, level=getattr(logging, opt.log_level.upper()), 
-                                        filename=os.path.join(opt.expt_dir, 'experiment.log'), filemode='a')
+with open(os.path.join(opt.expt_dir, 'experiment.log'), 'w') as exp_f:
+    exp_f.write("BEGIN LOG:\n")
+logging.basicConfig(
+    format=LOG_FORMAT,
+    level=getattr(logging, opt.log_level.upper()), 
+    filename=os.path.join(opt.expt_dir, 'experiment.log'),
+    filemode='a'
+)
+
+replace_tokens = ["@R_%d@"%x for x in range(0,opt.num_replace_tokens+1)]
+print('Number of replace tokens in source vocab:', opt.num_replace_tokens)
+logging.info('Number of replace tokens in source vocab: %d'%opt.num_replace_tokens)
 
 logging.info(vars(opt))
 
@@ -102,8 +115,6 @@ params = {
     'batch_size': opt.batch_size, 
     'num_epochs': opt.epochs
 }
-
-logging.info(params)
 
 max_len = params['max_len']
 def len_filter(example):
@@ -137,12 +148,17 @@ if opt.resume:
         src.vocab = checkpoint.input_vocab
         tgt.vocab = checkpoint.output_vocab
 else:
-    src.build_vocab(train, max_size=params['src_vocab_size'])
+    src.build_vocab(train, max_size=params['src_vocab_size'], specials=replace_tokens)
     tgt.build_vocab(train, max_size=params['tgt_vocab_size'])
     # input_vocab = src.vocab
     # output_vocab = tgt.vocab   
 
 src_adv.vocab = src.vocab 
+
+logging.info('Indices of special replace tokens:\n')
+for rep in replace_tokens:
+    logging.info("%s, %d; "%(rep, src.vocab.stoi[rep]))
+logging.info('\n')
 
 # Prepare loss
 weight = torch.ones(len(tgt.vocab))
@@ -193,12 +209,21 @@ t = SupervisedAdversarialTrainer(loss=loss, batch_size=params['batch_size'],
 
 
 # train with lamb*normal_loss + (1-lamb)*adv_loss
-lamb = 0.5
+lamb = np.linspace(opt.lamb, 0.0, opt.epochs)
+print(lamb)
 
-seq2seq = t.train(seq2seq, train,
-                  num_epochs=params['num_epochs'], dev_data=dev,
-                  optimizer=optimizer,
-                  teacher_forcing_ratio=0.5,
-                  resume=opt.resume, 
-                  load_checkpoint=opt.load_checkpoint, 
-                  attacks=attacks, lamb=lamb)
+load_checkpoint_path = None if opt.load_checkpoint is None else \
+    os.path.join(opt.expt_dir, Checkpoint.CHECKPOINT_DIR_NAME, opt.load_checkpoint)
+
+seq2seq = t.train(
+    seq2seq,
+    train,
+    num_epochs=params['num_epochs'],
+    dev_data=dev,
+    optimizer=optimizer,
+    teacher_forcing_ratio=0.5,
+    resume=opt.resume, 
+    load_checkpoint=load_checkpoint_path, 
+    attacks=attacks,
+    lamb=lamb
+)
