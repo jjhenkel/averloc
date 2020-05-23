@@ -39,4 +39,7 @@ else
     --adv_eval \
     -t "${T}" \
     -bs 32
+  python3 /seq2seq/seq2seq/evaluator/metrics.py \
+    --f_true /mnt/outputs/true_target \
+    --f_pred /mnt/outputs/predicted_target | tee /mnt/outputs/attack_metrics.txt
 fi
