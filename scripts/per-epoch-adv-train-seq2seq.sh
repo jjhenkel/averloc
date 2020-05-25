@@ -2,18 +2,44 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
+if [[ -z "${GPU}" ]]; then
+  echo "Error: please specify a GPU (GPU=<device>)"
+  exit 1
+fi
+
+if [[ -z "${DATASET}" ]]; then
+  echo "Error: please specfiy dataset (DATASET=c2s/java-small)"
+  exit 1
+fi
+
 trap "echo '[ADV-TRAIN]  - CTRL-C Pressed. Quiting...'; exit;" SIGINT SIGTERM
 
 pushd "${DIR}/.." > /dev/null
 
+if [ "${1}" = "--random" ]; then
+  export NO_RANDOM="false"
+  export NO_GRADIENT="true"
+  export TARGETING="random"
+elif [ "${1}" = "--gradient" ]; then
+  export NO_RANDOM="true"
+  export NO_GRADIENT="false"
+  export TARGETING="gradient"
+else
+  echo "Error: please specify either --random or --gradient as first arg."
+  exit 1
+fi
+
+export GPU="${GPU}"
+export LAMB=0.4
+export NUM_T=8
 export MAX_EPOCHS=10
-export DATASET=c2s/java-small
+export DATASET="${DATASET}"
 
 echo "[ADV-TRAIN] Copying over normal model for first-round targeting..."
-mkdir -p "trained-models/seq2seq/per-epoch-l${2}/${DATASET}/adversarial/lstm"
+mkdir -p "trained-models/seq2seq/per-epoch-l${LAMB}/${DATASET}/adversarial/lstm"
 docker run -it --rm \
   -v "${DIR}/../trained-models/seq2seq/${DATASET}/normal":/mnt/inputs \
-  -v "${DIR}/../trained-models/seq2seq/per-epoch-l${2}/${DATASET}/adversarial":/mnt/outputs \
+  -v "${DIR}/../trained-models/seq2seq/pe${MAX_EPOCHS}-${TARGETING}-l${LAMB}/${DATASET}/adversarial":/mnt/outputs \
   debian:9 \
     bash -c 'cp -r /mnt/inputs/lstm/checkpoints /mnt/outputs/lstm && mv /mnt/outputs/lstm/checkpoints/Best_F1 /mnt/outputs/lstm/checkpoints/Latest'
 echo "[ADV-TRAIN]   + Done!"
@@ -24,11 +50,13 @@ for epoch in $(seq 1 ${MAX_EPOCHS}); do
 echo "[ADV-TRAIN]   + Epoch ${epoch} targeting begins..."
 
 CHECKPOINT="Latest" \
+NO_RANDOM="${NO_RANDOM}" \
+NO_GRADIENT="${NO_GRADIENT}" \
 NO_RANDOM="true" \
 NO_TEST="true" \
 SHORT_NAME="d1-train-epoch-${epoch}-l${2}" \
-GPU="${1}" \
-MODELS_IN=trained-models/seq2seq/per-epoch-l${2}/${DATASET}/adversarial \
+GPU="${GPU}" \
+MODELS_IN=trained-models/seq2seq/pe${MAX_EPOCHS}-${TARGETING}-l${LAMB}/${DATASET}/adversarial \
 TRANSFORMS='transforms\.\w+' \
   time make extract-adv-dataset-tokens-c2s-java-small
 
@@ -37,9 +65,9 @@ echo "[ADV-TRAIN]   + Epoch ${epoch} training begins..."
 
 ARGS="${DO_FINETUNE} --epochs 1 --lamb ${2}" \
 SHORT_NAME="d1-train-epoch-${epoch}-l${2}" \
-GPU="${1}" \
-MODELS_OUT=trained-models/seq2seq/per-epoch-l${2}/${DATASET} \
-DATASET_NAME=datasets/adversarial/${SHORT_NAME}/tokens/${DATASET}/gradient-targeting \
+GPU="${GPU}" \
+MODELS_OUT=trained-models/seq2seq/pe${MAX_EPOCHS}-${TARGETING}-l${LAMB}/${DATASET} \
+DATASET_NAME=datasets/adversarial/${SHORT_NAME}/tokens/${DATASET}/${TARGETING}-targeting \
   time make adv-train-model-seq2seq
 echo "[ADV-TRAIN]     + Training epoch complete!"
 

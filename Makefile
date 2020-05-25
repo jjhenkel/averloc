@@ -739,6 +739,24 @@ train-model-code2seq: check-dataset-name check-gpu check-models-out build-image-
 		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs" \
 		"$${IMAGE_NAME}" $${ARGS}
 
+.PHONY: adv-train-model-code2seq
+adv-train-model-code2seq: check-dataset-name check-gpu check-models-out build-image-train-model-code2seq  ## (TRAIN) Trains the code2seq model on a selected dataset.
+	@IMAGE_NAME="$(shell whoami)/averloc--train-model-code2seq:$(shell git rev-parse HEAD)"
+	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		--gpus "device=$${GPU}" \
+		-v "${ROOT_DIR}/$${MODELS_OUT}/adversarial:/mnt/outputs" \
+		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs" \
+		"$${IMAGE_NAME}" $${ARGS}
+
+.PHONY: aug-train-model-code2seq
+aug-train-model-code2seq: check-dataset-name check-gpu check-models-out build-image-train-model-code2seq  ## (TRAIN) Trains the code2seq model on a selected dataset.
+	@IMAGE_NAME="$(shell whoami)/averloc--train-model-code2seq:$(shell git rev-parse HEAD)"
+	DOCKER_API_VERSION=1.40 docker run -it --rm \
+		--gpus "device=$${GPU}" \
+		-v "${ROOT_DIR}/$${MODELS_OUT}/augmented:/mnt/outputs" \
+		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs" \
+		"$${IMAGE_NAME}" $${ARGS}
+
 .PHONY: test-model-seq2seq
 test-model-seq2seq: check-dataset-name check-results-out check-gpu check-models-in build-image-test-model-seq2seq ## (TEST) Tests the seq2seq model on a selected dataset.
 	@IMAGE_NAME="$(shell whoami)/averloc--test-model-seq2seq:$(shell git rev-parse HEAD)"
@@ -792,163 +810,46 @@ ifndef SHORT_NAME
 	$(error SHORT_NAME is a required parameter for this target.)
 endif
 
-.PHONY: extract-adv-dataset-ast-paths-debug-java
-extract-adv-dataset-ast-paths-debug-java: | check-short-name check-transforms check-gpu check-models-in build-image-extract-adv-dataset-c2s
-	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-c2s:$(shell git rev-parse HEAD)"
-	DOCKER_API_VERSION=1.40 docker run -it --rm \
-		--gpus "device=$${GPU}" \
-		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
-		-e CHECKPOINT="$${CHECKPOINT}" \
-		-e NO_RANDOM="$${NO_RANDOM}" \
-		-e NO_TEST="$${NO_TEST}" \
-		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
-		-v "${ROOT_DIR}/debug:/mnt/staging" \
-		-v "${ROOT_DIR}/tasks/extract-adv-dataset-c2s:/app" \
-		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/debug/java:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/adversarial/$${SHORT_NAME}/ast-paths/debug/java:/mnt/outputs" \
-		"$${IMAGE_NAME}" $$(find "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/debug/java" -type d | grep -Po "$${TRANSFORMS}")
+.PHONY: check-dataset
+check-dataset:
+ifndef DATASET
+	$(error DATASET (e.g., c2s/java-small) is a required parameter for this target.)
+endif
 
-.PHONY: extract-adv-dataset-ast-paths-c2s-java-small
-extract-adv-dataset-ast-paths-c2s-java-small: | check-short-name check-transforms check-gpu check-models-in build-image-extract-adv-dataset-c2s
+.PHONY: extract-adv-dataset-ast-paths
+extract-adv-dataset-ast-paths: | check-dataset check-short-name check-transforms check-gpu check-models-in build-image-extract-adv-dataset-c2s
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-c2s:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		--gpus "device=$${GPU}" \
 		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
-		-e CHECKPOINT="$${CHECKPOINT}" \
+		-e NO_GRADIENT="$${NO_GRADIENT}" \
 		-e NO_RANDOM="$${NO_RANDOM}" \
 		-e NO_TEST="$${NO_TEST}" \
 		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
 		-v "${ROOT_DIR}/debug:/mnt/staging" \
 		-v "${ROOT_DIR}/tasks/extract-adv-dataset-c2s:/app" \
-		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-small:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/adversarial/$${SHORT_NAME}/ast-paths/c2s/java-small:/mnt/outputs" \
-		"$${IMAGE_NAME}"  $$(find "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/c2s/java-small" -type d | grep -Po "$${TRANSFORMS}")
-
-.PHONY: extract-adv-dataset-ast-paths-csn-java
-extract-adv-dataset-ast-paths-csn-java: | check-short-name check-transforms check-gpu check-models-in build-image-extract-adv-dataset-c2s
-	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-c2s:$(shell git rev-parse HEAD)"
-	DOCKER_API_VERSION=1.40 docker run -it --rm \
-		--gpus "device=$${GPU}" \
-		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
-		-e CHECKPOINT="$${CHECKPOINT}" \
-		-e NO_RANDOM="$${NO_RANDOM}" \
-		-e NO_TEST="$${NO_TEST}" \
-		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
-		-v "${ROOT_DIR}/debug:/mnt/staging" \
-		-v "${ROOT_DIR}/tasks/extract-adv-dataset-c2s:/app" \
-		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/csn/java:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/adversarial/$${SHORT_NAME}/ast-paths/csn/java:/mnt/outputs" \
-		"$${IMAGE_NAME}"  $$(find "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/csn/java" -type d | grep -Po "$${TRANSFORMS}")
-
-.PHONY: extract-adv-dataset-ast-paths-csn-python
-extract-adv-dataset-ast-paths-csn-python: | check-short-name check-transforms check-gpu check-models-in build-image-extract-adv-dataset-c2s
-	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-c2s:$(shell git rev-parse HEAD)"
-	DOCKER_API_VERSION=1.40 docker run -it --rm \
-		--gpus "device=$${GPU}" \
-		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
-		-e CHECKPOINT="$${CHECKPOINT}" \
-		-e NO_RANDOM="$${NO_RANDOM}" \
-		-e NO_TEST="$${NO_TEST}" \
-		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
-		-v "${ROOT_DIR}/debug:/mnt/staging" \
-		-v "${ROOT_DIR}/tasks/extract-adv-dataset-c2s:/app" \
-		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/csn/python:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/adversarial/$${SHORT_NAME}/ast-paths/csn/python:/mnt/outputs" \
-		"$${IMAGE_NAME}"  $$(find "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/csn/python" -type d | grep -Po "$${TRANSFORMS}")
-
-.PHONY: extract-adv-dataset-ast-paths-sri-py150
-extract-adv-dataset-ast-paths-sri-py150: | check-short-name check-transforms check-gpu check-models-in build-image-extract-adv-dataset-c2s
-	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-c2s:$(shell git rev-parse HEAD)"
-	DOCKER_API_VERSION=1.40 docker run -it --rm \
-		--gpus "device=$${GPU}" \
-		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
-		-e CHECKPOINT="$${CHECKPOINT}" \
-		-e NO_RANDOM="$${NO_RANDOM}" \
-		-e NO_TEST="$${NO_TEST}" \
-		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
-		-v "${ROOT_DIR}/debug:/mnt/staging" \
-		-v "${ROOT_DIR}/tasks/extract-adv-dataset-c2s:/app" \
-		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/sri/py150:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/adversarial/$${SHORT_NAME}/ast-paths/sri/py150:/mnt/outputs" \
-		"$${IMAGE_NAME}"  $$(find "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/sri/py150" -type d | grep -Po "$${TRANSFORMS}")
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/$${DATASET}:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/adversarial/$${SHORT_NAME}/ast-paths/$${DATASET}:/mnt/outputs" \
+		"$${IMAGE_NAME}" $$(find "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/$${DATASET}" -type d | grep -Po "$${TRANSFORMS}")
 
 #######################################################################################################################
 #######################################################################################################################
 
-.PHONY: extract-adv-dataset-tokens-debug-java 
-extract-adv-dataset-tokens-debug-java: | check-checkpoint check-short-name check-transforms check-gpu check-models-in build-image-extract-adv-dataset-tokens
+.PHONY: extract-adv-dataset-tokens
+extract-adv-dataset-tokens: | check-dataset check-checkpoint check-short-name check-transforms check-gpu check-models-in build-image-extract-adv-dataset-tokens
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-tokens:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		--gpus "device=$${GPU}" \
 		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
 		-e CHECKPOINT="$${CHECKPOINT}" \
+		-e NO_GRADIENT="$${NO_GRADIENT}" \
 		-e NO_RANDOM="$${NO_RANDOM}" \
 		-e NO_TEST="$${NO_TEST}" \
 		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
 		-v "${ROOT_DIR}/debug:/mnt/staging" \
-		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/debug/java:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/adversarial/$${SHORT_NAME}/tokens/debug/java:/mnt/outputs" \
-		"$${IMAGE_NAME}" $$(find "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/debug/java" -type d | grep -Po "$${TRANSFORMS}")
-
-.PHONY: extract-adv-dataset-tokens-c2s-java-small 
-extract-adv-dataset-tokens-c2s-java-small: | check-checkpoint check-short-name check-transforms check-gpu check-models-in build-image-extract-adv-dataset-tokens
-	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-tokens:$(shell git rev-parse HEAD)"
-	DOCKER_API_VERSION=1.40 docker run -it --rm \
-		--gpus "device=$${GPU}" \
-		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
-		-e CHECKPOINT="$${CHECKPOINT}" \
-		-e NO_RANDOM="$${NO_RANDOM}" \
-		-e NO_TEST="$${NO_TEST}" \
-		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
-		-v "${ROOT_DIR}/debug:/mnt/staging" \
-		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/c2s/java-small:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/adversarial/$${SHORT_NAME}/tokens/c2s/java-small:/mnt/outputs" \
-		"$${IMAGE_NAME}" $$(find "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/c2s/java-small" -type d | grep -Po "$${TRANSFORMS}")
-
-.PHONY: extract-adv-dataset-tokens-csn-java
-extract-adv-dataset-tokens-csn-java: | check-checkpoint check-short-name check-transforms check-gpu check-models-in build-image-extract-adv-dataset-tokens
-	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-tokens:$(shell git rev-parse HEAD)"
-	DOCKER_API_VERSION=1.40 docker run -it --rm \
-		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
-		-e CHECKPOINT="$${CHECKPOINT}" \
-		-e NO_RANDOM="$${NO_RANDOM}" \
-		-e NO_TEST="$${NO_TEST}" \
-		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/java:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/adversarial/$${SHORT_NAME}/tokens/csn/java:/mnt/outputs" \
-		"$${IMAGE_NAME}" $$(find "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/java" -type d | grep -Po "$${TRANSFORMS}")
-
-.PHONY: extract-adv-dataset-tokens-csn-python
-extract-adv-dataset-tokens-csn-python: | check-checkpoint check-short-name check-transforms check-gpu check-models-in build-image-extract-adv-dataset-tokens
-	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-tokens:$(shell git rev-parse HEAD)"
-	DOCKER_API_VERSION=1.40 docker run -it --rm \
-		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
-		-e CHECKPOINT="$${CHECKPOINT}" \
-		-e NO_RANDOM="$${NO_RANDOM}" \
-		-e NO_TEST="$${NO_TEST}" \
-		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/python:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/adversarial/$${SHORT_NAME}/tokens/csn/python:/mnt/outputs" \
-		"$${IMAGE_NAME}" $$(find "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/csn/python" -type d | grep -Po "$${TRANSFORMS}")
-
-.PHONY: extract-adv-dataset-tokens-sri-py150
-extract-adv-dataset-tokens-sri-py150: | check-checkpoint check-short-name check-transforms check-gpu check-models-in build-image-extract-adv-dataset-tokens
-	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-tokens:$(shell git rev-parse HEAD)"
-	DOCKER_API_VERSION=1.40 docker run -it --rm \
-		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
-		-e CHECKPOINT="$${CHECKPOINT}" \
-		-e NO_RANDOM="$${NO_RANDOM}" \
-		-e NO_TEST="$${NO_TEST}" \
-		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/sri/py150:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/adversarial/$${DIR_PART}/tokens/sri/py150:/mnt/outputs" \
-		"$${IMAGE_NAME}" $$(find "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/sri/py150" -type d | grep -Po "$${TRANSFORMS}")
-
-EADT_DEPS := extract-adv-dataset-tokens-c2s-java-small
-EADT_DEPS += extract-adv-dataset-tokens-csn-java
-EADT_DEPS += extract-adv-dataset-tokens-csn-python
-EADT_DEPS += extract-adv-dataset-tokens-sri-py150
-
-.PHONY: extract-adv-datasets-tokens
-extract-adv-datasets-tokens: $(EADT_DEPS) ## (DS-7) Extract preprocessed adversarial datasets (representations: tokens) from our transfromed (preprocessed) datasets 
-	@$(call echo_info,"Adversarial datasets (representation: tokens) extracted (from transformed datasets)!")
+		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/$${DATASET}:/mnt/inputs" \
+		-v "${ROOT_DIR}/datasets/adversarial/$${SHORT_NAME}/tokens/$${DATASET}:/mnt/outputs" \
+		"$${IMAGE_NAME}" $$(find "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/$${DATASET}" -type d | grep -Po "$${TRANSFORMS}")
 
 #######################################################################################################################
 #######################################################################################################################

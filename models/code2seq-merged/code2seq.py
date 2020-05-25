@@ -35,6 +35,8 @@ if __name__ == '__main__':
     parser.add_argument("-td", dest="train_dir", help="directory for adv-training", required=False)
     # for gradient attack
     parser.add_argument('--num_replace_tokens', default=20, type=int)
+    parser.add_argument('--epochs', default=20, type=int)
+    parser.add_argument('--lamb', default=0.5, type=float)
     args = parser.parse_args()
 
     replace_tokens = ["@R_%d@"%i for i in range(1, args.num_replace_tokens+1)]
@@ -45,7 +47,8 @@ if __name__ == '__main__':
         config = Config.get_default_config(args)
 
     # Composite training loss
-    lamb = 0.5
+    lamb = args.lamb
+    print('Lamb :=' + str(lamb))
 
     model = Model(config, replace_tokens)
     print('Created model')

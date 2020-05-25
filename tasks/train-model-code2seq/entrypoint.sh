@@ -23,6 +23,27 @@ if [ "${1}" = "--regular_training" ]; then
     -te "${FOLDER}/data.val.c2s" \
     -s /mnt/outputs/model \
     $@
+elif [ "${1}" = "--adv_fine_tune" ]; then
+  SELECTED_MODEL=$(
+    find /mnt/outputs \
+      -type f \
+      -name "model_iter*" \
+    | awk -F'.' '{ print $1 }' \
+    | sort -t 'r' -k 2 -n -u \
+    | tail -n1
+  )
+
+  shift
+  T="${1}"
+  shift
+  python3 -u /code2seq/code2seq.py \
+    -d "${FOLDER}/data" \
+    -te "${FOLDER}/data.val.c2s" \
+    -td "${FOLDER}" \
+    -t "${T}" \
+    -l ${SELECTED_MODEL} \
+    -s /mnt/outputs/model \
+    $@
 else
   T="${1}"
   shift

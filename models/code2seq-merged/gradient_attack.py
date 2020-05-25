@@ -24,7 +24,9 @@ if __name__ == '__main__':
     parser.add_argument("--batch_size", type=int, help="size of batch in training", required=False, default=32)
     parser.add_argument('--num_replace_tokens', default=20, type=int)
     parser.add_argument('--random', default=False, action='store_true')
+    parser.add_argument('--no_gradient', default=False, action='store_true')
     parser.add_argument('--output_json_path', required=True)
+    parser.add_argument('--epochs', default=20, type=int)
     args = parser.parse_args()
 
     args.data_path = None
@@ -38,20 +40,20 @@ if __name__ == '__main__':
     assert args.output_json_path[-5:]==".json", "output_json_path doesn't appear to be a json"
 
     model = Model(config)
-    print('Created model')
+    print('Loaded model')
 
     replace_tokens = ["@R_%d@"%i for i in range(1, args.num_replace_tokens+1)]
 
-    print('Running gradient %sattack'%('and random ' if args.random else ''))
-
-    gradient_replacements, random_replacements = model.run_gradient_attack(replace_tokens, batch_size=args.batch_size, random=args.random)
-
-    json.dump(gradient_replacements, open(args.output_json_path[:-5] + "-gradient.json", 'w'), indent=4)
-    print('Saved:', args.output_json_path[:-5] + "-gradient.json")
+    if not args.no_gradient:
+        print('Running gradient attack')
+        gradient_replacements = model.run_gradient_attack(replace_tokens, batch_size=args.batch_size)
+        json.dump(gradient_replacements, open(args.output_json_path[:-5] + "-gradient.json", 'w'), indent=4)
+        print('  + Saved:', args.output_json_path[:-5] + "-gradient.json")
 
     if args.random:
-        output_json_path = args.output_json_path[:-5] + "-random.json"
-        json.dump(random_replacements, open(output_json_path, 'w'), indent=4)
-        print('Saved:', output_json_path)
+        print('Running random attack')
+        random_replacements = model.run_random_attack(replace_tokens, batch_size=args.batch_size)
+        json.dump(random_replacements, open(args.output_json_path[:-5] + "-random.json", 'w'), indent=4)
+        print('  + Saved:', args.output_json_path[:-5] + "-random.json")
 
     model.close_session()
