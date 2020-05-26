@@ -31,7 +31,7 @@ def parse_args():
 	parser.add_argument('--num_replacements', default=50)
 	parser.add_argument('--distinct', action='store_true', dest='distinct', default=True)
 	parser.add_argument('--no-distinct', action='store_false', dest='distinct')
-	parser.add_argument('--no_gradient', action='store_false', dest='distinct')
+	parser.add_argument('--no_gradient', action='store_true', dest='no_gradient', default=False)
 	parser.add_argument('--batch_size', type=int, default=32)
 	parser.add_argument('--save_path', default=None)
 	parser.add_argument('--random', action='store_true', default=False, help='Also generate random attack')
