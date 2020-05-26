@@ -17,4 +17,8 @@ if __name__ == "__main__":
     selection = random.randint(3, len(parts) - 1) 
     out_file.write("{}\t{}\n".format(
       parts[selection].strip(), label.strip()
+    )) 
+    # This is to do simple "double data" aug.
+    out_file.write("{}\t{}\n".format(
+      parts[1].strip(), label.strip()
     ))
