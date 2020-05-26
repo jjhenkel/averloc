@@ -1,0 +1,30 @@
+./scripts/per-epoch-adv-train.sh 3 0.3 &> full-run-l0.3.txt && \
+AVERLOC_JUST_TEST=true CHECKPOINT="Latest" \
+SHORT_NAME="depth-1-test-for-adv-per-epoch-l0.3" \
+GPU=3 MODELS_IN=trained-models/seq2seq/per-epoch-l0.3/c2s/java-small/adversarial \
+TRANSFORMS='transforms\.\w+' time make extract-adv-dataset-tokens-c2s-java-small && \
+ARGS='--batch_size 32' GPU=3 CHECKPOINT="Latest" \
+DATASET_NAME=datasets/adversarial/depth-1-test-for-adv-per-epoch-l0.3/tokens/c2s/java-small/gradient-targeting \
+MODELS_IN=trained-models/seq2seq/per-epoch-l0.3/c2s/java-small/adversarial \
+RESULTS_OUT=results/seq2seq/c2s/java-small/adversarial-model/per-epoch-l0.3/gradient-data \
+time make test-model-seq2seq && \
+./scripts/per-epoch-adv-train.sh 3 0.2 &> full-run-l0.2.txt && \
+AVERLOC_JUST_TEST=true CHECKPOINT="Latest" \
+SHORT_NAME="depth-1-test-for-adv-per-epoch-l0.2" \
+GPU=3 MODELS_IN=trained-models/seq2seq/per-epoch-l0.2/c2s/java-small/adversarial \
+TRANSFORMS='transforms\.\w+' time make extract-adv-dataset-tokens-c2s-java-small && \
+ARGS='--batch_size 32' GPU=3 CHECKPOINT="Latest" \
+DATASET_NAME=datasets/adversarial/depth-1-test-for-adv-per-epoch-l0.2/tokens/c2s/java-small/gradient-targeting \
+MODELS_IN=trained-models/seq2seq/per-epoch-l0.2/c2s/java-small/adversarial \
+RESULTS_OUT=results/seq2seq/c2s/java-small/adversarial-model/per-epoch-l0.2/gradient-data \
+time make test-model-seq2seq && \
+./scripts/per-epoch-adv-train.sh 3 0.1 &> full-run-l0.1.txt && \
+AVERLOC_JUST_TEST=true CHECKPOINT="Latest" \
+SHORT_NAME="depth-1-test-for-adv-per-epoch-l0.1" \
+GPU=3 MODELS_IN=trained-models/seq2seq/per-epoch-l0.1/c2s/java-small/adversarial \
+TRANSFORMS='transforms\.\w+' time make extract-adv-dataset-tokens-c2s-java-small && \
+ARGS='--batch_size 32' GPU=3 CHECKPOINT="Latest" \
+DATASET_NAME=datasets/adversarial/depth-1-test-for-adv-per-epoch-l0.1/tokens/c2s/java-small/gradient-targeting \
+MODELS_IN=trained-models/seq2seq/per-epoch-l0.1/c2s/java-small/adversarial \
+RESULTS_OUT=results/seq2seq/c2s/java-small/adversarial-model/per-epoch-l0.1/gradient-data \
+time make test-model-seq2seq
