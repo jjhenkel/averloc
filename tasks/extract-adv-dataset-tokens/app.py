@@ -8,7 +8,7 @@ import tqdm
 def handle_replacement_tokens(line):
   new_line = line
   uniques = set()
-  for match in re.compile('replaceme\d+ ').findall(line):
+  for match in re.compile('replaceme\d+').findall(line):
     uniques.add(match.strip())
   
   for match in uniques:
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     ))
 
   print("Writing adv. {}ing samples...".format(sys.argv[1]))
-  with open("/mnt/staging/{}.tsv".format(sys.argv[1]), "w") as out_f:
+  with open("/mnt/outputs/{}.tsv".format(sys.argv[1]), "w") as out_f:
     out_f.write('index\tsrc\ttgt\t{}\n'.format(
       '\t'.join([ 
         '{}'.format(i) for i in TRANSFORMS
