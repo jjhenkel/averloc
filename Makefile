@@ -444,6 +444,46 @@ ALL_TRANSFORMS+="transforms.RenameParameters"
 ALL_TRANSFORMS+="transforms.ReplaceTrueFalse"
 ALL_TRANSFORMS+="transforms.UnrollWhiles"
 ALL_TRANSFORMS+="transforms.WrapTryCatch"
+ALL_TRANSFORMS+="depth-2-sample-1"
+ALL_TRANSFORMS+="depth-2-sample-2"
+ALL_TRANSFORMS+="depth-2-sample-3"
+ALL_TRANSFORMS+="depth-2-sample-4"
+ALL_TRANSFORMS+="depth-2-sample-5"
+ALL_TRANSFORMS+="depth-2-sample-6"
+ALL_TRANSFORMS+="depth-2-sample-7"
+ALL_TRANSFORMS+="depth-2-sample-8"
+ALL_TRANSFORMS+="depth-2-sample-9"
+ALL_TRANSFORMS+="depth-2-sample-10"
+ALL_TRANSFORMS+="depth-3-sample-1"
+ALL_TRANSFORMS+="depth-3-sample-2"
+ALL_TRANSFORMS+="depth-3-sample-3"
+ALL_TRANSFORMS+="depth-3-sample-4"
+ALL_TRANSFORMS+="depth-3-sample-5"
+ALL_TRANSFORMS+="depth-3-sample-6"
+ALL_TRANSFORMS+="depth-3-sample-7"
+ALL_TRANSFORMS+="depth-3-sample-8"
+ALL_TRANSFORMS+="depth-3-sample-9"
+ALL_TRANSFORMS+="depth-3-sample-10"
+ALL_TRANSFORMS+="depth-4-sample-1"
+ALL_TRANSFORMS+="depth-4-sample-2"
+ALL_TRANSFORMS+="depth-4-sample-3"
+ALL_TRANSFORMS+="depth-4-sample-4"
+ALL_TRANSFORMS+="depth-4-sample-5"
+ALL_TRANSFORMS+="depth-4-sample-6"
+ALL_TRANSFORMS+="depth-4-sample-7"
+ALL_TRANSFORMS+="depth-4-sample-8"
+ALL_TRANSFORMS+="depth-4-sample-9"
+ALL_TRANSFORMS+="depth-4-sample-10"
+ALL_TRANSFORMS+="depth-5-sample-1"
+ALL_TRANSFORMS+="depth-5-sample-2"
+ALL_TRANSFORMS+="depth-5-sample-3"
+ALL_TRANSFORMS+="depth-5-sample-4"
+ALL_TRANSFORMS+="depth-5-sample-5"
+ALL_TRANSFORMS+="depth-5-sample-6"
+ALL_TRANSFORMS+="depth-5-sample-7"
+ALL_TRANSFORMS+="depth-5-sample-8"
+ALL_TRANSFORMS+="depth-5-sample-9"
+ALL_TRANSFORMS+="depth-5-sample-10"
 
 datasets/transformed/preprocessed/ast-paths/debug/java: ## <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/debug/java' (using 'ast-paths' representation)...")
@@ -735,7 +775,7 @@ train-model-code2seq: check-dataset-name check-gpu check-models-out build-image-
 	@IMAGE_NAME="$(shell whoami)/averloc--train-model-code2seq:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it \
 		--gpus "device=$${GPU}" \
-		-v "${ROOT_DIR}/$${MODELS_OUT}:/mnt/outputs" \
+		-v "${ROOT_DIR}/$${MODELS_OUT}/normal:/mnt/outputs" \
 		-v "${ROOT_DIR}/$${DATASET_NAME}:/mnt/inputs" \
 		"$${IMAGE_NAME}" $${ARGS}
 
