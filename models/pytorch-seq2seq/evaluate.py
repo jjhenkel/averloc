@@ -31,7 +31,7 @@ def parse_args():
                         help='Path to experiment directory. If load_checkpoint is True, then path to checkpoint directory has to be provided')
     parser.add_argument('--load_checkpoint', action='store', dest='load_checkpoint', default='Best_F1',
                         help='The name of the checkpoint to load, usually an encoded time string')
-    parser.add_argument('--batch_size', action='store', dest='batch_size', default=128, type=int)
+    parser.add_argument('--batch_size', action='store', dest='batch_size', default=32, type=int)
     parser.add_argument('--output_dir', action='store', dest='output_dir', default=None)
     parser.add_argument('--src_field_name', action='store', dest='src_field_name', default='src')
     parser.add_argument('--save', action='store_true', default=False)
