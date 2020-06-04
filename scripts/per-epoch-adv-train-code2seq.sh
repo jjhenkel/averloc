@@ -36,19 +36,19 @@ export MAX_EPOCHS=10
 export DATASET="${DATASET}"
 
 SELECTED_MODEL=$(basename $(
-  find "${DIR}/../trained-models/code2seq/${DATASET}/normal" \
+  find "${DIR}/../final-models/code2seq/${DATASET}/normal" \
     -type f \
     -name "model_iter*" \
   | awk -F'.' '{ print $3 }' \
-  | sort -t 'r' -k 4 -n -u \
+  | sort -t 'r' -k 3 -n -u \
   | tail -n1
 ))
 echo "${SELECTED_MODEL}"
 
 echo "[ADV-TRAIN] Copying over normal model for first-round targeting..."
 docker run -it --rm \
-  -v "${DIR}/../trained-models/code2seq/${DATASET}/normal":/mnt/inputs \
-  -v "${DIR}/../trained-models/code2seq/pe${MAX_EPOCHS}-${TARGETING}-l${LAMB}/${DATASET}/adversarial":/mnt/outputs \
+  -v "${DIR}/../final-models/code2seq/${DATASET}/normal":/mnt/inputs \
+  -v "${DIR}/../final-models/code2seq/pe${MAX_EPOCHS}-${TARGETING}-l${LAMB}/${DATASET}/adversarial":/mnt/outputs \
   debian:9 \
     bash -c "\
       cp /mnt/inputs/${SELECTED_MODEL}.data-00000-of-00001 /mnt/outputs/model_iter1.data-00000-of-00001 && \
@@ -69,17 +69,17 @@ NO_TEST="true" \
 SHORT_NAME="d1-train-epoch-${epoch}-l${LAMB}" \
 GPU="${GPU}" \
 DATASET="${DATASET}" \
-MODELS_IN=trained-models/code2seq/pe${MAX_EPOCHS}-${TARGETING}-l${LAMB}/${DATASET}/adversarial \
+MODELS_IN=final-models/code2seq/pe${MAX_EPOCHS}-${TARGETING}-l${LAMB}/${DATASET}/adversarial \
 TRANSFORMS='transforms\.\w+' \
   time make extract-adv-dataset-ast-paths
 
 echo "[ADV-TRAIN]     + Targeting complete!"
 echo "[ADV-TRAIN]   + Epoch ${epoch} training begins..."
 
-ARGS="${DO_FINETUNE} ${NUM_T} --epochs 3 --lamb ${LAMB}" \
+ARGS="${DO_FINETUNE} ${NUM_T} --epochs 2 --lamb ${LAMB}" \
 SHORT_NAME="d1-train-epoch-${epoch}-l${LAMB}" \
 GPU="${GPU}" \
-MODELS_OUT=trained-models/code2seq/pe${MAX_EPOCHS}-${TARGETING}-l${LAMB}/${DATASET} \
+MODELS_OUT=final-models/code2seq/pe${MAX_EPOCHS}-${TARGETING}-l${LAMB}/${DATASET} \
 DATASET_NAME=datasets/adversarial/${SHORT_NAME}/ast-paths/${DATASET}/${TARGETING}-targeting \
   time make adv-train-model-code2seq
 echo "[ADV-TRAIN]     + Training epoch complete!"

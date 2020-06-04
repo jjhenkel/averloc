@@ -35,43 +35,43 @@ export NUM_T=8
 export MAX_EPOCHS=10
 export DATASET="${DATASET}"
 
-echo "[ADV-TRAIN] Copying over normal model for first-round targeting..."
-mkdir -p "trained-models/seq2seq/per-epoch-l${LAMB}/${DATASET}/adversarial/lstm"
-docker run -it --rm \
-  -v "${DIR}/../trained-models/seq2seq/${DATASET}/normal":/mnt/inputs \
-  -v "${DIR}/../trained-models/seq2seq/pe${MAX_EPOCHS}-${TARGETING}-l${LAMB}/${DATASET}/adversarial":/mnt/outputs \
-  debian:9 \
-    bash -c 'cp -r /mnt/inputs/lstm/checkpoints /mnt/outputs/lstm && mv /mnt/outputs/lstm/checkpoints/Best_F1 /mnt/outputs/lstm/checkpoints/Latest'
-echo "[ADV-TRAIN]   + Done!"
+# echo "[ADV-TRAIN] Copying over normal model for first-round targeting..."
+# mkdir -p "final-models/seq2seq/pe${MAX_EPOCHS}-${TARGETING}-l${LAMB}/${DATASET}/adversarial/lstm"
+# docker run -it --rm \
+#   -v "${DIR}/../final-models/seq2seq/${DATASET}/normal":/mnt/inputs \
+#   -v "${DIR}/../final-models/seq2seq/pe${MAX_EPOCHS}-${TARGETING}-l${LAMB}/${DATASET}/adversarial":/mnt/outputs \
+#   debian:9 \
+#     bash -c 'cp -r /mnt/inputs/lstm/checkpoints /mnt/outputs/lstm && mv /mnt/outputs/lstm/checkpoints/Best_F1 /mnt/outputs/lstm/checkpoints/Latest'
+# echo "[ADV-TRAIN]   + Done!"
+# echo "[ADV-TRAIN] Starting loop..."
 
-echo "[ADV-TRAIN] Starting loop..."
+export DO_FINETUNE="--adv_fine_tune"
 
-for epoch in $(seq 1 ${MAX_EPOCHS}); do
+for epoch in $(seq 10 ${MAX_EPOCHS}); do
 echo "[ADV-TRAIN]   + Epoch ${epoch} targeting begins..."
 
 CHECKPOINT="Latest" \
 NO_RANDOM="${NO_RANDOM}" \
 NO_GRADIENT="${NO_GRADIENT}" \
-NO_RANDOM="true" \
 NO_TEST="true" \
-SHORT_NAME="d1-train-epoch-${epoch}-l${2}" \
+SHORT_NAME="d1-train-epoch-${epoch}-l${LAMB}-${TARGETING}" \
 GPU="${GPU}" \
-MODELS_IN=trained-models/seq2seq/pe${MAX_EPOCHS}-${TARGETING}-l${LAMB}/${DATASET}/adversarial \
+DATASET="${DATASET}" \
+MODELS_IN=final-models/seq2seq/pe${MAX_EPOCHS}-${TARGETING}-l${LAMB}/${DATASET}/adversarial \
 TRANSFORMS='transforms\.\w+' \
-  time make extract-adv-dataset-tokens-c2s-java-small
+  time make extract-adv-dataset-tokens
 
 echo "[ADV-TRAIN]     + Targeting complete!"
 echo "[ADV-TRAIN]   + Epoch ${epoch} training begins..."
 
-ARGS="${DO_FINETUNE} --epochs 1 --lamb ${2}" \
-SHORT_NAME="d1-train-epoch-${epoch}-l${2}" \
+ARGS="${DO_FINETUNE} --batch_size 16 --epochs 1 --lamb ${LAMB}" \
+SHORT_NAME="d1-train-epoch-${epoch}-l${LAMB}-${TARGETING}" \
 GPU="${GPU}" \
-MODELS_OUT=trained-models/seq2seq/pe${MAX_EPOCHS}-${TARGETING}-l${LAMB}/${DATASET} \
+MODELS_OUT=final-models/seq2seq/pe${MAX_EPOCHS}-${TARGETING}-l${LAMB}/${DATASET} \
 DATASET_NAME=datasets/adversarial/${SHORT_NAME}/tokens/${DATASET}/${TARGETING}-targeting \
   time make adv-train-model-seq2seq
 echo "[ADV-TRAIN]     + Training epoch complete!"
 
-export DO_FINETUNE="--adv_fine_tune"
 done
 
 echo "[ADV-TRAIN]  + Training finished!"
