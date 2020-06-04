@@ -1,0 +1,9 @@
+attackName,randTargFOneDrop,gradTargFOneDrop,randTargFOneDropCS,gradTargFOneDropCS
+AddDeadCode,4.0,7.7,1.4,2.9
+InsertPrintStatement,2.7,6.1,3.8,10.2
+RenameField,2.3,5.4,2.0,2.0
+RenameLocalVariable,0.3,2.2,0.0,2.5
+RenameParameter,0.3,3.0,0.3,4.7
+ReplaceTrueFalse,0.0,0.7,0.2,0.5
+UnrollWhile,0.0,0.0,0.4,0.4
+WrapTryCatch,2.5,9.4,1.4,7.8
