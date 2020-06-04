@@ -1,6 +1,7 @@
 *.tsv
 datasets/backups
 trained-models/
+final-models/
 ig-results/
 debug/
 *log*.txt
