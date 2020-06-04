@@ -850,13 +850,22 @@ ifndef SHORT_NAME
 	$(error SHORT_NAME is a required parameter for this target.)
 endif
 
+.PHONY: check-dataset
+check-dataset: ## Ensures DATASET="<blah>" parameter is present. <!PRIVATE>
+ifndef DATASET
+	$(error DATASET is a required parameter for this target.)
+endif
+
 .PHONY: extract-adv-dataset-ast-paths
 extract-adv-dataset-ast-paths: | check-dataset check-short-name check-transforms check-gpu check-models-in build-image-extract-adv-dataset-c2s
 	@IMAGE_NAME="$(shell whoami)/averloc--extract-adv-dataset-c2s:$(shell git rev-parse HEAD)"
 	DOCKER_API_VERSION=1.40 docker run -it --rm \
 		--gpus "device=$${GPU}" \
 		-e AVERLOC_JUST_TEST="$${AVERLOC_JUST_TEST}" \
+		-e NO_GRADIENT="$${NO_GRADIENT}" \
 		-e NO_RANDOM="$${NO_RANDOM}" \
+		-e NO_TEST="$${NO_TEST}" \
+		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
 		-v "${ROOT_DIR}/tasks/extract-adv-dataset-c2s:/app" \
 		-v "${ROOT_DIR}/datasets/transformed/preprocessed/ast-paths/$${DATASET}:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/adversarial/$${SHORT_NAME}/ast-paths/$${DATASET}:/mnt/outputs" \
@@ -876,7 +885,6 @@ extract-adv-dataset-tokens: | check-dataset check-checkpoint check-short-name ch
 		-e NO_RANDOM="$${NO_RANDOM}" \
 		-e NO_TEST="$${NO_TEST}" \
 		-v "${ROOT_DIR}/$${MODELS_IN}:/models" \
-		-v "${ROOT_DIR}/debug:/mnt/staging" \
 		-v "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/$${DATASET}:/mnt/inputs" \
 		-v "${ROOT_DIR}/datasets/adversarial/$${SHORT_NAME}/tokens/$${DATASET}:/mnt/outputs" \
 		"$${IMAGE_NAME}" $$(find "${ROOT_DIR}/datasets/transformed/preprocessed/tokens/$${DATASET}" -type d | grep -Po "$${TRANSFORMS}")
