@@ -41,6 +41,7 @@ if __name__ == '__main__':
     OUT_MAPS[transform_name] = open(
       '/mnt/staging/data{}.{}.c2s'.format(i+1, sys.argv[1]), 'w'
     )
+    print('{} is in: data{}.{}.c2s'.format(transform_name, i+1, sys.argv[1]))
 
   index = 0
   for key in tqdm.tqdm(ID_MAP.keys(), desc="  + Progress"):

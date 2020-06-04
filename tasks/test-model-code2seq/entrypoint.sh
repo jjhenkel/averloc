@@ -29,7 +29,19 @@ if [ "${1}" = "--no-attack" ]; then
   shift
   python3 /code2seq/code2seq.py \
     --load ${SELECTED_MODEL} \
-    --test ${FOLDER}/data.test.c2s
+    --test ${FOLDER}/data.test.c2s | tee /mnt/outputs/log-normal.txt
+elif [ "${1}" = "--individual" ]; then
+  echo "Individual."
+  ls /mnt/inputs
+  mkdir -p /staging
+  shift
+  cat "${FOLDER}/${1}.test.c2s" > /staging/data.test.c2s
+  cp "${FOLDER}/data.dict.c2s" /staging/data.dict.c2s
+  FOLDER=/staging
+  shift
+  python3 /code2seq/code2seq.py \
+    --load ${SELECTED_MODEL} \
+    --test ${FOLDER}/data.test.c2s | tee /mnt/outputs/log-normal.txt
 else
   T="${1}"
   shift

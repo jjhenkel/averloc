@@ -23,6 +23,16 @@ if [ "${1}" = "--regular_training" ]; then
     -te "${FOLDER}/data.val.c2s" \
     -s /mnt/outputs/model \
     $@
+elif [ "${1}" = "--augmented_training" ]; then
+  shift
+  python /app/augment.py
+  python3 -u /code2seq/code2seq.py \
+    -d "${FOLDER}/data" \
+    -te "${FOLDER}/data.val.c2s" \
+    -td "${FOLDER}" \
+    -t "2" \
+    -s /mnt/outputs/model \
+    $@
 elif [ "${1}" = "--adv_fine_tune" ]; then
   SELECTED_MODEL=$(
     find /mnt/outputs \
