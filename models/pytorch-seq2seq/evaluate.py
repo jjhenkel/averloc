@@ -31,7 +31,7 @@ def parse_args():
                         help='Path to experiment directory. If load_checkpoint is True, then path to checkpoint directory has to be provided')
     parser.add_argument('--load_checkpoint', action='store', dest='load_checkpoint', default='Best_F1',
                         help='The name of the checkpoint to load, usually an encoded time string')
-    parser.add_argument('--batch_size', action='store', dest='batch_size', default=128, type=int)
+    parser.add_argument('--batch_size', action='store', dest='batch_size', default=32, type=int)
     parser.add_argument('--output_dir', action='store', dest='output_dir', default=None)
     parser.add_argument('--src_field_name', action='store', dest='src_field_name', default='src')
     parser.add_argument('--save', action='store_true', default=False)
@@ -61,15 +61,43 @@ def load_data(data_path,
             else:
                 fields_inp.append((col, src_adv))
 
-    data = torchtext.data.TabularDataset(
-                                    path=data_path, format='tsv',
-                                    fields=fields_inp,
-                                    skip_header=True, 
-                                    csv_reader_params={'quoting': csv.QUOTE_NONE}, 
-                                    filter_pred=filter_func
-                                    )
+    def len_filter_sml(example):
+        return len(example.src) <= 500
+    def len_filter_med(example):
+        return not len_filter_sml(example) and len(example.src) <= 1000
+    def len_filter_lrg(example):
+        return not len_filter_sml(example) and not len_filter_med(example)
 
-    return data, fields_inp, src, tgt, src_adv, idx_field
+    data_sml = torchtext.data.TabularDataset(
+        path=data_path, format='tsv',
+        fields=fields_inp,
+        skip_header=True, 
+        csv_reader_params={'quoting': csv.QUOTE_NONE}, 
+        filter_pred=len_filter_sml
+    )
+    data_med = torchtext.data.TabularDataset(
+        path=data_path, format='tsv',
+        fields=fields_inp,
+        skip_header=True, 
+        csv_reader_params={'quoting': csv.QUOTE_NONE}, 
+        filter_pred=len_filter_med
+    )
+    data_lrg = torchtext.data.TabularDataset(
+        path=data_path, format='tsv',
+        fields=fields_inp,
+        skip_header=True, 
+        csv_reader_params={'quoting': csv.QUOTE_NONE}, 
+        filter_pred=len_filter_lrg
+    )
+    data_all = torchtext.data.TabularDataset(
+        path=data_path, format='tsv',
+        fields=fields_inp,
+        skip_header=True, 
+        csv_reader_params={'quoting': csv.QUOTE_NONE}, 
+        filter_pred=lambda x: True
+    )
+
+    return data_all, data_sml, data_med, data_lrg, fields_inp, src, tgt, src_adv, idx_field
 
 
 def load_model_data_evaluator(expt_dir, model_name, data_path, batch_size=128):
@@ -79,7 +107,7 @@ def load_model_data_evaluator(expt_dir, model_name, data_path, batch_size=128):
     input_vocab = checkpoint.input_vocab
     output_vocab = checkpoint.output_vocab
 
-    dev, fields_inp, src, tgt, src_adv, idx_field = load_data(data_path)
+    data_all, data_sml, data_med, data_lrg, fields_inp, src, tgt, src_adv, idx_field = load_data(data_path)
 
     src.vocab = input_vocab
     tgt.vocab = output_vocab
@@ -92,7 +120,7 @@ def load_model_data_evaluator(expt_dir, model_name, data_path, batch_size=128):
         loss.cuda()
     evaluator = Evaluator(loss=loss, batch_size=batch_size)
 
-    return model, dev, evaluator, fields_inp
+    return model, data_all, data_sml, data_med, data_lrg, evaluator, fields_inp
 
 
 def calc_attributions(model, data, output_fname):
@@ -115,14 +143,18 @@ def calc_attributions(model, data, output_fname):
 
 
 
-def evaluate_model(evaluator, model, data, save=False, output_dir=None, output_fname=None, src_field_name='src', get_attributions=False):
-    print('Size of Test Set', sum(1 for _ in getattr(data, src_field_name)))
-    d = evaluator.evaluate(model, data, verbose=True, src_field_name=src_field_name)
+def evaluate_model(evaluator, model, data_all, data_sml, data_med, data_lrg, save=False, output_dir=None, output_fname=None, src_field_name='src', get_attributions=False):
+    print('Sizes:\n  + Data Small {}\n  + Data Med {}\n  + Data Lrg {}'.format(
+        sum(1 for _ in getattr(data_sml, src_field_name)),
+        sum(1 for _ in getattr(data_med, src_field_name)),
+        sum(1 for _ in getattr(data_lrg, src_field_name))
+    ))
+    d = evaluator.evaluate_adaptive_batch(model, data_sml, data_med, data_lrg, verbose=True, src_field_name=src_field_name)
 
     # print(d)
 
     if get_attributions:
-        calc_attributions(model, data, output_fname) 
+        calc_attributions(model, data_all, output_fname) 
 
     for m in d['metrics']:
         if m=='f1':
@@ -158,7 +190,7 @@ if __name__=="__main__":
     if opt.output_dir is None:
         opt.output_dir = opt.expt_dir
 
-    model, data, evaluator, fields_inp = load_model_data_evaluator(opt.expt_dir, model_name, opt.data_path, opt.batch_size)
+    model, data_all, data_sml, data_med, data_lrg, evaluator, fields_inp = load_model_data_evaluator(opt.expt_dir, model_name, opt.data_path, opt.batch_size)
     if opt.src_field_name == 'all':
         exclude = ['tgt', 'index', 'transforms.Identity']
         print('Running evaluation on all fields except',exclude)
@@ -167,8 +199,8 @@ if __name__=="__main__":
             if field_name in exclude:
                 continue
             print('Evaluating Field:', field_name)
-            evaluate_model(evaluator, model, data, opt.save, opt.output_dir, output_fname, field_name, opt.attributions)
+            evaluate_model(evaluator, model, data_all, data_sml, data_med, data_lrg, opt.save, opt.output_dir, output_fname, field_name, opt.attributions)
     else:
-        evaluate_model(evaluator, model, data, opt.save, opt.output_dir, output_fname, opt.src_field_name, opt.attributions)
+        evaluate_model(evaluator, model, data_all, data_sml, data_med, data_lrg, opt.save, opt.output_dir, output_fname, opt.src_field_name, opt.attributions)
 
 

@@ -360,6 +360,7 @@ class Model:
                         eval_input_tensors = self.sess.run(eval_input_tensors_data)
                         if lamb>0 and transf==0:
                             orig_tensors = eval_input_tensors
+                            continue
                         eval_curr_loss = self.sess.run(eval_graph_loss, feed_dict={eval_target_index: eval_input_tensors[reader.TARGET_INDEX_KEY], eval_target_lengths: eval_input_tensors[reader.TARGET_LENGTH_KEY], eval_path_source_indices: eval_input_tensors[reader.PATH_SOURCE_INDICES_KEY], eval_node_indices: eval_input_tensors[reader.NODE_INDICES_KEY], eval_path_target_indices: eval_input_tensors[reader.PATH_TARGET_INDICES_KEY],  eval_valid_context_mask: eval_input_tensors[reader.VALID_CONTEXT_MASK_KEY], eval_path_source_lengths: eval_input_tensors[reader.PATH_SOURCE_LENGTHS_KEY], eval_path_lengths: eval_input_tensors[reader.PATH_LENGTHS_KEY], eval_path_target_lengths: eval_input_tensors[reader.PATH_TARGET_LENGTHS_KEY]})
                         # print(eval_curr_loss)
                         if eval_curr_loss > worst_loss:
@@ -391,24 +392,24 @@ class Model:
                     print('Accuracy after {} epochs: {}'.format(self.epochs_trained, results))
                 print('After %d epochs: Precision: %.5f, recall: %.5f, F1: %.5f' % (
                     self.epochs_trained, precision, recall, f1))
-                if f1 > best_f1:
-                    best_f1 = f1
-                    best_f1_precision = precision
-                    best_f1_recall = recall
-                    best_epoch = self.epochs_trained
-                    epochs_no_improve = 0
-                    self.save_model(self.sess, self.config.SAVE_PATH)
-                else:
-                    epochs_no_improve += self.config.SAVE_EVERY_EPOCHS
-                    if epochs_no_improve >= self.config.PATIENCE:
-                        print('Not improved for %d epochs, stopping training' % self.config.PATIENCE)
-                        print('Best scores - epoch %d: ' % best_epoch)
-                        print('Precision: %.5f, recall: %.5f, F1: %.5f' % (best_f1_precision, best_f1_recall, best_f1))
-                        return
+                # if f1 > best_f1:
+                #     best_f1 = f1
+                #     best_f1_precision = precision
+                #     best_f1_recall = recall
+                #     best_epoch = self.epochs_trained
+                #     epochs_no_improve = 0
+                #     self.save_model(self.sess, self.config.SAVE_PATH)
+                # else:
+                #     epochs_no_improve += self.config.SAVE_EVERY_EPOCHS
+                #     if epochs_no_improve >= self.config.PATIENCE:
+                #         print('Not improved for %d epochs, stopping training' % self.config.PATIENCE)
+                #         print('Best scores - epoch %d: ' % best_epoch)
+                #         print('Precision: %.5f, recall: %.5f, F1: %.5f' % (best_f1_precision, best_f1_recall, best_f1))
+                #         return
 
 
         if self.config.SAVE_PATH:
-            self.save_model(self.sess, self.config.SAVE_PATH + '.final')
+            self.save_model(self.sess, self.config.SAVE_PATH)
             print('Model saved in file: %s' % self.config.SAVE_PATH)
 
         elapsed = int(time.time() - start_time)
@@ -1250,6 +1251,7 @@ class Model:
         if not sess is None:
             self.saver.restore(sess, self.config.LOAD_PATH)
             print('Done loading model')
+        print("Loading model from: '" + self.config.LOAD_PATH + "'")
         with open(self.config.LOAD_PATH + '.dict', 'rb') as file:
             if self.subtoken_to_index is not None:
                 return
@@ -1340,7 +1342,7 @@ class Model:
             return source_onehot, target_onehot, source_onehot_grad, target_onehot_grad, path_source_indices, path_target_indices
 
 
-    def run_gradient_attack(self, replace_tokens, batch_size, random=False):
+    def run_gradient_attack(self, replace_tokens, batch_size):
         start_time = time.time()
         if self.queue is None:
             # Hack
@@ -1367,7 +1369,6 @@ class Model:
         start_time = time.time()
 
         best_replacements = {}
-        random_replacements = {} if random else None
 
         assert self.config.BEAM_WIDTH==0
 
@@ -1389,10 +1390,69 @@ class Model:
 
                 best_replacements.update(d)
 
-                if random:
-                    d = get_random_token_replacement(path_source_indices, path_target_indices, indices=indices,
-                                                    tok_to_idx=self.subtoken_to_index, idx_to_tok=self.index_to_subtoken, replace_tokens=replace_tokens)
-                    random_replacements.update(d)
+                batch_num += 1
+                if batch_num%PRINT_FREQ==0:
+                    print(datetime.datetime.now(), end=':   ')
+                    print('Processed %d batches, %d data points'%(batch_num, batch_size*(batch_num)))
+
+        except tf.errors.OutOfRangeError:
+            pass
+
+        elapsed = int(time.time() - start_time)
+        print("Time taken: %sh%sm%ss" % ((elapsed // 60 // 60), (elapsed // 60) % 60, elapsed % 60))
+        
+        return best_replacements
+
+
+    def run_random_attack(self, replace_tokens, batch_size):
+        start_time = time.time()
+        if self.queue is None:
+            # Hack
+            self.config.TEST_BATCH_SIZE = batch_size
+            self.config.RNN_DROPOUT_KEEP_PROB = 1.0
+            self.config.EMBEDDINGS_DROPOUT_KEEP_PROB = 1.0
+
+            self.queue = reader.Reader(subtoken_to_index=self.subtoken_to_index, node_to_index=self.node_to_index,
+                                       target_to_index=self.target_to_index, config=self.config, is_evaluating=True, indexed=True)
+            reader_output = self.queue.get_output()
+            _, _, self.source_onehot_grad_op, self.target_onehot_grad_op, self.path_source_indices_op, self.path_target_indices_op = self.build_gradient_attack_graph(reader_output)
+            self.index_op = reader_output[reader.INDEX_KEY]
+            self.path_source_lengths_op = reader_output[reader.PATH_SOURCE_LENGTHS_KEY]
+            self.path_target_lengths_op = reader_output[reader.PATH_TARGET_LENGTHS_KEY]
+            self.saver = tf.train.Saver(max_to_keep=10)
+
+        if self.config.LOAD_PATH:
+            self.initialize_session_variables(self.sess)
+            self.load_model(self.sess)
+        else:
+            raise Exception('config.LOAD_PATH not specified')
+
+        self.queue.reset(self.sess)
+        start_time = time.time()
+
+        random_replacements = {} if random else None
+
+        assert self.config.BEAM_WIDTH==0
+
+        batch_num = 0
+        PRINT_FREQ = 25
+        print('Start time: ',datetime.datetime.now())
+        try:
+            while True:
+                path_source_indices, path_target_indices, indices = self.sess.run([
+                        self.path_source_indices_op,
+                        self.path_target_indices_op,
+                        self.index_op])
+                
+                d = get_random_token_replacement(
+                    path_source_indices,
+                    path_target_indices,
+                    indices=indices,
+                    tok_to_idx=self.subtoken_to_index,
+                    idx_to_tok=self.index_to_subtoken,
+                    replace_tokens=replace_tokens
+                )
+                random_replacements.update(d)
 
                 batch_num += 1
                 if batch_num%PRINT_FREQ==0:
@@ -1405,8 +1465,7 @@ class Model:
         elapsed = int(time.time() - start_time)
         print("Time taken: %sh%sm%ss" % ((elapsed // 60 // 60), (elapsed // 60) % 60, elapsed % 60))
         
-        return best_replacements, random_replacements
-
+        return random_replacements
 
 
 #######################################################

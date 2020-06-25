@@ -16,20 +16,12 @@ NUMBER = re.compile(
   r'^\d+(\.\d+)?$'
 )
 
-BRACKETS = re.compile(
-  r'^(\{|\(|\[|\]|\)|\})$'
+DELIMITERS = re.compile(
+  r'^(\{|\(|\[|\]|\)|\}|;|,)$'
 )
 
 OPERATORS = re.compile(
-  r'^(=|!=|<=|>=|<|>|\?|!|\*|\+|\*=|\+=|/|%|@|&|&&|\||\|\|)$'
-)
-
-PUNCTUATION = re.compile(
-  r'^(;|:|\.|,)$'
-)
-
-WORDS = re.compile(
-  r'^(\w+)$'
+  r'^(=|!=|<=|>=|<|>|\?|!|\*|\+|\*=|\+=|/|%|@|&|&&|\||\|\||\.|:)$'
 )
 
 
@@ -40,14 +32,10 @@ def classify_tok(tok):
     return 'KEYWORD'
   elif NUMBER.match(tok):
     return 'NUMBER'
-  elif BRACKETS.match(tok):
-    return 'BRACKET'
+  elif DELIMITERS.match(tok):
+    return 'DELIMITER'
   elif OPERATORS.match(tok):
     return 'OPERATOR'
-  elif PUNCTUATION.match(tok):
-    return 'PUNCTUATION'
-  elif WORDS.match(tok):
-    return 'WORDS'
   else:
     return 'OTHER'
 

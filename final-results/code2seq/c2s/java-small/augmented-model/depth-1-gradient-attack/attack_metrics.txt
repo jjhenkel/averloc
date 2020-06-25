@@ -1,0 +1,6 @@
+precision: 28.155
+recall: 19.978
+f1: 23.372
+exact_match: 0.680
+word-level accuracy: 15.543
+

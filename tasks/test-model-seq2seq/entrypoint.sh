@@ -19,20 +19,22 @@ if [ "${1}" = "--no-attack" ]; then
     --expt_dir /models/lstm \
     --output_dir /mnt/outputs \
     --load_checkpoint "${CHECKPOINT}" \
-      $@
+      $@ \
+  | tee /mnt/outputs/log.txt
 else
   python /model/evaluate.py \
     --data_path "${TEST_FILE}" \
     --expt_dir /models/lstm \
     --output_dir /mnt/outputs \
     --load_checkpoint "${CHECKPOINT}" \
-      $@
+  | tee /mnt/outputs/log-normal.txt
 
   python /model/attack_batched.py \
     --data_path "${TEST_FILE}" \
     --expt_dir /models/lstm \
     --output_dir /mnt/outputs \
-    --load_checkpoint "${CHECKPOINT}"
+    --load_checkpoint "${CHECKPOINT}" $@ \
+  | tee /mnt/outputs/log-attacked.txt
 fi
 
 if [ -f /mnt/inputs/baseline.tsv ]; then

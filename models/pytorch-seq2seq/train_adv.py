@@ -209,7 +209,7 @@ t = SupervisedAdversarialTrainer(loss=loss, batch_size=params['batch_size'],
 
 
 # train with lamb*normal_loss + (1-lamb)*adv_loss
-lamb = np.linspace(opt.lamb, 0.0, opt.epochs)
+lamb = opt.lamb
 print(lamb)
 
 load_checkpoint_path = None if opt.load_checkpoint is None else \

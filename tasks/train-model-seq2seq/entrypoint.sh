@@ -25,13 +25,15 @@ if [ "${1}" = "--regular_training" ]; then
     --expt_dir /mnt/outputs $@
 elif [ "${1}" = "--augmented_training" ]; then
   shift
-  TRAIN_FILE=/staging/train.tsv
+  TRAIN_FILE=/mnt/outputs/train.tsv
   python /app/augment.py
-  python /model/train.py \
+  python /model/train_adv.py \
     --train_path "${TRAIN_FILE}" \
     --dev_path "${VALID_FILE}" \
     --expt_name lstm \
-    --expt_dir /mnt/outputs $@
+    --expt_dir /mnt/outputs \
+    --lamb 0.5 \
+    $@
 elif [ "${1}" = "--adv_fine_tune" ]; then
   shift
   python /model/train_adv.py \

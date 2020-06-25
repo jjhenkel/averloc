@@ -6,8 +6,16 @@ SUBTOKEN_VOCAB_SIZE=15000 # Standardize with our seq2seq model
 TARGET_VOCAB_SIZE=5000 # Standardize with our seq2seq model 
 NUM_THREADS=$(nproc)
 PYTHON=python3
+JUST_TEST=no
 
 mkdir -p /mnt/outputs
+
+if [ ! -f "/mnt/inputs/train.jsonl.gz" ]; then
+  echo "Just test.jsonl.gz... fixing up for just test extraction"
+  cp /mnt/inputs/test.jsonl.gz /mnt/inputs/train.jsonl.gz
+  cp /mnt/inputs/test.jsonl.gz /mnt/inputs/valid.jsonl.gz
+  JUST_TEST=yes
+fi
 
 if [ "${1}" == "java" ]; then
 
@@ -55,26 +63,26 @@ if [ "${1}" == "java" ]; then
 
 elif [ "${1}" == "python" ]; then
 
-  mkdir -p /staging/step1
-  mkdir -p /staging/step2
+  mkdir -p /mnt/outputs/step1
+  mkdir -p /mnt/outputs/step2
 
   # Stage files
   echo "Staging files..."
   echo "  - Staging test.jsonl.gz..."
-  cat /mnt/inputs/test.jsonl.gz | gzip -cd | python3 /pystage.py > /staging/step1/test.json
+  cat /mnt/inputs/test.jsonl.gz | gzip -cd | python3 /pystage.py > /mnt/outputs/step1/test.json
   echo "  + Complete"
   echo "  - Staging train.jsonl.gz..."
-  cat /mnt/inputs/train.jsonl.gz | gzip -cd | python3 /pystage.py > /staging/step1/train.json
+  cat /mnt/inputs/train.jsonl.gz | gzip -cd | python3 /pystage.py > /mnt/outputs/step1/train.json
   echo "  + Complete"
   echo "  - Staging valid.jsonl.gz..."
-  cat /mnt/inputs/valid.jsonl.gz | gzip -cd | python3 /pystage.py > /staging/step1/valid.json
+  cat /mnt/inputs/valid.jsonl.gz | gzip -cd | python3 /pystage.py > /mnt/outputs/step1/valid.json
   echo "  + Complete"
 
   EXTRA_FLAG=""
   if [ -f /mnt/inputs/baseline.jsonl.gz ]; then
     echo "  - Staging baseline.jsonl.gz..."
-    cat /mnt/inputs/baseline.jsonl.gz | gzip -cd | python3 /pystage.py > /staging/step1/baseline.json
-    EXTRA_FLAG="--baseline_data /staging/step2/baseline_output_file.txt"
+    cat /mnt/inputs/baseline.jsonl.gz | gzip -cd | python3 /pystage.py > /mnt/outputs/step1/baseline.json
+    EXTRA_FLAG="--baseline_data /mnt/outputs/step2/baseline_output_file.txt"
     echo "  + Complete"
   fi
 
@@ -82,13 +90,13 @@ elif [ "${1}" == "python" ]; then
   python3 /code2seq/Python150kExtractor/extract.py \
     --n_jobs="$(nproc)" \
     --seed="12345" \
-    --data_dir=/staging/step1 \
+    --data_dir=/mnt/outputs/step1 \
     --max_path_width=2 \
     --max_path_length=8 \
-    --output_dir=/staging/step2
+    --output_dir=/mnt/outputs/step2
 
   # Modified preprocess
-  data_dir=/staging/step2
+  data_dir=/mnt/outputs/step2
   mkdir -p "${data_dir}"
   train_data_file=$data_dir/train_output_file.txt
   valid_data_file=$data_dir/valid_output_file.txt
@@ -121,9 +129,23 @@ elif [ "${1}" == "python" ]; then
 
   echo "  + Preprocessing finished"
 
+  rm -rf /mnt/outputs/step1
+  rm -rf /mnt/outputs/step2
+
 else
 
   echo "Lanugage: ${1} not supported for ast-paths extraction."
   exit 1
+
+fi
+
+if [ "${JUST_TEST}" = "yes" ]; then
+  
+  echo "Removing extra files (used for just-test extraction)..."
+  rm -f /mnt/inputs/train.jsonl.gz
+  rm -f /mnt/inputs/valid.jsonl.gz
+  rm -f /mnt/outputs/data.train.c2s
+  rm -f /mnt/outputs/data.val.c2s
+  echo "  + Cleanup Done!"
 
 fi

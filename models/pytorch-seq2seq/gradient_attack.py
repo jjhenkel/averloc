@@ -31,7 +31,8 @@ def parse_args():
 	parser.add_argument('--num_replacements', default=50)
 	parser.add_argument('--distinct', action='store_true', dest='distinct', default=True)
 	parser.add_argument('--no-distinct', action='store_false', dest='distinct')
-	parser.add_argument('--batch_size', type=int, default=32)
+	parser.add_argument('--no_gradient', action='store_true', dest='no_gradient', default=False)
+	parser.add_argument('--batch_size', type=int, default=16)
 	parser.add_argument('--save_path', default=None)
 	parser.add_argument('--random', action='store_true', default=False, help='Also generate random attack')
 	opt = parser.parse_args()
@@ -318,7 +319,7 @@ if __name__=="__main__":
 	print(opt)
 
 	replace_tokens = ["@R_%d@"%x for x in range(0,opt.num_replacements+1)]
-	print('Replace tokens:', replace_tokens)
+	# print('Replace tokens:', replace_tokens)
 
 	model, input_vocab, output_vocab = load_model(opt.expt_dir, opt.load_checkpoint)
 
@@ -330,7 +331,6 @@ if __name__=="__main__":
 	src_adv.vocab = input_vocab
 
 	print('Data size:', len(data))
-
 
 	if opt.random:
 		rand_d = {}
@@ -350,27 +350,23 @@ if __name__=="__main__":
 		# Assuming save path ends with '.json'
 		save_path = save_path[:-5] + '-random.json'
 		json.dump(rand_d, open(save_path, 'w'), indent=4)
-		print('Saved:', save_path)
+		print('  + Saved:', save_path)
 
+	if not opt.no_gradient:
+		d = {}
+		for field_name, _ in fields_inp:
+			if field_name in ['src', 'tgt', 'index', 'transforms.Identity']:
+				continue
 
+			print('Attacking using Gradient', field_name)
+			d[field_name] = apply_gradient_attack(data, model, input_vocab, replace_tokens, field_name, opt)
+			# break
 
-	d = {}
-	for field_name, _ in fields_inp:
-		if field_name in ['src', 'tgt', 'index', 'transforms.Identity']:
-			continue
-
-		print('Attacking using Gradient', field_name)
-		d[field_name] = apply_gradient_attack(data, model, input_vocab, replace_tokens, field_name, opt)
-		# break
-
-	save_path = opt.save_path
-	if save_path is None:
-		fname = opt.data_path.replace('/', '|').replace('.','|') + "%s.json"%("-distinct" if opt.distinct else "")
-		save_path = os.path.join(opt.expt_dir, fname)
-	# Assuming save path ends with '.json'
-	save_path = save_path[:-5] + '-gradient.json'
-	json.dump(d, open(save_path, 'w'), indent=4)
-	print('Saved:', save_path)
+		save_path = opt.save_path
+		# Assuming save path ends with '.json'
+		save_path = save_path[:-5] + '-gradient.json'
+		json.dump(d, open(save_path, 'w'), indent=4)
+		print('  + Saved:', save_path)
 
 
 	
