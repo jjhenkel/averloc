@@ -384,44 +384,105 @@ extract-ast-paths: build-image-preprocess-dataset-c2s | $(EAP_DEPS) ## (DS-3) Ge
 #######################################################################################################################
 #######################################################################################################################
 
+ALL_TRANSFORMS:="transforms.Identity"
+ALL_TRANSFORMS+="depth-5-sample-1"
+ALL_TRANSFORMS+="depth-5-sample-2"
+ALL_TRANSFORMS+="depth-5-sample-3"
+ALL_TRANSFORMS+="depth-5-sample-4"
+ALL_TRANSFORMS+="depth-5-sample-5"
+ALL_TRANSFORMS+="depth-5-sample-6"
+ALL_TRANSFORMS+="depth-5-sample-7"
+ALL_TRANSFORMS+="depth-5-sample-8"
+ALL_TRANSFORMS+="depth-5-sample-9"
+ALL_TRANSFORMS+="depth-5-sample-10"
+ALL_TRANSFORMS+="depth-5-sample-11"
+ALL_TRANSFORMS+="depth-5-sample-12"
+ALL_TRANSFORMS+="depth-5-sample-13"
+ALL_TRANSFORMS+="depth-5-sample-14"
+ALL_TRANSFORMS+="depth-5-sample-15"
+ALL_TRANSFORMS+="depth-5-sample-16"
+ALL_TRANSFORMS+="depth-5-sample-17"
+ALL_TRANSFORMS+="depth-5-sample-18"
+ALL_TRANSFORMS+="depth-5-sample-19"
+ALL_TRANSFORMS+="depth-5-sample-20"
+ALL_TRANSFORMS+="depth-5-sample-21"
+ALL_TRANSFORMS+="depth-5-sample-22"
+ALL_TRANSFORMS+="depth-5-sample-23"
+ALL_TRANSFORMS+="depth-5-sample-24"
+ALL_TRANSFORMS+="depth-5-sample-25"
+ALL_TRANSFORMS+="depth-5-sample-26"
+ALL_TRANSFORMS+="depth-5-sample-27"
+ALL_TRANSFORMS+="depth-5-sample-28"
+ALL_TRANSFORMS+="depth-5-sample-29"
+ALL_TRANSFORMS+="depth-5-sample-30"
+ALL_TRANSFORMS+="depth-5-sample-31"
+ALL_TRANSFORMS+="depth-5-sample-32"
+ALL_TRANSFORMS+="depth-5-sample-33"
+ALL_TRANSFORMS+="depth-5-sample-34"
+ALL_TRANSFORMS+="depth-5-sample-35"
+ALL_TRANSFORMS+="depth-5-sample-36"
+ALL_TRANSFORMS+="depth-5-sample-37"
+ALL_TRANSFORMS+="depth-5-sample-38"
+ALL_TRANSFORMS+="depth-5-sample-39"
+ALL_TRANSFORMS+="depth-5-sample-40"
+ALL_TRANSFORMS+="depth-5-sample-41"
+ALL_TRANSFORMS+="depth-5-sample-42"
+ALL_TRANSFORMS+="depth-5-sample-43"
+ALL_TRANSFORMS+="depth-5-sample-44"
+ALL_TRANSFORMS+="depth-5-sample-45"
+ALL_TRANSFORMS+="depth-5-sample-46"
+ALL_TRANSFORMS+="depth-5-sample-47"
+ALL_TRANSFORMS+="depth-5-sample-48"
+ALL_TRANSFORMS+="depth-5-sample-49"
+ALL_TRANSFORMS+="depth-5-sample-50"
+
+
 datasets/preprocessed/tokens/c2s/java-small: ## Generate a preprocessed (representation: tokens) version of code2seq's java-small dataset <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'preprocessed/tokens/c2s/java-small' (using 'tokens' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
-	docker run -it --rm \
-		-v "${ROOT_DIR}/datasets/normalized/c2s/java-small:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/preprocessed/tokens/c2s/java-small:/mnt/outputs" \
-		"$${IMAGE_NAME}"
+	@for transform in ${ALL_TRANSFORMS}; do
+		docker run -it --rm \
+			-v "${ROOT_DIR}/datasets/normalized/c2s/java-small/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/preprocessed/tokens/c2s/java-small/$${transform}:/mnt/outputs" \
+			"$${IMAGE_NAME}"
+	done
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
 
 datasets/preprocessed/tokens/csn/java: ## Generate a preprocessed (representation: tokens) version of CodeSearchNet's Java dataset <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'preprocessed/tokens/csn/java' (using 'tokens' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
-	docker run -it --rm \
-		-v "${ROOT_DIR}/datasets/normalized/csn/java:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/preprocessed/tokens/csn/java:/mnt/outputs" \
-		"$${IMAGE_NAME}"
+	@for transform in ${ALL_TRANSFORMS}; do
+		docker run -it --rm \
+			-v "${ROOT_DIR}/datasets/normalized/csn/java/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/preprocessed/tokens/csn/java/$${transform}:/mnt/outputs" \
+			"$${IMAGE_NAME}"
+	done
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
 
 datasets/preprocessed/tokens/csn/python: ## Generate a preprocessed (representation: tokens) version of CodeSearchNet's Python dataset <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'preprocessed/tokens/csn/python' (using 'tokens' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
-	docker run -it --rm \
-		-v "${ROOT_DIR}/datasets/normalized/csn/python:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/preprocessed/tokens/csn/python:/mnt/outputs" \
-		"$${IMAGE_NAME}"
+	@for transform in ${ALL_TRANSFORMS}; do
+		docker run -it --rm \
+			-v "${ROOT_DIR}/datasets/normalized/csn/python/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/preprocessed/tokens/csn/python/$${transform}:/mnt/outputs" \
+			"$${IMAGE_NAME}"
+	done
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
 
 datasets/preprocessed/tokens/sri/py150: ## Generate a preprocessed (representation: tokens) version of SRI Lab's py150k dataset <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'preprocessed/tokens/sri/py150' (using 'tokens' representation)...")
 	@$(call mkdir_cleanup_on_error,$@)
 	@IMAGE_NAME="$(shell whoami)/averloc--preprocess-dataset-tokens:$(shell git rev-parse HEAD)"
-	docker run -it --rm \
-		-v "${ROOT_DIR}/datasets/normalized/sri/py150:/mnt/inputs" \
-		-v "${ROOT_DIR}/datasets/preprocessed/tokens/sri/py150:/mnt/outputs" \
-		"$${IMAGE_NAME}"
+	@for transform in ${ALL_TRANSFORMS}; do
+		docker run -it --rm \
+			-v "${ROOT_DIR}/datasets/normalized/sri/py150/$${transform}:/mnt/inputs" \
+			-v "${ROOT_DIR}/datasets/preprocessed/tokens/sri/py150/$${transform}:/mnt/outputs" \
+			"$${IMAGE_NAME}"
+	done
 	@$(call echo_debug,"  + Finalizing (using 'tokens' representation) complete!")
 
 ETOK_DEPS := datasets/preprocessed/tokens/c2s/java-small
@@ -435,15 +496,6 @@ extract-tokens: build-image-preprocess-dataset-tokens | $(ETOK_DEPS) ## (DS-3) G
 #######################################################################################################################
 #######################################################################################################################
 
-ALL_TRANSFORMS:="transforms.Identity"
-ALL_TRANSFORMS+="transforms.AddDeadCode"
-ALL_TRANSFORMS+="transforms.InsertPrintStatements"
-ALL_TRANSFORMS+="transforms.RenameFields"
-ALL_TRANSFORMS+="transforms.RenameLocalVariables"
-ALL_TRANSFORMS+="transforms.RenameParameters"
-ALL_TRANSFORMS+="transforms.ReplaceTrueFalse"
-ALL_TRANSFORMS+="transforms.UnrollWhiles"
-ALL_TRANSFORMS+="transforms.WrapTryCatch"
 
 datasets/transformed/preprocessed/ast-paths/debug/java: ## <!PRIVATE>
 	@$(call echo_debug,"Finalizing dataset 'transformed/preprocessed/ast-paths/debug/java' (using 'ast-paths' representation)...")
